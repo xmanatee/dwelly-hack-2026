@@ -40,3 +40,6 @@ dist/
 .DS_Store
 .idea/
 .vscode/
+
+# Dwelly hackathon public cases (separate upstream clone)
+/dwelly-cases/
