@@ -1,26 +1,22 @@
-# Show the workflow in 60 seconds
+# Product and voice demos
 
-[← Project](../README.md) · [Recording storyboard](script.md) · [Submission fields](../SUBMISSION.md)
+[← Project](../README.md) · [Submission metadata](../SUBMISSION.md)
 
-**Video status: not recorded.** Intended final path: `demo/demo.mp4`. No playable video is claimed by this page.
+[![Watch the main product demo](dashboard-preview.jpg)](dashboard.mp4)
 
-Show the request, the context the system actually sees, the chosen plan and an observable result. The current reproducible demonstration is a local pipeline with a placeholder Planner and mock external actions. Arithmetic executes locally.
+| Recording | What it shows | Duration |
+| --- | --- | --- |
+| **[Main demo — case desk](dashboard.mp4)** | Banking cases, decisions, operator queue and quality review. Dashboard figures show earlier development runs, not the final challenge score. | 65.87 s |
+| **[Voice call](voice-call.mp4)** | ElevenLabs conversation connected to the Dwelly call pipeline. | 46.60 s |
 
-## Two available scenes
+Both MP4 files are committed directly in this repository, with H.264 video and AAC audio.
+The main recording is slightly longer than the guide's approximately 60-second target;
+the uploaded recording is preserved unchanged.
 
-| Scene | What viewers can inspect |
-| --- | --- |
-| Ticket → human review | Normalized trigger, excluded future/other-case records, the stub plan and simulated handoff/reply. |
-| Calculation → ticket reply | Explicit saved fixture plan, local result `150.00`, a simulated ticket message containing that value, and durable replay. |
+The voice bridge returns the case pipeline's reply to the caller within the same conversation.
+The reproducible demo uses a prepared fixture plan. Live speech does not imply a live bank
+transaction: handoffs and external banking effects remain simulated.
+[Voice setup and limits](../examples/voice/README.md).
 
-Use the [runnable commands](../examples/production/README.md). Label a saved fixture plan as a fixture; it is not evidence that an LLM generated the decision. When Vera's Planner is ready, replace that scene with a real captured model run and update the narration.
-
-## Recording slots
-
-- [ ] Record the final implemented workflow, at most about 60 seconds.
-- [ ] Add the real video file inside the repository at the chosen path.
-- [ ] Check playback and duration; show actual outputs without editing failed answers.
-- [ ] Add voice footage only if an actual voice integration exists.
-- [ ] Fill the committed video path and freeze/result commit fields in `SUBMISSION.md`.
-
-`demo/*.mp4` and `demo/*.mov` are currently ignored to avoid accidentally committing raw recordings. Once a final file exists, explicitly include that approved deliverable, using Git LFS if needed; a future path or an external link is not the video itself. Do not add a broken “Watch demo” button before the file exists.
+[Final challenge answers](../ANSWERS/README.md) are separate from the dashboard's historical
+results. They retain the actual generated outputs, plans and traces for all 30 banking cases.

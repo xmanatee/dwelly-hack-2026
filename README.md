@@ -7,11 +7,28 @@
 An open-source operational agent for requests that arrive as emails, calls and tickets.
 Built for the **Dwelly AI Hackathon 2026 · Banking & Financial Services**.
 
-[Quickstart](#quickstart) · [Architecture](docs/architecture/README.md) · [Planner](docs/planner/README.md) · [Evaluation](docs/evaluation/README.md) · [Demo](demo/README.md)
+[Quickstart](#quickstart) · [Architecture](docs/architecture/README.md) · [Planner](docs/planner/README.md) · [Evaluation](docs/evaluation/README.md) · [Demo](#watch-the-demo) · [Final answers](ANSWERS/README.md)
 
 Python 3.12 · Pydantic AI · uv · [Apache 2.0](LICENSE)
 
 </div>
+
+## Watch the demo
+
+[![Watch the main demo: banking case desk and decision review](demo/dashboard-preview.jpg)](demo/dashboard.mp4)
+
+**[▶ Main product demo](demo/dashboard.mp4)** · **[▶ Voice call demo](demo/voice-call.mp4)**
+
+The case desk shows requests, decisions and operator review. The ElevenLabs voice integration
+lets a caller ask about a case and hear the pipeline's response in the same conversation.
+The recorded voice scenario uses a prepared demo plan; external banking actions remain simulated.
+[Voice setup](examples/voice/README.md) · [Video details](demo/README.md).
+
+**Reality Test:** all **30 Banking & Financial Services challenges** have generated
+[answers and reasoning](ANSWERS/README.md), with plans, evidence references and local traces.
+Opus 5.5 at high effort completed all cases with **zero generation failures**;
+this is run completion, not an independently judged correctness score.
+[Run report](ANSWERS/report.html) · [Verification](ANSWERS/verification.json).
 
 ## Context. Decision. Action.
 
@@ -130,13 +147,13 @@ The generator direction is reusable across service tracks; the current implement
 
 For model-backed runs, copy `.env.example` to `.env` and set only the selected provider's key (`ANTHROPIC_API_KEY`, `OPENROUTER_API_KEY` or `OPENAI_API_KEY`). `--context-config` and `--planner-config` explicitly enable paid calls; offline demos, checks and saved-report rendering do not. No vendor telemetry or session capture is enabled. [Configuration and development](docs/development/README.md).
 
-The voice backend uses the same context/planning/execution core. [Run the service and configure ElevenLabs](docs/voice/README.md) · [Demo storyboard — video pending](demo/README.md).
+The voice backend uses the same context/planning/execution core. [Run the service and configure ElevenLabs](docs/voice/README.md) · [Recorded product and voice demos](demo/README.md).
 
 ## Assumptions and next steps
 
 Source adapters establish access boundaries; names and email addresses remain search hints. A plan is intent, a mock receipt is a simulation, and neither proves an external bank operation occurred. Public examples are development data, not final Reality Test submissions.
 
-Next: evaluate the combined decision core, add temporal entity snapshots and provision real channel adapters. Live banking effects, an end-to-end provider audio conversation and a recorded demo are not verified. The authenticated service is usable locally; its external effects remain mock. [Component audit and remaining deployment work](docs/architecture/integration-status.md). [Integration receipts](experiments/usability-integration/README.md).
+Next: evaluate the combined decision core, add temporal entity snapshots and provision real channel adapters. Live banking effects are not implemented. Product and voice recordings are included above; the voice demo uses fixture planning, and autonomous model-plan-to-speech remains a next step. The authenticated service is usable locally; its external effects remain mock. [Component audit and remaining deployment work](docs/architecture/integration-status.md). [Integration receipts](experiments/usability-integration/README.md).
 
 ## Explore and contribute
 
@@ -155,7 +172,7 @@ uv run hackathon-winner /path/to/cases --output .cache/winner/evaluation-1
 
 Default output: repository-root `ANSWERS/<original-case-folder>/ANSWER.md` and `REASONING.md`.
 With no arguments, the command uses the two bundled synthetic smoke cases. Default model:
-Claude Fable 5.1 (`claude-fable-5-1`, high effort) via `ANTHROPIC_API_KEY`; `--config` can select the saved Claude Code configuration.
+Claude Fable 5.1 (`claude-fable-5-1`, high effort) via `ANTHROPIC_API_KEY`. The final challenge run used **Opus 5.5 high** with `--config experiments/final-challenges/config.json` and the environment variable `ANTHROPIC_WINNER_API_KEY`. [Exact challenge preparation and run](experiments/final-challenges/README.md). Install PDF support with `uv sync --locked --extra evaluation`; the challenge preparation script also requires local Tesseract for image transcription.
 The runner imports `dwelly_bot.planner`, includes supplied attachments, preserves model
 failures, and saves context, plans and journals.
 
