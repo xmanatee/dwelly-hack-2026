@@ -84,3 +84,14 @@ uv run hackathon-winner report --input .cache/winner/evaluation-1
 `generate` accepts `<case>.plan.json` and `<case>.context.md` for the product action schema. Without `--config` it is an offline renderer; supplying config enables model wording. `report` rebuilds HTML from saved outputs without model calls.
 
 New Planner steps separate `instruction` from `rationale` (explanation, observed evidence, criterion and rule source). Both model and template generators preserve these grounds in REASONING.md. Winner formats the chosen next actions; it does not invent later branches or independently choose another strategy.
+
+## Evaluate public examples
+
+The [public decision evaluation](../../experiments/winner-public-decisions/README.md)
+prepares 102 decision-time inputs from all 50 original banking scenarios. Every
+input has a separate expected-action text file, outside Winner's evidence tree.
+Run Winner on `prepared/inputs`, then judge the saved plans, answers and reasoning
+with `python -m dwelly_bot.evaluation.winner`. That evaluator checks input hashes,
+uses the shared model pool and budget, and resumes saved reviews without rerunning
+the Planner. Its report separates wrong actions, generator drift, unsupported
+facts, safety issues and limitations of the historical reference itself.

@@ -14,7 +14,7 @@ def render(bundle: dict[str, Any], output: Path) -> None:
     summary = bundle["summary"]
     report = Report(
         title="Winner · public decision evaluation",
-        subtitle="50 public banking scenarios · Sonnet Planner + generator · independent Opus review",
+        subtitle=f"{summary['scenarios']} source scenarios · {summary['assigned']} decisions · independent saved-output review",
         receipt=bundle["receipt"],
     )
     report.text(

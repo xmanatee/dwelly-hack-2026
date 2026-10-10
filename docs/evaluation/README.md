@@ -57,6 +57,12 @@ Scenario-writing, simulated-customer and review sub-agents are possible supporti
 
 ## Evidence already available
 
+[Current Winner evaluation](../../experiments/winner-public-decisions/README.md):
+102 prepared decisions covering all 50 public banking scenarios, isolated
+context/action files, Sonnet Planner and answer generation, and independent Opus
+review. The rubric separates plan quality, output fidelity, factual grounding,
+safety and reference ambiguity. Public examples remain development data.
+
 [Historical MiniMax/Sonnet comparison](../../experiments/sonnet-vs-minimax-anthropic/README.md): 50 executed cases and 50 reviews per model on the earlier agent. Inputs and saved outputs are preserved. The judge's verdicts are assessments, not observed bank outcomes, and model/provider differences limit cost and latency comparisons.
 
 The current skeleton has offline checks for context boundaries, action routing, arithmetic, model-tool interaction with a local test model, and durable mock replay. These establish mechanics; they do not establish final Planner quality.

@@ -159,3 +159,58 @@ def test_unknowns_and_failures_stay_in_denominator() -> None:
     assert summary["criteria"]["plan_action"] == {"pass": 1, "not_assessed": 1}
     findings[0]["status"] = "unknown"
     assert summarize(rows)["all_core_pass"] == 0
+
+
+@pytest.mark.asyncio
+async def test_judge_uses_reference_and_resumes_saved_review(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from collections.abc import AsyncIterator
+    from contextlib import asynccontextmanager
+
+    from pydantic_ai.models.test import TestModel
+
+    from dwelly_bot.evaluation import winner
+    from dwelly_bot.evaluation.judge import LlmJudge
+
+    prepared, _, _ = fixture(tmp_path)
+    predictions = tmp_path / "winner"
+    prediction(prepared, predictions)
+    calls = []
+
+    @asynccontextmanager
+    async def context(
+        path: Path, rubric: dict[str, Any]
+    ) -> AsyncIterator[tuple[LlmJudge, RunConfig]]:
+        class CountingJudge(LlmJudge):
+            async def review(self, case: dict[str, Any]) -> dict[str, Any]:
+                calls.append(case["id"])
+                return await super().review(case)
+
+        model = TestModel(
+            custom_output_args={
+                "summary": "Offline fixture only",
+                "findings": [
+                    {
+                        "criterion": c["id"],
+                        "status": "pass",
+                        "reason": "Fixture",
+                        "evidence_ids": ["TASK", "PUBLIC-REFERENCE"],
+                    }
+                    for c in rubric["criteria"]
+                ],
+            }
+        )
+        yield CountingJudge(model, rubric), RunConfig()
+
+    monkeypatch.setattr(winner, "judge_context", context)
+    output = tmp_path / "graded"
+    bundle = await winner.evaluate(prepared, predictions, tmp_path / "config", output)
+    assert bundle["summary"]["all_core_pass"] == 1
+    assert "EXPECTED_ACTION" in str(
+        bundle["cases"][0]["judge_record"]["input_payload"]["evidence"]["PUBLIC-REFERENCE"]
+    )
+    assert "EXPECTED_ACTION" not in bundle["cases"][0]["input"]
+    assert (output / "report.html").exists()
+    assert await winner.evaluate(prepared, predictions, tmp_path / "config", output) == bundle
+    assert calls == ["001-e002"]
