@@ -12,10 +12,12 @@ import re
 import sqlite3
 import tempfile
 from collections import Counter
+from contextlib import closing
 from pathlib import Path
 from typing import Any
 
 from dwelly_bot.adapters.banking import BankingSession, decision_input
+from dwelly_bot.adapters.synthetic_banking.policy import is_observation
 from dwelly_bot.context.documents import Documents
 from dwelly_bot.contracts import AgentCase, PlannerConfig, RunConfig
 from dwelly_bot.planner.context import history_view, parse_events
@@ -195,12 +197,6 @@ SYNTH_FLAGS = {
     "director_impersonation_payment": "scam_in_progress",
     "one_time_code_shared": "account_takeover",
 }
-# Responses to these queries are effects of an action, so never decision-time evidence.
-ACTION_QUERY = re.compile(
-    r"\b(block|register|submit|cancel|send|order|revoke|place|generate|issue|apply|change|"
-    r"amend|refer|open|log|record|request|create|update|add|remove|recall|freeze|unfreeze)",
-    re.I,
-)
 SYNTH_TRACK = "Banking & Financial Services"
 
 
@@ -217,8 +213,11 @@ def build_synthetic_items(
     bank's systems catalogue. With `records`, it also sees lookup-style system responses;
     responses to action queries (blocks, registrations, changes) are always excluded.
     """
+    if per_scenario is not None and per_scenario < 1:
+        raise ValueError("--per-scenario must be positive")
     vocabulary = playbook((config.planner or PlannerConfig()).playbook)[1]
-    with sqlite3.connect(root / "banking_synth.sqlite") as database:
+    database_path = (root / "banking_synth.sqlite").resolve()
+    with closing(sqlite3.connect(database_path.as_uri() + "?mode=ro", uri=True)) as database:
         systems = [
             {
                 "id": row[0],
@@ -231,7 +230,6 @@ def build_synthetic_items(
                 "SELECT system_id, display_name, kind, read_only, description FROM systems"
             )
         ]
-    kinds = {system["id"]: system["kind"] for system in systems}
     labels = {system["id"]: system["name"] for system in systems}
     rows = [json.loads(line) for line in (root / "cases.jsonl").read_text().splitlines()]
     taken: Counter[str] = Counter()
@@ -258,9 +256,7 @@ def build_synthetic_items(
                     target.write_text(content + "\n")
             if records:
                 for i, response in enumerate(row["system_responses"], 1):
-                    if kinds.get(response["system_id"]) != "record" or ACTION_QUERY.search(
-                        response["query_hint"]
-                    ):
+                    if not is_observation(response["system_id"], response["query_hint"]):
                         continue
                     absent = ", ".join(response["fields_absent"]) or "none listed"
                     target = folder / "records" / f"{response['system_id']}-{i}.md"

@@ -8,7 +8,7 @@ case evidence → PlanInput (JSON) → planner → Plan (JSON, code-checked) →
 
 - `contracts.py`: `PlanInput` (request, timed events, documents, datapoints, `solver_tools`) and `Plan` (facts with evidence IDs, identity/authority, safety flags, ordered steps, response guidance, expected disposition).
 - `context.py`: builds `PlanInput` from the adapter's decision-point documents and the solver's own tool bindings, so disabled tools never appear.
-- `validate.py`: steps must use listed solver tools or playbook actions; facts must cite input evidence; safety flags force their required actions; state-changing actions need identity and authority first. A failed check gets one repair attempt.
+- `validate.py`: steps must use listed solver tools or playbook actions; facts must cite input evidence; safety flags force their required actions; state-changing actions need identity and authority first. A failed check uses the configured repair limit.
 - `prompt.md` and `playbooks/<name>.md|.json`: the tunable parts. The JSON defines the action vocabulary, state-changing and identity actions, and each safety flag's required actions.
 
 Enable it in a run config; omit `model` to reuse the solver's model and account:
@@ -41,8 +41,10 @@ uv run dwelly-bot plan eval score --references analysis/artifacts/plan-eval/publ
 - `references.json` holds the bank's actual next event, its heuristic action label, and expected safety flags with their required actions. It is never part of planner input. Review and correct `reference_action` labels by hand; scoring reads the file as given.
 - `score` reports plan availability, next-action accuracy (first substantive proposed action, skipping identity confirmation), whether the reference action appears anywhere in the plan, safety-flag recall, required-action completeness, false flags on control cases, and flags raised on unlabelled cases. The recorded next event is one acceptable action, not the only correct one, so read the confusion pairs before drawing conclusions.
 
-Synthetic cases from `synthetic/` use their own labels: first action and target, required gates, must-not, must-convey, unsupported claims and signposts. `--per-scenario N` takes the first N cases of each of the 75 scenarios. The planner sees the events up to the labelled decision point, the attachments available by then and the synthetic bank's systems catalogue (`datapoints.bank_systems`). `--records` also adds lookup-style system responses as `records/` documents; responses to action queries (blocks, registrations, changes) are never included because they describe effects after the decision. `score` then also reports `target_match` against the labelled target system.
+Synthetic cases from `synthetic/` use their own labels: first action and target, required gates, must-not, must-convey, unsupported claims and signposts. `--per-scenario N` takes the first N cases of each of the 75 scenarios. The planner sees the events up to the labelled decision point, the attachments available by then and the synthetic bank's systems catalogue (`datapoints.bank_systems`). `--records` also adds lookup-style system responses as `records/` documents; the same reviewed query allowlist as the local banking adapter admits observations and withholds command, mixed and unknown responses. System kind or action-word matching alone is not sufficient. `score` then also reports `target_match` against the labelled target system.
 
 ```sh
 uv run --extra analysis dwelly-bot plan eval build --synthetic .cache/datasets/banking-synth --per-scenario 2 --output analysis/artifacts/plan-eval/synthetic
 ```
+
+Standalone Planner runs save configuration, model messages and cost receipts in each local journal, including failed calls, and return a nonzero exit code when any plan fails.

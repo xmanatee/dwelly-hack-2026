@@ -324,3 +324,33 @@ def test_target_match_is_loose_on_system_names() -> None:
     assert target_match("card management system", "H&V card system")
     assert not target_match("standing-order journal", "Payment journal")
     assert target_match(None, "anything") is None
+
+
+def test_synthetic_evaluation_uses_shared_observation_policy(tmp_path: Path) -> None:
+    from dwelly_bot.evaluation.plans import build_synthetic_items
+
+    root = synthetic_corpus(tmp_path)
+    path = root / "cases.jsonl"
+    row = json.loads(path.read_text())
+    row["system_responses"].extend(
+        [
+            {
+                "system_id": "card_system",
+                "query_hint": "mysterious operation outcome",
+                "response_text": "UNREVIEWED_EFFECT",
+                "fields_absent": [],
+            },
+            {
+                "system_id": "card_system",
+                "query_hint": "gambling block status and removal request",
+                "response_text": "REVIEWED_OBSERVATION",
+                "fields_absent": [],
+            },
+        ]
+    )
+    path.write_text(json.dumps(row) + "\n")
+    [source], _ = build_synthetic_items(root, config=RunConfig(), records=True)
+    assert "UNREVIEWED_EFFECT" not in source.model_dump_json()
+    assert "REVIEWED_OBSERVATION" in source.model_dump_json()
+    with pytest.raises(ValueError, match="positive"):
+        build_synthetic_items(root, config=RunConfig(), per_scenario=0)

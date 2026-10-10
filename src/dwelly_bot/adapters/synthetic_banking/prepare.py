@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 import re
 import shutil
 import sqlite3
@@ -11,6 +10,7 @@ from contextlib import closing
 from datetime import UTC, datetime
 from pathlib import Path
 
+from dwelly_bot.adapters.synthetic_banking.policy import is_observation
 from dwelly_bot.channels.intake import inbound_adapter
 from dwelly_bot.storage import file_hash, save_json
 
@@ -68,7 +68,6 @@ def _prepare(original: Path, output: Path) -> dict[str, object]:
         end.commit()
 
     counts: dict[str, int] = {"cases": 0, "messages": 0, "responses": 0, "documents": 0}
-    read_queries = json.loads(Path(__file__).with_name("read_queries.json").read_text())
     withheld_responses = 0
     media: dict[str, int] = {}
     with (
@@ -149,9 +148,7 @@ def _prepare(original: Path, output: Path) -> dict[str, object]:
                 "FROM case_system_responses WHERE case_key=?",
                 (key,),
             ).fetchall()
-            readable = [
-                r for r in responses if r["query_hint"] in read_queries.get(r["system_id"], [])
-            ]
+            readable = [r for r in responses if is_observation(r["system_id"], r["query_hint"])]
             withheld_responses += len(responses) - len(readable)
             dst.executemany("INSERT INTO responses VALUES(?,?,?,?,?,?)", readable)
             for attachment in src.execute(

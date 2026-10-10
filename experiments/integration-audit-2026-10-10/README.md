@@ -51,3 +51,29 @@ execution failure still retains the exact dataset receipt and partial evidence.
 Offline tests cover failed-import cleanup, timezone conversion, trigger tampering, malformed
 manifests, ambiguous routes, conflicting paths and failure captures. Original generated
 corpus bytes and historical run outputs were not regenerated or edited.
+
+## Consistent evaluation evidence
+
+The synthetic Planner evaluation builder previously used a separate action-word heuristic.
+It now imports the adapter's reviewed observation policy. Unknown query types are withheld,
+and reviewed observations are not dropped merely because their query mentions a change or
+block. The source database opens read-only. A regression covers both cases. Existing saved
+scores are not regenerated: changed input evidence needs a new evaluation before comparison.
+
+## Verification receipts
+
+[Local verification](local-verification.json) records three offline runs on the existing
+seed-2026 data (ticket SYN-0001, call SYN-0250, email SYN-0813), with capture hashes and the
+source commit. All produced source context, the human-review plan and two simulated effects.
+Captures remain under the ignored `.cache/integration-audit-20261010/` directory. No paid
+model jobs, external messages or bank actions were triggered during this audit.
+
+Intentional remaining integration work: align the advisory and executable Planner contracts
+with Vera, attach real channel/voice/bank adapters, add temporal entity snapshots/OCR, and
+run a fresh accepted benchmark. The audit does not turn these placeholders into deployed
+production functionality.
+
+Final offline gate: `uv run dwelly-bot check` passed Ruff lint/format, strict mypy on
+147 source files, and **302 tests**. The initial gate had 282 passing tests; the added
+regressions exercise the failures above. `main` was fetched again before publication.
+The pre-existing dirty `experiments/baseline/report.html` is outside this task's commits.

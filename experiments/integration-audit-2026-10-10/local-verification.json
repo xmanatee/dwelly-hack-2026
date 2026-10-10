@@ -1,0 +1,69 @@
+{
+  "source_commit": "f3eb96bc9e0f585fa3603fb61af5e97c4358fe7a",
+  "scope": "Offline product pipeline on existing seed-2026; human-review stub and mock executor; no model calls",
+  "runs": [
+    {
+      "channel": "ticket",
+      "event_id": "SYN-0001-event-3",
+      "status": "simulated",
+      "record_count": 5,
+      "operations": [
+        "handoff",
+        "ticket_comment"
+      ],
+      "captures": ".cache/integration-audit-20261010/ticket",
+      "sha256": {
+        "context.json": "de1da6c2725d46169110228a3ca9a0752da76ffccc38d5822fe3e3ec299dc97a",
+        "context.md": "b21f6ef29240fea4c4357d5e45abb42463824a2d6b0784ecb6d371323c753733",
+        "dataset.json": "833dafbdb26a4e5f49f185ad5569bc34ada2736a865f1077367200bde6ff4e90",
+        "events.jsonl": "956112e3cc23f8f4b502439c0324835c90cf536491ff417b66b9c446252732a6",
+        "input.json": "fd42f0b5b2e44dc9dc35b2951629ce74495171a8da54a29fe9bd360b18ca2c6d",
+        "plan.json": "b0d71b40a45a4fd8d72d21e2e7d60520fee6b4f338fbe5177a982305f7cdbfd4",
+        "result.json": "ddc033d5e31f84424f5e12394245806d72241ac27f86d869eec11f6548357a78",
+        "trigger.json": "9e4c2a7f86fa724d4d3bd1933606eeee36d88ea724a8d02551092422ac8ba1bc"
+      }
+    },
+    {
+      "channel": "call",
+      "event_id": "SYN-0250-event-2-call",
+      "status": "simulated",
+      "record_count": 4,
+      "operations": [
+        "handoff",
+        "speak_in_call"
+      ],
+      "captures": ".cache/integration-audit-20261010/call",
+      "sha256": {
+        "context.json": "6ca469ea7a706f661369dd8509f1201d3dc18da8b5bf06892d2284a26e8b0919",
+        "context.md": "137e2e60fb5046a2f7827b27a769b42359dcb6c9adc8999d8eeed7484ee163dd",
+        "dataset.json": "833dafbdb26a4e5f49f185ad5569bc34ada2736a865f1077367200bde6ff4e90",
+        "events.jsonl": "5823fe0e84f9d68abdfd9399f46fcc79eb052f0472195e7b4e8d4a3c964eef72",
+        "input.json": "1408c8b3512682de63246b8bcf829b79b4bd3366ebebefb87cd91ecca15bf74a",
+        "plan.json": "b0d71b40a45a4fd8d72d21e2e7d60520fee6b4f338fbe5177a982305f7cdbfd4",
+        "result.json": "704a394df10c695673eb6baf0991c5ffd736c79166d8150233a3067fa0386307",
+        "trigger.json": "9b400c67a4bf7a4e25eca5f2a2e88965e0b6bbe53812d381561d12b70cf50c02"
+      }
+    },
+    {
+      "channel": "email",
+      "event_id": "SYN-0813-event-1",
+      "status": "simulated",
+      "record_count": 3,
+      "operations": [
+        "handoff",
+        "email_reply"
+      ],
+      "captures": ".cache/integration-audit-20261010/email",
+      "sha256": {
+        "context.json": "b34886492f11a1d0d09a90f07c862a40645468bccb84fa36f2980b7b20aaa4a8",
+        "context.md": "de68a4bf454fe7f9f5c57efdf8d07ec5e76488e4b4726c6453c668c1f1b676b8",
+        "dataset.json": "833dafbdb26a4e5f49f185ad5569bc34ada2736a865f1077367200bde6ff4e90",
+        "events.jsonl": "bfa33b272faf613f0b02b46d462707b233c5372e9bb97f2305f49ad051f2c7f1",
+        "input.json": "2a7516480475d81cdd68725b95d7298be603ace6d03e3b3c6957b528a8303d87",
+        "plan.json": "b0d71b40a45a4fd8d72d21e2e7d60520fee6b4f338fbe5177a982305f7cdbfd4",
+        "result.json": "d9ffc3121a8653c1bebf90c5eb5b6a08aca8e8315f0b087655718f6506ebdc08",
+        "trigger.json": "6449bd3dd9560c508e58910fad4cbcc1069a647b164e06c33e0e367dc9529603"
+      }
+    }
+  ]
+}
