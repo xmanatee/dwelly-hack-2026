@@ -1,6 +1,7 @@
 # Development
 
 - Python + Pydantic AI; use uv. [README](README.md) owns setup and checks.
+- Target architecture: [context → planner → execution](docs/architecture/README.md). One shared planner consumes prepared context and skills and returns a structured plan without business tool calls; context collection, execution and channel delivery are separate. The current runtime predates this migration.
 - Before editing, and again before an authorized push, follow [dwelly-bot-repo-sync](.agents/skills/dwelly-bot-repo-sync/SKILL.md). Work on `main`; preserve concurrent changes.
 - Agent behaviour, model/config, runtime prompts/skills, retrieval or tool changes: follow [dwelly-bot-experiment](.agents/skills/dwelly-bot-experiment/SKILL.md).
 - Data exploration: use [analyze](.agents/skills/analyze/SKILL.md); [analysis/README.md](analysis/README.md) owns recipe usage. Analysis findings become agent changes only through the experiment workflow.
