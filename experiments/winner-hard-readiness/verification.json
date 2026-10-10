@@ -1,0 +1,57 @@
+{
+  "scope": "Two bundled synthetic cases; transport/configuration readiness, not the forthcoming 30 cases",
+  "model": "claude-opus-5-5",
+  "effort": "high",
+  "config": "src/hackathon_winner/config-hard.json",
+  "config_sha256": "f1d03379e8fcccbcec6cfec3c847a1a4420ff3d12002b8a7930c8ca4ae809b23",
+  "source_commit": "05c1e484d22447c9703821b835a56c24c03998ac",
+  "source_note": "Run began at 9bb7b51, then rebased over submission-metadata-only team changes; execution source bytes identical.",
+  "cases": [
+    {
+      "case_id": "001",
+      "input_files": {
+        "history.md": "777e0e73008f56c5a30f3a1a58eaea44d0d3927e209c9a300b617b550d4fe623"
+      },
+      "planner": "available",
+      "generator": "model",
+      "error": null,
+      "requests": 4,
+      "cost_usd": 0.3109956
+    },
+    {
+      "case_id": "002",
+      "input_files": {
+        "history.md": "52d1d20dec18339da637ccb3a5ed38afafc8ed73ae486211b3fb9ce500d91159",
+        "attachments/payment-screen.txt": "ccb898cb602f091698b5d706dd3f1beca4904434a001e69cac9a2e161f976550"
+      },
+      "planner": "available",
+      "generator": "model",
+      "error": null,
+      "requests": 3,
+      "cost_usd": 0.204188
+    }
+  ],
+  "budget_guard_usd": 100,
+  "readiness_cost_upper_bound_usd": 0.5151836,
+  "requests": 7,
+  "files_sha256": {
+    ".winner-run": "fb8fdaab6342ca7408069b168153f91b36425de698602102f0cfa4bee6b48edd",
+    "001/ANSWER.md": "0ce64307955c720fb42882200b9081e4a8af50b0720a602309f2959cfd2b48d5",
+    "001/REASONING.md": "5401714955277e3f5c1b645da07673db402a8396a43315ea144ce6811e9325ea",
+    "001/context.md": "166f26114f2416ff68e7bfa333c338d324d48bf3aa3feff9a0b059a60b57154c",
+    "001/generation.json": "f741da5fd36ba3a8088cfa2ff055752a2e86eee5d08c1435737fbc787c111252",
+    "001/plan.json": "700494ab0ca58b3bb1730ccd33f4a839fa49ad9bbde824c7e34a90ae3f072a62",
+    "002/ANSWER.md": "86dacce899cf070920f9a60effd15224429367c48b0e263a449794b3f8ab7f67",
+    "002/REASONING.md": "eddf286d64bb393c46ae788084ddac0acb55ce8bfdbc73996ee61cc361683dab",
+    "002/context.md": "705863993db311bfc1f0008c657b89ec325db08eabb2b4b9c8ba606b0dc5050e",
+    "002/generation.json": "02545202e83151999f4b21ba8a5a2e543dccd4b0016f2d13a227ffbbaf40e3f1",
+    "002/plan.json": "f8438a7bba0fe7e7ecbe9f08d87e45fdd438aa8b1beda396ac373597266e4950",
+    "journals/001.jsonl": "5e618fb96cf60889503169b1e08c4a8acbc831c36738f46be3eb41ddbb390821",
+    "journals/002.jsonl": "634c74ab7aae967cd992f35c09aae694bc293118d0f276170392dcc1c5994c1c",
+    "predictions.json": "2a51f8759aeb117578a0a2c4ae2c4486f4b0794f76879b12a8e478579d563c1f",
+    "report.html": "6b65f313f2946d1dfcfbb48523fea01bb7b63ffd71dfa59b93b220a4dea97378"
+  },
+  "offline_tests_passed": 75,
+  "ruff": "passed",
+  "mypy": "passed"
+}

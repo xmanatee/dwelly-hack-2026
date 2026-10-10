@@ -33,3 +33,18 @@ with Fable 5.1 at $10/$50. The guard includes readiness calls, reservations and 
 $100 is a ceiling, not a guarantee that any input size or number of retries will fit. A readiness smoke on bundled cases verifies the
 actual transport, larger output allowance and Planner → generator path; it is not an eval
 of the forthcoming hard cases.
+
+## Readiness result
+
+Both bundled cases completed Planner and model generation with no terminal errors:
+seven model requests, including one additional repair call, at a configured-price upper
+bound of **$0.5151836**. These costs are charged to the same $100 cumulative local ledger;
+approximately $99.48 remains under that guard. This does not reveal provider credit balance
+or forecast arbitrary hard-case costs.
+
+[HTML report](report.html) · [Verification and hashes](verification.json) ·
+[Unmodified captures](captures.tar.gz)
+
+75 affected offline tests, Ruff and strict mypy passed. The code was committed before model
+calls. Team submission metadata updates were rebased without changing execution sources.
+The new credential was checked absent from all staged files and exported captures.
