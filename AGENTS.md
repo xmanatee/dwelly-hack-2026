@@ -8,7 +8,8 @@
 - Data exploration: use [analyze](.agents/skills/analyze/SKILL.md); [analysis/README.md](analysis/README.md) owns recipe usage. Analysis findings become agent changes only through the experiment workflow.
 - Banking data semantics: [dataset/README.md](dataset/README.md) owns the organizer contract. Full public-case study is retrospective; runtime evidence is an explicit decision-time projection. Preserve development/challenge identity, review attachment availability, and never replay later history as live tool results.
 - Report styling, docs, tests and coding instructions: relevant offline checks; no paid benchmark by default.
-- After each successfully addressed request, commit this task's changes. Use quick, targeted validation; do not regenerate artifacts or run heavy checks unless needed or requested. Push only when requested.
+- Plan work as small, independently reviewable stages. For each stage: sync, inspect what teammates already implemented, adjust the plan, implement only the remaining work, validate, sync again and resolve conflicts, then commit and push that stage. The user has authorized these stage-by-stage pushes; do not wait until the entire request is finished. Follow the repo-sync skill throughout and preserve unrelated work.
+- Use quick, targeted validation; do not regenerate artifacts or run heavy checks unless needed or requested. After integrating concurrent changes, rerun checks affected by the combined result before pushing.
 - Format Python with Ruff; keep lint, strict types and affected tests passing.
 - Keep dataset mapping/guards in adapters, agent orchestration in the harness, saved-result grading in evaluation and display in reporting. Reuse the common runner, model pool, budget and journal; analytics must not import private evaluator labels.
 - Shared application: `src/dwelly_bot/`; experiment specs: `experiments/`; original corpus: ignored `dataset/`. Preserve original data bytes and actual run outputs.
