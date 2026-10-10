@@ -1,6 +1,7 @@
 """Shared local composition for demo fixtures and synthetic data; effects stay mock."""
 
 from pathlib import Path
+from typing import Any
 
 from dwelly_bot.channels.intake import Inbound
 from dwelly_bot.context.collector import ContextCollector, ContextSource, Investigator
@@ -18,16 +19,19 @@ async def run_local_pipeline(
     *,
     state: Path | None = None,
     context_config: Path | None = None,
+    dataset: dict[str, Any] | None = None,
 ) -> ExecutionResult:
     if output.exists():
         raise FileExistsError(f"Capture directory already exists: {output}")
+    if state is not None and state.resolve().is_relative_to(output.resolve()):
+        raise ValueError("Receipt state must be outside the capture directory")
 
     async def run(investigator: Investigator | None = None) -> ExecutionResult:
         return await ProductionPipeline(
             ContextCollector(sources, investigator=investigator),
             planner,
             MockExecutor(state_path=state),
-        ).run(event, output)
+        ).run(event, output, dataset=dataset)
 
     if context_config is None:
         return await run()

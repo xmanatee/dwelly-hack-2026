@@ -30,3 +30,24 @@ Full-history reports explicitly describe their retrospective scope.
 Offline function-model tests cover both failure stages, continuation, planner model selection,
 request/token settings, traces, conditional rendering and command exit codes. These are
 integration checks, not evidence that model-authored answers are always faithful.
+
+The investigator's read boundary owns the source timeout and uses the smaller of the
+collector timeout and configured tool limit. This avoids two equal deadlines racing:
+the source can return a gap instead of the outer tool cancelling that conversion.
+Other runtime tools keep their existing timeout handling.
+
+## Synthetic data and local runner
+
+The importer now builds in a temporary sibling and publishes only a complete projection.
+It rejects recursive output and invalid case IDs, preserves timezone offsets as actual UTC
+instants, and records incoming case file hashes in new manifests. Runtime checks validate
+those hashes when present. Existing v1 captures and datasets remain readable unchanged;
+older manifests without `cases_sha256` verify the runtime database but not trigger bytes.
+
+Local replay rejects ambiguous contact routes and scope/filename mismatches. Receipt stores
+cannot occupy the capture directory. Dataset provenance is written at pipeline start so an
+execution failure still retains the exact dataset receipt and partial evidence.
+
+Offline tests cover failed-import cleanup, timezone conversion, trigger tampering, malformed
+manifests, ambiguous routes, conflicting paths and failure captures. Original generated
+corpus bytes and historical run outputs were not regenerated or edited.

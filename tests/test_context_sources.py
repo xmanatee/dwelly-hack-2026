@@ -162,11 +162,13 @@ async def test_agent_keeps_partial_evidence_when_source_unavailable(
     journal = Journal(tmp_path / "events.jsonl")
     model = BudgetedModel(FunctionModel(respond), BudgetLedger(tmp_path / "budget.json"), "test")
     try:
-        result = await AgentInvestigator(model).gather(
+        from dwelly_bot.contracts import RunConfig
+
+        result = await AgentInvestigator(model, RunConfig(tool_timeout_seconds=0.01)).gather(
             ContextQuery(scope_id="a", as_of=datetime.now(UTC), hints=IdentityHints()),
             (Source(),),
             journal,
-            source_timeout=0.01,
+            source_timeout=10,
         )
     finally:
         journal.close()

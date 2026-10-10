@@ -1,6 +1,7 @@
 """One orchestration path for all channels, with replaceable context/planner/executor."""
 
 from pathlib import Path
+from typing import Any
 
 from dwelly_bot.channels.intake import Inbound, normalize
 from dwelly_bot.context.collector import ContextCollector
@@ -16,11 +17,15 @@ class ProductionPipeline:
         self.planner = planner
         self.executor = executor
 
-    async def run(self, event: Inbound, output: Path) -> ExecutionResult:
+    async def run(
+        self, event: Inbound, output: Path, *, dataset: dict[str, Any] | None = None
+    ) -> ExecutionResult:
         """Create a new immutable capture; channel replies are executed plan actions."""
         output.mkdir(parents=True, exist_ok=False)
         journal = Journal(output / "events.jsonl")
         try:
+            if dataset is not None:
+                save_json(output / "dataset.json", dataset)
             save_json(output / "input.json", event.model_dump(mode="json"))
             with journal.record(
                 "normalize", {"event_id": event.event_id}, kind="intake", read_only=True

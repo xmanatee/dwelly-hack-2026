@@ -268,3 +268,86 @@ async def test_context_agent_reads_bank_tools_and_returns_observed_records(
     assert "HALLUCINATED CLAIM FROM MODEL" not in context.text
     assert "HALLUCINATED CLAIM FROM MODEL" in (tmp_path / "events.jsonl").read_text()
     assert calls == 2
+
+
+def test_prepare_preserves_aware_instants_and_cleans_failed_projection(
+    bank: Path, tmp_path: Path
+) -> None:
+    from dwelly_bot.adapters.synthetic_banking.prepare import timestamp
+
+    assert timestamp("2026-01-01T10:00:00+02:00") == "2026-01-01T08:00:00+00:00"
+    assert timestamp("2026-01-01 10:00:00") == "2026-01-01T10:00:00+00:00"
+    original = bank / "evaluation/original"
+    with pytest.raises(ValueError, match="outside"):
+        prepare(original, original / "recursive-output")
+    with sqlite3.connect(original / "banking_synth.sqlite") as db:
+        db.execute("UPDATE cases SET case_key='../escape' WHERE case_key='SYN-0001'")
+    output = tmp_path / "failed"
+    with pytest.raises(ValueError, match="case ID"):
+        prepare(original, output)
+    assert not output.exists()
+    assert not list(tmp_path.glob(".bank-prepare-*"))
+    assert not (tmp_path / "escape.json").exists()
+
+
+def test_cli_rejects_changed_case_bytes(bank: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    case = bank / "cases/SYN-0001.json"
+    case.write_text(case.read_text() + "\n")
+    with pytest.raises(SystemExit) as failure:
+        main(["local", "list", "--dataset", str(bank)])
+    assert failure.value.code == 2
+    assert "case hash mismatch" in capsys.readouterr().err
+
+
+@pytest.mark.parametrize("manifest", [[], {}, {"format": "bad"}])
+def test_cli_reports_invalid_manifest_without_key_errors(bank: Path, manifest: object) -> None:
+    (bank / "manifest.json").write_text(json.dumps(manifest))
+    with pytest.raises(SystemExit) as failure:
+        main(["local", "list", "--dataset", str(bank)])
+    assert failure.value.code == 2
+
+
+def test_replay_rejects_ambiguous_route_and_mismatched_scope(bank: Path) -> None:
+    with sqlite3.connect(bank / "state/decision.sqlite") as db:
+        db.execute(
+            "INSERT INTO contacts SELECT scope_id, 'second', name, email, phone, actor_kind FROM contacts WHERE scope_id='SYN-0001'"
+        )
+    with pytest.raises(ValueError, match="exactly one"):
+        local_event(bank, "SYN-0001", "call")
+    path = bank / "cases/SYN-0001.json"
+    data = json.loads(path.read_text())
+    data["scope_id"] = "SYN-0002"
+    path.write_text(json.dumps(data))
+    with pytest.raises(ValueError, match="scope disagree"):
+        local_event(bank, "SYN-0001")
+
+
+async def test_local_failure_keeps_dataset_receipt_and_rejects_nested_state(
+    bank: Path, tmp_path: Path
+) -> None:
+    from dwelly_bot.harness.local import run_local_pipeline
+    from dwelly_bot.planning import Plan
+
+    class BrokenPlanner:
+        async def plan(self, context: str) -> Plan:
+            raise ValueError("planner failure")
+
+    manifest = json.loads((bank / "manifest.json").read_text())
+    event = local_event(bank, "SYN-0001")
+    output = tmp_path / "failed-run"
+    with pytest.raises(ValueError, match="outside"):
+        await run_local_pipeline(
+            event,
+            bank_sources(bank),
+            BrokenPlanner(),
+            output,
+            state=output / "receipts.sqlite",
+            dataset=manifest,
+        )
+    assert not output.exists()
+    with pytest.raises(ValueError, match="planner failure"):
+        await run_local_pipeline(
+            event, bank_sources(bank), BrokenPlanner(), output, dataset=manifest
+        )
+    assert json.loads((output / "dataset.json").read_text()) == manifest
+    assert (output / "failure.json").exists() and (output / "context.md").exists()

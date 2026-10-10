@@ -139,6 +139,7 @@ class CaseRuntime:
         schema: dict[str, Any] | None = None,
         *,
         read_only: bool = False,
+        manages_read_timeout: bool = False,
     ) -> Tool[Any]:
         signature = inspect.signature(function)
 
@@ -156,7 +157,7 @@ class CaseRuntime:
                 # an unobserved mutation running in a worker thread.
                 async with (
                     asyncio.timeout(self.config.tool_timeout_seconds)
-                    if read_only
+                    if read_only and not manages_read_timeout
                     else nullcontext()
                 ):
                     if read_only and not inspect.iscoroutinefunction(function):

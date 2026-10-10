@@ -47,7 +47,11 @@ class AgentInvestigator:
                 raise ValueError("Choose a source from the supplied catalogue")
             questions.append(f"{source}: {question}")
             request = query.model_copy(update={"question": question})
-            result = await lookup_source(available[source], request, source_timeout)
+            # This boundary turns a read deadline into a visible source gap. Avoid
+            # a competing outer deadline cancelling it before that result is returned.
+            result = await lookup_source(
+                available[source], request, min(source_timeout, self.config.tool_timeout_seconds)
+            )
             observed.append(result)
             return result.model_dump(mode="json")
 
@@ -58,7 +62,11 @@ class AgentInvestigator:
             role="context",
             tools=[
                 runtime.tool(
-                    "read_source", read_source.__doc__ or "Read source", read_source, read_only=True
+                    "read_source",
+                    read_source.__doc__ or "Read source",
+                    read_source,
+                    read_only=True,
+                    manages_read_timeout=True,
                 )
             ],
         )

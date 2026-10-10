@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import json
+import re
 import shutil
 import sqlite3
+import tempfile
 from contextlib import closing
 from datetime import UTC, datetime
 from pathlib import Path
@@ -14,7 +16,8 @@ from dwelly_bot.storage import file_hash, save_json
 
 
 def timestamp(value: str) -> str:
-    return datetime.fromisoformat(value).replace(tzinfo=UTC).isoformat()
+    parsed = datetime.fromisoformat(value)
+    return (parsed if parsed.tzinfo else parsed.replace(tzinfo=UTC)).astimezone(UTC).isoformat()
 
 
 def document_text(path: Path, media_type: str) -> tuple[str | None, str]:
@@ -36,6 +39,20 @@ def prepare(original: Path, output: Path) -> dict[str, object]:
     """
     if output.exists():
         raise FileExistsError(f"Dataset directory exists: {output}")
+    if output.resolve().is_relative_to(original.resolve()):
+        raise ValueError("Dataset output must be outside the original corpus")
+    output.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix=".bank-prepare-", dir=output.parent) as temporary:
+        staged = Path(temporary) / "dataset"
+        manifest = _prepare(original, staged)
+        if output.exists():
+            raise FileExistsError(f"Dataset directory exists: {output}")
+        staged.rename(output)
+    return manifest
+
+
+def _prepare(original: Path, output: Path) -> dict[str, object]:
+    """Build in a temporary sibling; only a complete projection becomes visible."""
     source = original / "banking_synth.sqlite"
     output.mkdir(parents=True)
     state, cases, evaluation = (output / d for d in ("state", "cases", "evaluation"))
@@ -47,7 +64,7 @@ def prepare(original: Path, output: Path) -> dict[str, object]:
     with closing(sqlite3.connect(state / "end-state.sqlite")) as end:
         for (name,) in end.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall():
             if name == "cases" or name.startswith("case_"):
-                end.execute(f'DROP TABLE "{name}"')
+                end.execute('DROP TABLE "' + name.replace('"', '""') + '"')
         end.commit()
 
     counts: dict[str, int] = {"cases": 0, "messages": 0, "responses": 0, "documents": 0}
@@ -69,6 +86,8 @@ def prepare(original: Path, output: Path) -> dict[str, object]:
         )
         for case in src.execute("SELECT case_key,case_number,bank_id FROM cases ORDER BY case_key"):
             key = case["case_key"]
+            if not re.fullmatch(r"SYN-\d{4,}", key):
+                raise ValueError(f"Invalid synthetic case ID: {key!r}")
             events = src.execute(
                 "SELECT * FROM case_events WHERE case_key=? AND is_decision_visible=1 ORDER BY seq",
                 (key,),
@@ -181,6 +200,7 @@ def prepare(original: Path, output: Path) -> dict[str, object]:
         "format": "dwelly-synthetic-bank-v1",
         "source_sha256": file_hash(source),
         "runtime_sha256": file_hash(state / "decision.sqlite"),
+        "cases_sha256": {p.name: file_hash(p) for p in sorted(cases.glob("*.json"))},
         "counts": counts,
         "document_extraction": media,
         "withheld_action_or_unreviewed_responses": withheld_responses,

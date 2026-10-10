@@ -131,3 +131,13 @@ ReportLab 5.0.1 receipt; fresh builds record their installed versions in `manife
 The local pipeline still uses `dwelly_bot.planning.HumanReviewPlanner`; the team's new
 [`dwelly_bot.planner`](../../src/dwelly_bot/planner/README.md) has an advisory schema and
 is not silently substituted for the executable `text → Plan` contract.
+
+New builds publish only after the entire projection succeeds and include `cases_sha256`
+checksums for incoming trigger files. The runner verifies these alongside the database and
+read-query policy. Legacy v1 datasets without that field remain supported; their manifest
+checks the database, not individual trigger bytes. Build to a fresh directory to obtain full
+trigger checksums. Original data and earlier captures are never upgraded in place.
+
+Failed pipeline runs retain `dataset.json` with the partial context and failure receipt.
+Keep `--state` outside `--output`; channel replay requires one unambiguous local contact.
+A failed source read becomes an explicit gap, while other observed evidence is retained.
