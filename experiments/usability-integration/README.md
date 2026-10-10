@@ -111,3 +111,22 @@ Documentation now points to the implemented shared Planner and authenticated ser
 local mechanisms from real banking adapters, provider audio deployment and other remaining
 capabilities. No external bank operation, outbound message or live ElevenLabs audio session
 was performed. No baseline reference or historical run was rewritten.
+
+## Team synchronization follow-up
+
+The team changed the default Winner model to Fable 5.1 and added wrapped-folder loading
+(`c729639`), then added a manual workflow (`f6e0833`). Both were integrated. Wrapped-folder
+traversal now retains the original source containment check, with a regression test for
+outside symlinks, ordinary wrappers, decoding and explicit IDs (23 affected tests passed).
+
+A repeated local call correctly failed with an idempotency conflict because a different
+model proposed changed actions for the same event in the existing receipt database. A fresh
+experiment must use a separate `--state`; do not disable replay protection. The failed capture
+is retained. A new local run uses an independent experiment state.
+
+The Fable Winner smoke exposed a repair problem: a verification referral was encoded as
+`request_team_action`, whose vocabulary category is state-changing. Repair only reworded the
+instruction and repeated the forbidden category. The authority gate remains unchanged.
+The general prompt and repair feedback now explain that category explicitly and distinguish
+verification/support referrals from authorized operations. This is a contract clarification,
+not a scenario-specific answer or adoption of a new quality baseline.

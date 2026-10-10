@@ -81,7 +81,9 @@ def check_plan(
         for step in plan.steps:
             if require_decision and step.action in playbook.state_changing:
                 errors.append(
-                    f"{step.id}: decide verification/handoff now; do not schedule a change before authority is established"
+                    f"{step.id}: decide verification/handoff now; do not schedule a change before authority is established. "
+                    f"{step.action} is classified as state-changing regardless of its wording; "
+                    "use an appropriate non-state-changing verification, secure-route or specialist-handoff action from the vocabulary"
                 )
             identity_seen |= step.action in playbook.identity_actions
             if step.action in playbook.state_changing and not identity_seen:
