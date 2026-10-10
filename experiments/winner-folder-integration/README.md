@@ -29,3 +29,16 @@ calls with an invalid OAuth access token (401). The two actual failure outputs a
 are retained in `claude-code-captures.json.gz`, with their original HTML report. No generator
 ran. The default config was then changed to the already configured Anthropic API, preserving
 the existing account ledger. No credential file or CLI login was modified.
+
+
+## Verified outcome
+
+- Full offline gate: **305 tests**, Ruff and strict mypy (150 source files).
+- Built wheel includes both modules, Planner resources, Winner configurations and smoke data.
+- Source `d0d0b7d`: both bundled cases completed Planner → model generator, with 4 settled model requests and estimated API cost **$0.090032**.
+- [Actual outputs](report.html), [verification receipt](verification.json) and `anthropic-captures.json.gz` retain the generated answers, reasoning, plans, source context and traces.
+- The failed Claude Code attempt remains separately saved; no generated case was manually corrected.
+
+The second plan still proposes a journal re-check despite the supplied journal snapshot.
+This remains visible in its plan and reasoning; tuning Planner decisions is separate from
+verifying the import/export path. No quality improvement or official test score is claimed.

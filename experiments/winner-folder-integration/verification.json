@@ -1,0 +1,42 @@
+{
+  "source_commit": "d0d0b7dd12e4f12b5ad114e12741c21aa13cfa72",
+  "offline_tests": 305,
+  "model": "claude-sonnet-5-5",
+  "cases": [
+    {
+      "case_id": "001",
+      "input_files": {
+        "history.md": "777e0e73008f56c5a30f3a1a58eaea44d0d3927e209c9a300b617b550d4fe623"
+      },
+      "planner": "available",
+      "generator": "model",
+      "error": null,
+      "requests": 2,
+      "cost_usd": 0.041606000000000004,
+      "answer_words": 260,
+      "reasoning_words": 432
+    },
+    {
+      "case_id": "002",
+      "input_files": {
+        "history.md": "52d1d20dec18339da637ccb3a5ed38afafc8ed73ae486211b3fb9ce500d91159",
+        "attachments/payment-screen.txt": "ccb898cb602f091698b5d706dd3f1beca4904434a001e69cac9a2e161f976550"
+      },
+      "planner": "available",
+      "generator": "model",
+      "error": null,
+      "requests": 2,
+      "cost_usd": 0.048426,
+      "answer_words": 307,
+      "reasoning_words": 464
+    }
+  ],
+  "total_requests": 4,
+  "total_cost_usd": 0.090032,
+  "scope": "Integration smoke only; no benchmark adoption or bank execution",
+  "observations": [
+    "Planner and generator both used the same supplied context with no executor.",
+    "Both plans remain proposals. Case 002 proposes a journal re-check despite an existing snapshot; Planner action quality is separate from this integration check.",
+    "Claude Code authentication failure retained separately; no failed outputs were replaced."
+  ]
+}

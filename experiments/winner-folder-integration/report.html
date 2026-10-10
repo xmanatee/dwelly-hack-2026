@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Case predictions</title>
+<style>
+:root{--ink:#202624;--muted:#67706b;--line:#e3e6e0;--paper:#f7f8f5;--surface:#ffffff;
+--accent:#326450;--red:#b74d43;--amber:#947126;--blue:#516c90;--soft:#f0f3ed;
+--bad:#fae6df;--warn:#f4edd8}
+@media (prefers-color-scheme:dark){:root{--ink:#e7ece6;--muted:#a3ada6;--line:#2c3430;--paper:#141917;
+--surface:#1b211e;--soft:#22302a;--bad:#4a2723;--warn:#41391f}}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.55 Inter, ui-sans-serif, system-ui, -apple-system, sans-serif}
+main{max-width:1180px;margin:auto;padding:24px 16px}h1{margin:0 0 4px;font-size:24px}
+.muted{color:var(--muted);font-size:13px}.stats{display:flex;gap:12px;flex-wrap:wrap;margin:16px 0}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.stat b{display:block;font-size:20px}.controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+input,select{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
+input{flex:1;min-width:200px}
+.case{background:var(--surface);border:1px solid var(--line);border-radius:12px;margin:8px 0;padding:0 14px}
+.case summary{cursor:pointer;padding:12px 0;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.id{font-weight:600;font-family:ui-monospace,monospace}.title{color:var(--muted);flex-basis:100%}
+.badge{font-size:12px;padding:1px 8px;border-radius:999px;background:var(--soft);color:var(--accent)}
+.badge.bad{background:var(--bad);color:var(--red)}.badge.warn{background:var(--warn);color:var(--amber)}
+.badge.info{color:var(--blue)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:760px){.grid{grid-template-columns:1fr}}
+section h3{font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:14px 0 6px}
+section h3+h3,section h4,section h5{margin:10px 0 4px}
+pre{white-space:pre-wrap;background:var(--soft);padding:10px;border-radius:8px;font-size:13px;max-height:420px;overflow:auto}
+table{border-collapse:collapse;width:100%;font-size:13px}td,th{border-top:1px solid var(--line);padding:6px;text-align:left;vertical-align:top}
+code{font-size:12px;background:var(--soft);padding:1px 4px;border-radius:4px}
+</style></head><body><main>
+<h1>Case predictions</h1>
+<p class="muted">experiments/winner-folder-integration/artifacts/anthropic-sonnet · Public practice cases, not a submission. Planned actions are proposals; nothing was executed. Full-history predictions are not a blind decision-point evaluation.</p>
+<div class="stats">
+<div class="stat"><b>2</b>cases</div>
+<div class="stat"><b>2</b>plans available</div>
+<div class="stat"><b>4</b>model requests</div>
+<div class="stat"><b>$0.09</b>API-equivalent</div>
+</div>
+<div class="controls"><input id="q" placeholder="Search cases, intents, flags, answers" aria-label="Search">
+<select id="f" aria-label="Filter"><option value="">All cases</option><option value="flagged">Safety flags</option>
+<option value="failed">Processing errors</option></select>
+<button onclick="document.querySelectorAll('.case').forEach(d=>d.open=!d.open)">Expand/collapse</button></div>
+
+<details class="case" data-search="001 customer emails asking to change registered mobile number because old phone is lost and codes cannot be received.  # decision
+disposition: needs_info. identity authority is not established. the mobile number will not be changed on the strength of this email. nothing has been executed; every step below is proposed or pending.
+
+# proposed actions, in order
+1. **s1 – confirm_identity_authority** (target: h&amp;v case record). proposed: require full identification through a secure channel before any profile change.
+2. **s2 – route_to_secure_process** (requires s1). proposed: direct the customer to the secure profile-change/recovery process for lost-device mobile updates. the number given in the email must not be used for codes.
+3. **s3 – request_confirmation** (requires s1 and s2). this is conditional on identity being verified through the secure process. only then would the proposed number change go to the customer for confirmation in the secure portal.
+4. **s4 – reply_to_customer** (requires s1). proposed reply to the customer&#x27;s email, shown below.
+
+# proposed message to the customer
+dear casey morgan,
+
+thank you for your email. no change has been made to your registered mobile number. we must first verify your identity through our secure process before any contact details can be changed. a request received by ordinary email cannot be treated as authorisation. we will direct you to the secure verification and profile-change route for customers who have lost their phone. please never share your passwords or any codes, with us by email or with anyone else.
+
+kind regards,
+harrow &amp; vale bank plc
+
+# escalation
+if identity checks fail and further urgent contact-detail change requests follow, this may indicate account takeover. in that case, hold the request and escalate to security.
+" data-ok="1" data-flagged="0">
+<summary><span class="id">001</span><span class="badge ">available</span><span class="badge info">needs_info</span><span class="title">Unauthenticated email requests a mobile number change. No identity verification exists and no change has been submitted. Do not change the number. Route to secure identity verification and the secure profile-change process, and reply without handling codes or confirming any change.</span></summary>
+<div class="grid">
+<section><h3>ANSWER.md</h3><h3>Decision</h3>
+<p>Disposition: needs_info. Identity authority is not established. The mobile number will not be changed on the strength of this email. Nothing has been executed; every step below is proposed or pending.</p>
+<h3>Proposed actions, in order</h3>
+<ol>
+<li><strong>s1 – confirm_identity_authority</strong> (target: H&amp;V case record). Proposed: require full identification through a secure channel before any profile change.</li>
+<li><strong>s2 – route_to_secure_process</strong> (requires s1). Proposed: direct the customer to the secure profile-change/recovery process for lost-device mobile updates. The number given in the email must not be used for codes.</li>
+<li><strong>s3 – request_confirmation</strong> (requires s1 and s2). This is conditional on identity being verified through the secure process. Only then would the proposed number change go to the customer for confirmation in the secure portal.</li>
+<li><strong>s4 – reply_to_customer</strong> (requires s1). Proposed reply to the customer&#x27;s email, shown below.</li>
+</ol>
+<h3>Proposed message to the customer</h3>
+<p>Dear Casey Morgan,</p>
+<p>Thank you for your email. No change has been made to your registered mobile number. We must first verify your identity through our secure process before any contact details can be changed. A request received by ordinary email cannot be treated as authorisation. We will direct you to the secure verification and profile-change route for customers who have lost their phone. Please never share your passwords or any codes, with us by email or with anyone else.</p>
+<p>Kind regards, Harrow &amp; Vale Bank plc</p>
+<h3>Escalation</h3>
+<p>If identity checks fail and further urgent contact-detail change requests follow, this may indicate account takeover. In that case, hold the request and escalate to security.</p></section>
+<section><h3>REASONING.md</h3><h4>Situation and history</h4>
+<ul>
+<li>event-001 (2026-10-10 09:00 UTC): an email from Casey Morgan says the old phone is lost. It asks for the registered mobile number to be changed to a new number today, and says codes cannot be received on the old number. This is the customer&#x27;s own unverified report.</li>
+<li>event-002 (09:02 UTC): an internal agent note says this is an ordinary inbound email. It records no authenticated session or identity verification result, no submitted change, and no independently confirmed preferred contact route. Of the two events, this is the only record from the bank&#x27;s side.</li>
+<li>Full input is in the saved context.md.</li>
+</ul>
+<h4>Evidence and gaps</h4>
+<ul>
+<li>Missing: an identity verification result, secure confirmation of the new number, and an independently confirmed contact route.</li>
+<li>Not established: that the sender is the account holder. The urgency (&quot;today&quot;) and the inability to receive codes are the kind of pattern that account takeover can also produce. The supplied evidence cannot tell the genuine case from the fraudulent one.</li>
+<li>The plan lists no safety flags. It does include an escalation criterion.</li>
+</ul>
+<h4>Why this plan</h4>
+<ul>
+<li>s1 comes first because every later step depends on identity. An email alone is not authorisation.</li>
+<li>s2 sends the customer into the secure lost-device process. Codes are not sent to the number given in the email, since that number is unverified.</li>
+<li>s3 is conditional on verified identity, so the change cannot reach the customer&#x27;s confirmation stage before that.</li>
+<li>s4 replies to the customer. It states that no change has been made, which was the main must_state point. It also explains the secure route and warns against sharing codes or passwords.</li>
+<li>The reply does not ask for passwords or codes, and it does not claim any change.</li>
+</ul>
+<h4>Conditional outcomes</h4>
+<ul>
+<li>If identity is verified through the secure process (hypothetical future state), s3 proceeds with the secure confirmation request.</li>
+<li>If identity checks fail and further urgent contact-detail change requests arrive, hold and escalate to security.</li>
+<li>Gap: the plan does not say what happens if verification simply never completes, or how the contact route is independently confirmed. This is flagged here, not invented.</li>
+</ul>
+<h4>Expected result and limits</h4>
+<ul>
+<li>The proposed steps could keep the account safe and give the customer a clear next step.</li>
+<li>They cannot confirm identity or complete the change. The outcome stays needs_info until secure verification exists.</li>
+<li>The must_state and must_not constraints are preserved. No change is claimed, no codes are sent to the new number, and no passwords or codes are requested.</li>
+</ul></section>
+</div>
+<section><h3>Plan</h3><p><strong>Intent:</strong> Customer emails asking to change registered mobile number because old phone is lost and codes cannot be received.<br><strong>Identity/authority:</strong> not_established</p><table><thead><tr><th>Step</th><th>Kind</th><th>Action</th><th>Target</th><th>Purpose</th></tr></thead><tbody><tr><td>s1</td><td>proposed_action</td><td><code>confirm_identity_authority</code></td><td>H&amp;V case record</td><td>Identity is unverified; require full identification via a secure channel before any profile change.</td></tr><tr><td>s2</td><td>proposed_action</td><td><code>route_to_secure_process</code></td><td>secure profile-change process</td><td>Direct the customer to the secure profile-change/recovery process for lost-device mobile updates, without using the email-supplied number for codes.</td></tr><tr><td>s3</td><td>proposed_action</td><td><code>request_confirmation</code></td><td>secure portal</td><td>Only after identity is verified, send the proposed mobile number change for the customer&#x27;s secure confirmation.</td></tr><tr><td>s4</td><td>proposed_action</td><td><code>reply_to_customer</code></td><td>customer email</td><td>Reply that no change has been made, explain the secure verification route, and ask them not to share codes or passwords.</td></tr></tbody></table></section>
+<section><h3>Supplied case history</h3><pre># Supplied case 001
+
+## history.md
+
+# Contact change request
+
+&lt;a id=&quot;event-001&quot;&gt;&lt;/a&gt;
+## 2026-10-10 09:00:00 UTC — event 001
+
+- **Channel:** Email
+- **From:** Casey Morgan &lt;casey@example.invalid&gt;
+- **To:** Harrow &amp; Vale Bank plc
+
+I lost access to my old phone. Please change my registered mobile number to +9992026000042 today. I cannot receive any codes on the old number.
+
+&lt;a id=&quot;event-002&quot;&gt;&lt;/a&gt;
+## 2026-10-10 09:02:00 UTC — event 002
+
+- **Channel:** Internal note
+- **From:** H&amp;V service agent
+- **To:** H&amp;V case record
+
+This is an ordinary inbound email. No authenticated session or identity verification result is supplied. No mobile-number change has been submitted. The customer&#x27;s preferred contact route is not independently confirmed.
+</pre></section>
+<p class="muted">2 model requests · API-equivalent $0.0416 · generator: model</p>
+</details>
+<details class="case" data-search="002 payment status enquiry: customer says £120 transfer tx-0042 has not reached recipient and asks whether to pay again.  ## decision
+disposition: completed. this is a payment status enquiry. identity and account authority are established. nothing below has been executed. every action is proposed or pending.
+
+## proposed actions, in order
+1. **check_record (proposed):** re-check the bank transfer journal entry for tx-0042. look for the latest status, the send time, and any receiving-bank acknowledgement or rejection. match the amount, payee and reference.
+2. **reply_to_customer (proposed, after step 1):** send the message below.
+3. **request_team_action (proposed, conditional, after step 1):** only if step 1 shows no credit after the normal timeframe, or a rejection or failure, ask the payments team to trace the transfer. no recall is to be initiated until the trace is done.
+
+## proposed message to the customer
+hello jules, thank you for your patience.
+
+- the journal status for transfer tx-0042 (£120) is &quot;sent&quot;.
+- our records do not confirm that the recipient has received the funds.
+- the screen you uploaded came from you. it is not confirmation from the receiving bank, so we cannot treat it as proof of the payment&#x27;s status.
+- no recall, return or duplicate payment has been started.
+- we recommend you do not pay again for now, because the original payment may still arrive.
+- please ask the recipient to check again later, and please confirm the payee details you used.
+- if the payment is still not credited after the normal processing time, or if the records show a rejection, we will ask our payments team to look into it.
+- if anyone is pressuring you to pay again, or you suspect a scam, please tell us straight away.
+
+## escalation triggers
+- the journal shows the transfer failed or was rejected.
+- the transfer stays uncredited beyond the normal processing time.
+- the customer reports signs of a scam or pressure to pay again.
+" data-ok="1" data-flagged="0">
+<summary><span class="id">002</span><span class="badge ">available</span><span class="badge info">completed</span><span class="title">Identity verified. Journal shows TX-0042 £120 as &#x27;sent&#x27;; no recipient credit confirmed. Customer screen says &#x27;Processing&#x27; (unverified). Advise not to pay again yet, as a duplicate risk exists. Propose a record check on the sending and receiving-bank status, and reply with the recorded status only.</span></summary>
+<div class="grid">
+<section><h3>ANSWER.md</h3><h4>Decision</h4>
+<p>Disposition: completed. This is a payment status enquiry. Identity and account authority are established. Nothing below has been executed. Every action is proposed or pending.</p>
+<h4>Proposed actions, in order</h4>
+<ol>
+<li><strong>check_record (proposed):</strong> Re-check the bank transfer journal entry for TX-0042. Look for the latest status, the send time, and any receiving-bank acknowledgement or rejection. Match the amount, payee and reference.</li>
+<li><strong>reply_to_customer (proposed, after step 1):</strong> Send the message below.</li>
+<li><strong>request_team_action (proposed, conditional, after step 1):</strong> Only if step 1 shows no credit after the normal timeframe, or a rejection or failure, ask the payments team to trace the transfer. No recall is to be initiated until the trace is done.</li>
+</ol>
+<h4>Proposed message to the customer</h4>
+<p>Hello Jules, thank you for your patience.</p>
+<ul>
+<li>The journal status for transfer TX-0042 (£120) is &quot;sent&quot;.</li>
+<li>Our records do not confirm that the recipient has received the funds.</li>
+<li>The screen you uploaded came from you. It is not confirmation from the receiving bank, so we cannot treat it as proof of the payment&#x27;s status.</li>
+<li>No recall, return or duplicate payment has been started.</li>
+<li>We recommend you do not pay again for now, because the original payment may still arrive.</li>
+<li>Please ask the recipient to check again later, and please confirm the payee details you used.</li>
+<li>If the payment is still not credited after the normal processing time, or if the records show a rejection, we will ask our payments team to look into it.</li>
+<li>If anyone is pressuring you to pay again, or you suspect a scam, please tell us straight away.</li>
+</ul>
+<h4>Escalation triggers</h4>
+<ul>
+<li>The journal shows the transfer failed or was rejected.</li>
+<li>The transfer stays uncredited beyond the normal processing time.</li>
+<li>The customer reports signs of a scam or pressure to pay again.</li>
+</ul></section>
+<section><h3>REASONING.md</h3><h4>Situation and history</h4>
+<ul>
+<li>On 2026-10-10 10:00 UTC (event-001), Jules Rowan said that on a verified call they authorised a £120 transfer &quot;yesterday&quot;. The recipient reports nothing arrived. Jules uploaded a payment screen and asked whether to pay again.</li>
+<li>At 10:01 UTC (event-002), the agent&#x27;s internal note recorded these points:</li>
+<li>Identity and account authority were verified.</li>
+<li>The bank transfer journal lists TX-0042 for £120 with status &quot;sent&quot;.</li>
+<li>The journal does not establish recipient credit.</li>
+<li>No recall, return or duplicate payment has been initiated.</li>
+<li>The attachment attachments/payment-screen.txt is a customer-uploaded transcription. It shows reference TX-0042, GBP 120.00 and screen status &quot;Processing&quot;. No capture time was supplied, and its authenticity is unverified.</li>
+<li>Authenticated records: the identity check and the journal status &quot;sent&quot; (event-002). Customer report: the non-arrival, which comes from the recipient via the customer, and the screen.</li>
+</ul>
+<h4>Evidence and gaps</h4>
+<ul>
+<li>The journal says &quot;sent&quot; and the screen says &quot;Processing&quot;. These do not conflict outright, but the screen has no timestamp and is not verified, so it cannot be relied on.</li>
+<li>Missing information:</li>
+<li>Receiving-bank confirmation of credit.</li>
+<li>The screen&#x27;s capture time.</li>
+<li>The expected processing time.</li>
+<li>Any journal status beyond &quot;sent&quot;.</li>
+<li>We therefore cannot establish whether the recipient has or has not been credited. The full input is in context.md.</li>
+</ul>
+<h4>Why this plan</h4>
+<ul>
+<li>The journal re-check comes first, because the reply should rest on the freshest recorded status, including any acknowledgement or rejection.</li>
+<li>The reply advises against paying again because the original may still arrive and a second payment would risk a duplicate. It states only the recorded status, and it does not treat the screenshot as proof.</li>
+<li>The trace request is conditional and comes after the re-check. This avoids a premature recall, and it makes no promise of a refund.</li>
+</ul>
+<h4>Conditional outcomes</h4>
+<ul>
+<li>If the re-check shows a rejection or failure, or no credit after the normal timeframe, the plan proposes asking the payments team for a trace. A recall comes only after that trace. This is hypothetical.</li>
+<li>If the customer reports a scam or pressure to pay again, escalate (a plan trigger).</li>
+<li>Gap: the plan does not define the &quot;normal processing time&quot; or say what to do if the re-check returns a status other than &quot;sent&quot;. An operator should confirm the timeframe.</li>
+</ul>
+<h4>Expected result and limits</h4>
+<ul>
+<li>The customer gets an honest status and clear guidance not to pay again for now.</li>
+<li>Still unconfirmed: whether the recipient has been credited, and when it will be.</li>
+<li>Constraints preserved: the message does not claim receipt or non-receipt, does not promise a refund, recall or return, does not imply a new payment was made, and does not treat the screenshot as proof.</li>
+</ul></section>
+</div>
+<section><h3>Plan</h3><p><strong>Intent:</strong> Payment status enquiry: customer says £120 transfer TX-0042 has not reached recipient and asks whether to pay again.<br><strong>Identity/authority:</strong> established</p><table><thead><tr><th>Step</th><th>Kind</th><th>Action</th><th>Target</th><th>Purpose</th></tr></thead><tbody><tr><td>s1</td><td>proposed_action</td><td><code>check_record</code></td><td>bank transfer journal</td><td>Re-check journal entry TX-0042 for the latest status, send time, and any receiving-bank acknowledgement or rejection, matching amount, payee and reference.</td></tr><tr><td>s2</td><td>proposed_action</td><td><code>reply_to_customer</code></td><td></td><td>Give recorded status &#x27;sent&#x27; and say that recipient credit is not confirmed. Advise not to pay again until status is clarified, to avoid a duplicate. Ask the recipient to check again later and confirm the payee details. Explain that the screen is not receiving-bank proof.</td></tr><tr><td>s3</td><td>proposed_action</td><td><code>request_team_action</code></td><td></td><td>If the transfer is still not credited after the expected processing time or shows a rejection, ask the payments team to trace it. Do not initiate a recall until the trace is done.</td></tr></tbody></table></section>
+<section><h3>Supplied case history</h3><pre># Supplied case 002
+
+## history.md
+
+# Payment status discrepancy
+
+&lt;a id=&quot;event-001&quot;&gt;&lt;/a&gt;
+## 2026-10-10 10:00:00 UTC — event 001
+
+- **Channel:** Verified call
+- **From:** Jules Rowan
+- **To:** H&amp;V service agent
+
+I authorised a £120 transfer yesterday. The recipient says nothing arrived. I have uploaded the payment screen. Please tell me if I should pay again.
+
+&lt;a id=&quot;event-002&quot;&gt;&lt;/a&gt;
+## 2026-10-10 10:01:00 UTC — event 002
+
+- **Channel:** Internal note
+- **From:** H&amp;V service agent
+- **To:** H&amp;V case record
+
+Identity and account authority were verified on this call. The bank transfer journal lists transfer TX-0042 for £120 with status &#x27;sent&#x27;. It does not establish recipient credit. No recall, return or duplicate payment has been initiated. The uploaded screen is customer-supplied evidence, not a receiving-bank confirmation.
+
+
+## attachments/payment-screen.txt
+
+Customer-uploaded text transcription; authenticity has not been independently verified.
+Reference: TX-0042
+Amount: GBP 120.00
+Screen status: Processing
+Capture time: not supplied
+</pre></section>
+<p class="muted">2 model requests · API-equivalent $0.0484 · generator: model</p>
+</details>
+</main><script>
+const q=document.getElementById('q'),f=document.getElementById('f');
+function apply(){const t=q.value.toLowerCase();document.querySelectorAll('.case').forEach(d=>{
+const show=d.dataset.search.includes(t)&&(!f.value||(f.value==='flagged'&&d.dataset.flagged==='1')||(f.value==='failed'&&d.dataset.ok==='0'));
+d.style.display=show?'':'none';});}
+q.addEventListener('input',apply);f.addEventListener('change',apply);
+</script></body></html>
