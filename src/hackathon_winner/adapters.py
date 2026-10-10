@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -38,7 +39,7 @@ def checked_path(path: Path, folder: Path) -> Path:
 
 def attachment_text(path: Path) -> str:
     if path.suffix.lower() in {".md", ".txt", ".csv", ".json"}:
-        return path.read_text(encoding="utf-8")
+        return path.read_text(encoding="utf-8", errors="replace")
     if path.suffix.lower() == ".pdf":
         try:
             from pypdf import PdfReader
@@ -52,6 +53,23 @@ def attachment_text(path: Path) -> str:
     return f"[Attachment unread: unsupported {path.suffix or 'binary'} format; no OCR performed.]"
 
 
+MAIN_FILES = ("history.md", "context.md", "request.md")
+
+
+def main_file(folder: Path) -> Path | None:
+    return next((folder / n for n in MAIN_FILES if (folder / n).is_file()), None)
+
+
+def case_root(path: Path) -> Path:
+    """Descend through single wrapper folders (e.g. a track folder) to the case folders."""
+    for _ in range(3):
+        children = [p for p in path.iterdir() if p.is_dir() and not p.name.startswith((".", "__"))]
+        if any(main_file(p) for p in children) or len(children) != 1:
+            return path
+        path = children[0]
+    return path
+
+
 def load(
     track: Path, config: RunConfig, *, ids: list[str] | None = None, prefix: str = "banking"
 ) -> list[HistoryCase]:
@@ -60,10 +78,21 @@ def load(
     The folder runner uses prefix='' to preserve organizer folder IDs verbatim. These are
     supplied snapshots, not a generated cutoff: the caller owns the evaluation input boundary.
     """
+    track = case_root(track)
     folders = sorted(p for p in track.iterdir() if p.is_dir() and not p.name.startswith("."))
 
     def identity(path: Path) -> str:
         return f"{prefix}-{path.name}" if prefix else path.name
+
+    if ids is None:
+        # Archive debris (e.g. __MACOSX) or non-case folders must not abort a full run.
+        kept = []
+        for p in folders:
+            if not CASE.fullmatch(identity(p)) or main_file(p) is None:
+                print(f"warning: skipping {p.name!r}: not a case folder", file=sys.stderr)
+            else:
+                kept.append(p)
+        folders = kept
 
     if ids is not None:
         wanted = set(ids)
@@ -83,17 +112,10 @@ def load(
             "readme.md",
         }:
             raise ValueError(f"Unsafe or reserved case identifier {case_id!r}")
-        main = next(
-            (
-                folder / n
-                for n in ("history.md", "context.md", "request.md")
-                if (folder / n).is_file()
-            ),
-            None,
-        )
+        main = main_file(folder)
         if main is None:
             raise ValueError(f"{folder.name}: expected history.md, context.md or request.md")
-        history = checked_path(main, folder).read_text(encoding="utf-8")
+        history = checked_path(main, folder).read_text(encoding="utf-8", errors="replace")
         if not history.strip():
             raise ValueError(f"{folder.name}: empty {main.name}")
         events = parse_events(history)

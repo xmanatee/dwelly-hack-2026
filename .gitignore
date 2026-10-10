@@ -30,6 +30,7 @@ dist/
 /ANSWERS/*
 !/ANSWERS/README.md
 /demo/*.mp4
+!/demo/demo.mp4
 /demo/*.mov
 *.log
 
