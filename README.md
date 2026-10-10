@@ -155,6 +155,6 @@ uv run hackathon-winner /path/to/cases --output .cache/winner/evaluation-1
 
 Default output: repository-root `ANSWERS/<original-case-folder>/ANSWER.md` and `REASONING.md`.
 With no arguments, the command uses the two bundled synthetic smoke cases. Default model:
-Vera's Claude Code Sonnet configuration; `--config` selects an API configuration instead.
+Anthropic Sonnet via `ANTHROPIC_API_KEY`; `--config` can select the saved Claude Code configuration.
 The runner imports `dwelly_bot.planner`, includes supplied attachments, preserves model
 failures, and saves context, plans and journals. [Setup, input contract and examples](src/hackathon_winner/README.md).

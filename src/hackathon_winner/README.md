@@ -27,7 +27,7 @@ uv run hackathon-winner /path/to/cases --output .cache/winner/evaluation-1
 uv run hackathon-winner
 ```
 
-The default [config](config.json) uses Vera's `claude-code/sonnet` setup: install the Claude Code CLI and sign in before running. It uses the shared ledger and API-equivalent cost accounting. For API models, use `--config PATH` with the existing `RunConfig` format; credentials come from environment variables or the repository `.env`. No credentials belong in configuration or outputs. The evaluation extra enables PDF text extraction.
+The default [config](config.json) uses the project's configured Anthropic API with `claude-sonnet-5-5`. Set `ANTHROPIC_API_KEY` in your environment or repository `.env`; the shared account ledger records costs. No credentials belong in configuration or outputs. Use `--config PATH` for any supported `RunConfig`. Vera's Claude Code transport remains available with `--config src/hackathon_winner/config-claude-code.json`; it requires an installed CLI and valid signed-in session, and records API-equivalent usage. The evaluation extra enables PDF text extraction.
 
 `--ids 001,002` selects folders. `--template` replaces only the answer generator with deterministic rendering; Planner still calls its model. `python -m hackathon_winner` works too. `hackathon-solver` and the `predict --cases PATH` syntax remain command aliases.
 
