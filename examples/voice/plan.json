@@ -12,7 +12,7 @@
     {
       "kind": "reply_to_trigger",
       "id": "answer",
-      "message": "I've checked your transfer of 350 pounds to Kestrel Joinery from the 8th of October. It left your account and our records show it as sent, but we don't yet have confirmation that the receiving bank has credited it. I've asked our investigations team to trace it, and they'll update you through your secure messages. Please don't send the payment again while the trace is open."
+      "message": "Your 350 pounds to Kestrel Joinery shows as sent, but the receiving bank hasn't confirmed it yet. Our investigations team is tracing it — please don't pay again."
     }
   ]
 }

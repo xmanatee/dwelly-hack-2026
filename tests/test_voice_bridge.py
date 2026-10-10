@@ -51,7 +51,7 @@ async def test_reply_is_spoken_in_the_open_call(tmp_path: Path) -> None:
         )
     )
     assert reply["status"] == "answered"
-    assert reply["say"].startswith("I've checked your transfer of 350 pounds")
+    assert reply["say"].startswith("Your 350 pounds to Kestrel Joinery shows as sent")
     assert reply["handoff"] == "human-support"
     assert reply["reference"] == "s1-001"
     capture = tmp_path / "s1-001"
