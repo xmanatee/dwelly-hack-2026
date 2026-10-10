@@ -1,0 +1,21 @@
+{
+  "model": "claude-sonnet-5-5",
+  "provider": "anthropic",
+  "max_tokens": 4096,
+  "max_requests": 12,
+  "case_timeout_seconds": 300,
+  "request_timeout_seconds": 120,
+  "case_concurrency": 6,
+  "total_budget_usd": 20,
+  "account_budget_usd": 20,
+  "max_total_tokens": 150000,
+  "reasoning_enabled": true,
+  "reasoning_effort": "low",
+  "tool_choice_required": false,
+  "run_timeout_seconds": 3600,
+  "deadline_utc": "2026-10-10T15:30:00Z",
+  "budget_file": ".cache/accounts/anthropic.json",
+  "input_price_per_million": 2,
+  "output_price_per_million": 10,
+  "anthropic_cache": true
+}

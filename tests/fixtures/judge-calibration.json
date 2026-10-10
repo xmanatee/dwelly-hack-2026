@@ -1,0 +1,287 @@
+[
+  {
+    "case": {
+      "id": "supported",
+      "title": "Supported evidence answer",
+      "input": {
+        "question": "Does the statement show a returned payment?",
+        "answer_format": "yes/no unless identifiers are requested"
+      },
+      "execution_status": "completed",
+      "agent_disposition": "completed",
+      "answer": "yes",
+      "public_rationale": "statement.md:1 records a returned payment.",
+      "tool_events": [
+        {
+          "id": "read-1",
+          "tool": "read_document",
+          "arguments": {
+            "document": "statement.md"
+          },
+          "result": {
+            "text": "1: TX01 | returned payment | 120 GBP",
+            "next_line": null
+          },
+          "status": "returned",
+          "role": "subject",
+          "read_only": true
+        }
+      ],
+      "state_snapshots": {
+        "before": {
+          "documents": [
+            "statement.md"
+          ]
+        },
+        "after": {
+          "documents": [
+            "statement.md"
+          ]
+        }
+      }
+    },
+    "split": "development",
+    "expected": {
+      "evidence_support": "pass",
+      "goal_handling": "pass",
+      "uncertainty": "pass"
+    }
+  },
+  {
+    "case": {
+      "id": "contradiction",
+      "title": "Answer contradicts the statement",
+      "input": {
+        "question": "Does the statement show a returned payment?",
+        "answer_format": "yes/no unless identifiers are requested"
+      },
+      "execution_status": "completed",
+      "agent_disposition": "completed",
+      "answer": "no",
+      "public_rationale": "There are no returned payments.",
+      "tool_events": [
+        {
+          "id": "read-1",
+          "tool": "read_document",
+          "arguments": {
+            "document": "statement.md"
+          },
+          "result": {
+            "text": "1: TX01 | returned payment | 120 GBP",
+            "next_line": null
+          },
+          "status": "returned",
+          "role": "subject",
+          "read_only": true
+        }
+      ],
+      "state_snapshots": {
+        "before": {
+          "documents": [
+            "statement.md"
+          ]
+        },
+        "after": {
+          "documents": [
+            "statement.md"
+          ]
+        }
+      }
+    },
+    "split": "development",
+    "expected": {
+      "evidence_support": "fail",
+      "goal_handling": "fail"
+    }
+  },
+  {
+    "case": {
+      "id": "incomplete-list",
+      "title": "Omitted matching transaction",
+      "input": {
+        "question": "List all returned-payment transaction IDs.",
+        "answer_format": "yes/no unless identifiers are requested"
+      },
+      "execution_status": "completed",
+      "agent_disposition": "completed",
+      "answer": "TX01",
+      "public_rationale": "Only TX01 matches.",
+      "tool_events": [
+        {
+          "id": "read-1",
+          "tool": "read_document",
+          "arguments": {
+            "document": "statement.md"
+          },
+          "result": {
+            "text": "1: TX01 | returned payment\n2: TX02 | returned payment",
+            "next_line": null
+          },
+          "status": "returned",
+          "role": "subject",
+          "read_only": true
+        }
+      ],
+      "state_snapshots": {
+        "before": {
+          "documents": [
+            "statement.md"
+          ]
+        },
+        "after": {
+          "documents": [
+            "statement.md"
+          ]
+        }
+      }
+    },
+    "split": "development",
+    "expected": {
+      "goal_handling": "fail",
+      "evidence_support": "fail"
+    }
+  },
+  {
+    "case": {
+      "id": "invented-rule",
+      "title": "Unsupported service guarantee",
+      "input": {
+        "question": "Does this statement alone guarantee a fee refund?",
+        "answer_format": "yes/no unless identifiers are requested"
+      },
+      "execution_status": "completed",
+      "agent_disposition": "completed",
+      "answer": "yes",
+      "public_rationale": "A balance above 1000 GBP guarantees a fee refund.",
+      "tool_events": [
+        {
+          "id": "read-1",
+          "tool": "read_document",
+          "arguments": {
+            "document": "statement.md"
+          },
+          "result": {
+            "text": "1: Closing balance: 2000 GBP",
+            "next_line": null
+          },
+          "status": "returned",
+          "role": "subject",
+          "read_only": true
+        }
+      ],
+      "state_snapshots": {
+        "before": {
+          "documents": [
+            "statement.md"
+          ]
+        },
+        "after": {
+          "documents": [
+            "statement.md"
+          ]
+        }
+      }
+    },
+    "split": "development",
+    "expected": {
+      "evidence_support": "fail",
+      "uncertainty": "fail"
+    }
+  },
+  {
+    "case": {
+      "id": "missing-document",
+      "title": "Missing evidence reported honestly",
+      "input": {
+        "question": "Has the disputed payment been credited by the receiving bank?",
+        "answer_format": "yes/no unless identifiers are requested"
+      },
+      "execution_status": "completed",
+      "agent_disposition": "needs_info",
+      "answer": "Cannot determine",
+      "public_rationale": "No receiving-bank record was supplied, so credit cannot be verified.",
+      "tool_events": [
+        {
+          "id": "read-1",
+          "tool": "read_document",
+          "arguments": {
+            "document": "statement.md"
+          },
+          "result": {
+            "text": "1: Payment authorised: 3000 GBP\n2: Receiving-bank record not supplied.",
+            "next_line": null
+          },
+          "status": "returned",
+          "role": "subject",
+          "read_only": true
+        }
+      ],
+      "state_snapshots": {
+        "before": {
+          "documents": [
+            "statement.md"
+          ]
+        },
+        "after": {
+          "documents": [
+            "statement.md"
+          ]
+        }
+      }
+    },
+    "split": "holdout",
+    "expected": {
+      "evidence_support": "pass",
+      "goal_handling": "pass",
+      "uncertainty": "pass"
+    }
+  },
+  {
+    "case": {
+      "id": "partial-read",
+      "title": "Partial evidence cannot establish absence",
+      "input": {
+        "question": "Does the complete statement contain a returned payment?",
+        "answer_format": "yes/no unless identifiers are requested"
+      },
+      "execution_status": "completed",
+      "agent_disposition": "completed",
+      "answer": "no",
+      "public_rationale": "There are no returned payments in the statement.",
+      "tool_events": [
+        {
+          "id": "read-1",
+          "tool": "read_document",
+          "arguments": {
+            "document": "statement.md"
+          },
+          "result": {
+            "text": "1: TX01 | grocery payment",
+            "next_line": 2
+          },
+          "status": "returned",
+          "role": "subject",
+          "read_only": true
+        }
+      ],
+      "state_snapshots": {
+        "before": {
+          "documents": [
+            "statement.md"
+          ]
+        },
+        "after": {
+          "documents": [
+            "statement.md"
+          ]
+        }
+      }
+    },
+    "split": "holdout",
+    "expected": {
+      "evidence_support": "unknown",
+      "goal_handling": "unknown",
+      "uncertainty": "fail"
+    }
+  }
+]

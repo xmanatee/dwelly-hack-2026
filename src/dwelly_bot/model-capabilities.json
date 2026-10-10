@@ -1,0 +1,14 @@
+{
+  "checked_at": "2026-10-09",
+  "source": "https://openrouter.ai/api/v1/models",
+  "reasoning": {
+    "moonshotai/kimi-k2.6": true,
+    "minimax/minimax-m2.7": true,
+    "minimax/minimax-m2.5": true,
+    "moonshotai/kimi-k2.5": true,
+    "openai/gpt-5.4-mini": true,
+    "qwen/qwen3.5-35b-a3b": true,
+    "google/gemini-3-flash-preview": true,
+    "openai/gpt-4.1-mini": false
+  }
+}

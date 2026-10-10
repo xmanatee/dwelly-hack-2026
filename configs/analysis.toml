@@ -1,0 +1,11 @@
+# Optional paid analysis shares the existing account allowance. Keys stay in .env.
+model = "claude-sonnet-5-5"
+provider = "anthropic"
+max_tokens = 4096
+request_timeout_seconds = 120
+total_budget_usd = 20
+account_budget_usd = 20
+budget_file = ".cache/accounts/anthropic.json"
+input_price_per_million = 2
+output_price_per_million = 10
+reasoning_enabled = false

@@ -1,0 +1,6 @@
+title = "Banking service case review"
+
+[fields]
+"Organizer case" = "/input/organizer_id"
+"Decision time" = "/input/decision_time"
+"Visible events" = "/input/visible_events"

@@ -1,0 +1,55 @@
+[project]
+name = "dwelly-bot"
+version = "0.0.1"
+description = "Operational case agent for the Dwelly hackathon"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+dependencies = [
+  "pydantic>=2,<3",
+  "pydantic-ai-slim[anthropic,openai,openrouter]==2.54.0",
+  "pydantic-evals==2.54.0",
+  "python-dotenv>=1,<2",
+]
+
+[project.optional-dependencies]
+analysis = ["plotly>=6,<7", "scikit-learn>=1.6,<2"]
+
+
+[project.scripts]
+dwelly-bot = "dwelly_bot.cli:main"
+
+[dependency-groups]
+dev = ["mypy>=2.4,<3", "pytest>=8,<10", "pytest-asyncio>=0.24,<2", "ruff>=0.9,<1"]
+
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/dwelly_bot"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+extend-exclude = ["experiments/**/artifacts", "analysis/artifacts", "dataset"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
+ignore = ["E501"] # Line wrapping is owned by the formatter.
+
+[tool.mypy]
+python_version = "3.12"
+files = ["src", "tests", "experiments/controls", "dataset/fetch.py"]
+exclude = ["^build/", "^dist/"]
+exclude_gitignore = true
+strict = true
+
+[[tool.mypy.overrides]]
+module = ["plotly.*", "sklearn.*"]
+ignore_missing_imports = true

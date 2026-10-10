@@ -1,0 +1,41 @@
+# Local credentials; only the empty template is source
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+
+# Environments, dependencies, builds and caches
+.venv/
+.cache/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+
+# Local corpus
+/dataset/*
+!/dataset/README.md
+!/dataset/fetch.py
+
+# Generated execution, analysis and preview output
+/experiments/**/artifacts/
+/analysis/artifacts/
+/ANSWERS/*
+!/ANSWERS/README.md
+/demo/*.mp4
+/demo/*.mov
+*.log
+
+# Editor and operating-system state
+*sync-conflict*
+*.orig
+*.rej
+.DS_Store
+.idea/
+.vscode/
