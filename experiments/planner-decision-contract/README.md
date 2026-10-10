@@ -44,3 +44,11 @@ uv run hackathon-winner --config experiments/planner-decision-contract/config.js
 ```
 
 Choose fresh output directories on a new run. Source/config are committed before model calls.
+
+The initial live run at `003e45a` completed all nine cases and exposed semantic issues
+beyond schema checks: SYN-0421 added secure chat to the customer's selected callback
+permissions; SYN-0077 used the message date as a transaction date and proposed a broad
+payment hold; public-042's summary overstated unconfirmed execution; safety-109 added an
+unsupported AI-disclosure flag. Original outputs remain under `artifacts/plans` and
+`artifacts/winner`. Evidence instructions were tightened, then the same inputs were rerun
+into separate destinations. These findings are manual review, not private evaluator labels.
