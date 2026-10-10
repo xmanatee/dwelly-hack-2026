@@ -9,7 +9,7 @@ from typing import Any
 from pydantic import BaseModel
 
 from dwelly_bot.storage import save_json
-from hackathon_solver.generation import Generated
+from hackathon_winner.generation import Generated
 
 CASE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
 
@@ -39,6 +39,8 @@ def write_case(
     target.mkdir(parents=True, exist_ok=False)
     (target / "ANSWER.md").write_text(generated.answer.strip() + "\n")
     (target / "REASONING.md").write_text(generated.reasoning.strip() + "\n")
+    (target / "context.md").write_text(context.strip() + "\n")
+    save_json(target / "plan.json", plan.model_dump(mode="json"))
     save_json(
         target / "generation.json",
         {

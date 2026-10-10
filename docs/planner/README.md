@@ -59,7 +59,7 @@ The model, routing, skill hierarchy and number of passes are deliberately open. 
 ## Concurrent team implementation
 
 The team has added an [advisory case Planner](../../src/dwelly_bot/planner/README.md) and
-[Solver package](../../packages/hackathon_solver/README.md). That Planner currently accepts
+[Solver package](../../src/hackathon_winner/README.md). That Planner currently accepts
 `PlanInput` and emits its own advisory schema. The local runner continues to use the shared
 `planning.Planner` protocol and human-review stub. A deliberate adapter/alignment step is
 needed before substituting it for executable plans; its advice is not silently executed.

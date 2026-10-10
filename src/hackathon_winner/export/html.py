@@ -122,7 +122,7 @@ def render(directory: Path, output: Path | None = None) -> Path:
     scope = (
         "Public practice cases, not a submission"
         if meta.get("development", True)
-        else "Submission candidate; review before delivery"
+        else "Supplied cases; official eligibility is not inferred"
     )
     t = TOKENS
     page = f"""<!doctype html>

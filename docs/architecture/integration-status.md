@@ -58,7 +58,7 @@ JSON/SQLite-источники; ограниченное время чтения
 ## Контест
 
 Профиль contest использует предметные действия как предложения; mock-исполнитель его
-не принимает. [Пакет Solver](../../packages/hackathon_solver/README.md) уже добавлен командой: генерация
+не принимает. [Пакет Solver](../../src/hackathon_winner/README.md) уже добавлен командой: генерация
 ANSWER/REASONING, экспорт и development predict. Новый `dwelly_bot.planner` использует
 отдельную advisory-схему; локальный runner сохраняет `planning.HumanReviewPlanner`.
 Согласование контрактов ещё предстоит.

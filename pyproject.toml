@@ -26,28 +26,23 @@ synthetic = [
 
 [project.scripts]
 dwelly-bot = "dwelly_bot.cli:main"
+hackathon-winner = "hackathon_winner.cli:main"
+hackathon-solver = "hackathon_winner.cli:main"
 
 [dependency-groups]
 dev = [
-    "hackathon-solver",
     "mypy>=2.4,<3",
     "pytest>=8,<10",
     "pytest-asyncio>=0.24,<2",
     "ruff>=0.9,<1",
 ]
 
-[tool.uv.workspace]
-members = ["packages/hackathon_solver"]
-
-[tool.uv.sources]
-hackathon-solver = { workspace = true }
-
 [build-system]
 requires = ["hatchling>=1.27,<2"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/dwelly_bot"]
+packages = ["src/dwelly_bot", "src/hackathon_winner"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -64,7 +59,7 @@ ignore = ["E501"] # Line wrapping is owned by the formatter.
 
 [tool.mypy]
 python_version = "3.12"
-files = ["src", "packages/hackathon_solver/src", "tests", "dataset/fetch.py"]
+files = ["src", "tests", "dataset/fetch.py"]
 exclude = ["^build/", "^dist/"]
 exclude_gitignore = true
 strict = true

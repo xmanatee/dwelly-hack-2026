@@ -172,7 +172,7 @@ class ModelGenerator:
         self.agent = runtime.agent(
             output_type=Generated,
             output_name="generated_answer",
-            instructions=instructions or text("generation/prompt.md", package="hackathon_solver"),
+            instructions=instructions or text("generation/prompt.md", package="hackathon_winner"),
             role="generator",
         )
 

@@ -5,9 +5,6 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from hackathon_solver.cli import main as solver_cli
-from hackathon_solver.export import check_output, write_case
-from hackathon_solver.generation import EXECUTED_CLAIM, ModelGenerator, TemplateGenerator
 from pydantic_ai.messages import ModelMessage, ModelResponse, ToolCallPart
 from pydantic_ai.models.function import AgentInfo, FunctionModel
 
@@ -15,6 +12,9 @@ from dwelly_bot.contracts import RunConfig
 from dwelly_bot.experiments.journal import Journal
 from dwelly_bot.harness.runtime import CaseRuntime
 from dwelly_bot.planning.contracts import Handoff, Plan, ReplyToTrigger
+from hackathon_winner.cli import main as solver_cli
+from hackathon_winner.export import check_output, write_case
+from hackathon_winner.generation import EXECUTED_CLAIM, ModelGenerator, TemplateGenerator
 
 PLAN = Plan(
     decision="Register a return request for the misdirected £286.40 transfer.",
@@ -86,7 +86,9 @@ def test_cli_writes_two_files_and_audit_record(tmp_path: Path) -> None:
     assert sorted(p.name for p in case.iterdir()) == [
         "ANSWER.md",
         "REASONING.md",
+        "context.md",
         "generation.json",
+        "plan.json",
     ]
     record = json.loads((case / "generation.json").read_text())
     assert record["generator"] == {"kind": "template"}
@@ -133,7 +135,7 @@ async def test_template_renders_case_planner_plans_as_proposals() -> None:
 
 
 def test_html_report_escapes_case_text(tmp_path: Path) -> None:
-    from hackathon_solver.export.html import render
+    from hackathon_winner.export.html import render
 
     case = tmp_path / "banking-001"
     case.mkdir()
@@ -170,9 +172,8 @@ def test_html_report_escapes_case_text(tmp_path: Path) -> None:
 
 
 def test_history_adapter_reads_only_history(tmp_path: Path) -> None:
-    from hackathon_solver.adapters import load
-
     from dwelly_bot.contracts import RunConfig
+    from hackathon_winner.adapters import load
 
     folder = tmp_path / "track" / "005"
     folder.mkdir(parents=True)
@@ -342,9 +343,118 @@ def test_predict_retains_failures_and_continues_batch(
 
 
 def test_empty_history_corpus_and_nested_answers_are_rejected(tmp_path: Path) -> None:
-    from hackathon_solver.adapters import load
+    from hackathon_winner.adapters import load
 
     with pytest.raises(ValueError, match="No history"):
         load(tmp_path, RunConfig())
     with pytest.raises(ValueError, match="practice"):
         check_output(tmp_path / "ANSWERS" / "nested", development=True)
+
+
+def test_winner_default_and_custom_output_preserve_case_folders(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from contextlib import nullcontext
+
+    import dwelly_bot.planner.cli as planner_cli
+    import hackathon_winner.cli as winner_cli
+    import hackathon_winner.runner as winner_runner
+    from dwelly_bot.contracts import ModelProfile
+    from dwelly_bot.paths import ROOT
+    from dwelly_bot.planner import Plan as ImportedPlan
+    from dwelly_bot.planner import PlanInput, make_plan
+
+    assert "steps" in ImportedPlan.model_fields and "events" in PlanInput.model_fields
+    assert callable(make_plan)
+    assert winner_runner.DEFAULT_OUTPUT == ROOT / "ANSWERS"
+
+    def respond(messages: list[ModelMessage], info: AgentInfo) -> ModelResponse:
+        tool = info.output_tools[0].name
+        if tool == "case_plan":
+            result = {
+                "intent": "review",
+                "summary": "Explain the remaining uncertainty",
+                "identity_authority": "not_needed",
+                "expected_disposition": "needs_info",
+                "steps": [
+                    {
+                        "id": "s1",
+                        "kind": "proposed_action",
+                        "action": "reply_to_customer",
+                        "purpose": "Explain what is not confirmed",
+                    }
+                ],
+            }
+        else:
+            result = {
+                "answer": "Proposed response only.",
+                "reasoning": "See context.md and event-001. Uncertainty remains.",
+            }
+        return ModelResponse(parts=[ToolCallPart(tool, result)])
+
+    def transport(profile: ModelProfile) -> Any:
+        return nullcontext(FunctionModel(respond)), profile
+
+    monkeypatch.setattr(planner_cli, "transport", transport)
+    config = tmp_path / "config.json"
+    config.write_text(RunConfig(budget_file=str(tmp_path / "ledger.json")).model_dump_json())
+    monkeypatch.setattr(winner_cli, "DEFAULT_CONFIG", config)
+    default = tmp_path / "repo/ANSWERS"
+    monkeypatch.setattr(winner_cli, "DEFAULT_OUTPUT", default)
+    assert winner_cli.main([]) == 0
+    custom = tmp_path / "evaluation"
+    assert winner_cli.main([str(winner_runner.DEFAULT_CASES), "--output", str(custom)]) == 0
+    for output in (default, custom):
+        for case in ("001", "002"):
+            for name in ("ANSWER.md", "REASONING.md", "plan.json", "context.md", "generation.json"):
+                assert (output / case / name).is_file()
+            assert not (output / f"banking-{case}").exists()
+        rows = json.loads((output / "predictions.json").read_text())
+        assert rows["development"] is True
+        assert rows["cases"][1]["input_files"]["attachments/payment-screen.txt"]
+        assert (output / "report.html").is_file()
+    with pytest.raises(SystemExit) as failure:
+        winner_cli.main([])
+    assert failure.value.code == 2  # Existing generated answers are preserved.
+
+
+def test_winner_plain_context_and_attachments_without_labels(tmp_path: Path) -> None:
+    from hackathon_winner.adapters import load
+
+    folder = tmp_path / "real-case-42"
+    attachments = folder / "attachments"
+    attachments.mkdir(parents=True)
+    (folder / "context.md").write_text("Customer asks about a transfer; authentication unknown.")
+    (folder / "index.md").write_text("PRIVATE_LABEL")
+    (folder / "ANSWER.md").write_text("FUTURE_ANSWER")
+    (attachments / "details.csv").write_text("reference,status\nTX-42,pending\n")
+    (attachments / "scan.png").write_bytes(b"not-a-real-image")
+    [case] = load(tmp_path, RunConfig(), prefix="")
+    assert case.case_id == "real-case-42"
+    assert case.source.events == [] and case.source.solver_tools == []
+    assert "TX-42" in case.history and "Attachment unread" in case.history
+    assert "PRIVATE_LABEL" not in case.history and "FUTURE_ANSWER" not in case.history
+    assert {d.name for d in case.source.documents} == {
+        "context.md",
+        "attachments/details.csv",
+        "attachments/scan.png",
+    }
+    assert set(case.input_files) == {
+        "context.md",
+        "attachments/details.csv",
+        "attachments/scan.png",
+    }
+
+
+def test_winner_rejects_attachment_outside_case(tmp_path: Path) -> None:
+    from hackathon_winner.adapters import load
+
+    track = tmp_path / "cases"
+    folder = track / "1"
+    (folder / "attachments").mkdir(parents=True)
+    (folder / "history.md").write_text("A supplied case")
+    private = tmp_path / "private.txt"
+    private.write_text("OUTSIDE_SECRET")
+    (folder / "attachments/private.txt").symlink_to(private)
+    with pytest.raises(ValueError, match="escapes"):
+        load(track, RunConfig(), prefix="")

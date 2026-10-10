@@ -17,7 +17,7 @@ flowchart LR
     E -. Next experiment .-> P
 ```
 
-The diagram is the target shared-core path. The [Solver package](../../packages/hackathon_solver/README.md) now has generation/export and development predictions; aligning the advisory case Planner with the shared executable-plan contract is pending.
+The diagram is the target shared-core path. The [Solver package](../../src/hackathon_winner/README.md) now has generation/export and development predictions; aligning the advisory case Planner with the shared executable-plan contract is pending.
 
 The organizer's public examples contain completed histories. Our adapter chooses a decision point, retains evidence available then and excludes later events and outcome summaries. It creates the text input; the raw corpus is not universally one ready-made prompt file. The recorded ending is an example, not the only acceptable decision. [Organizer data guidance](https://github.com/DwellyOrg/HackatonPublicCases#using-the-examples).
 
@@ -66,7 +66,7 @@ The current skeleton has offline checks for context boundaries, action routing, 
 - [x] Integrate the supplied generator, schema, seed selection and case triggers.
 - [ ] Extend the generator with temporal entity snapshots and explicit read/action response types.
 - [ ] Vera: link the final Planner and versioned skills/configuration.
-- [x] Link [Solver generation/export](../../packages/hackathon_solver/README.md).
+- [x] Link [Solver generation/export](../../src/hackathon_winner/README.md).
 - [ ] Align context preparation and Planner contracts across local and contest paths.
 - [ ] Evaluation owner: add the new same-input baseline/candidate table and representative failures.
 - [ ] Team: document the final held-out split and immutable run receipts.

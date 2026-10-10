@@ -1,12 +1,6 @@
 version = 1
-revision = 5
+revision = 3
 requires-python = "==3.12.*"
-
-[manifest]
-members = [
-    "dwelly-bot",
-    "hackathon-solver",
-]
 
 [[package]]
 name = "annotated-types"
@@ -196,7 +190,6 @@ synthetic = [
 
 [package.dev-dependencies]
 dev = [
-    { name = "hackathon-solver" },
     { name = "mypy" },
     { name = "pytest" },
     { name = "pytest-asyncio" },
@@ -220,7 +213,6 @@ provides-extras = ["analysis", "evaluation", "synthetic"]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "hackathon-solver", editable = "packages/hackathon_solver" },
     { name = "mypy", specifier = ">=2.4,<3" },
     { name = "pytest", specifier = ">=8,<10" },
     { name = "pytest-asyncio", specifier = ">=0.24,<2" },
@@ -257,17 +249,6 @@ sdist = { url = "https://files.pythonhosted.org/packages/01/ee/02a2c011bdab74c6f
 wheels = [
     { url = "https://files.pythonhosted.org/packages/04/4b/29cac41a4d98d144bf5f6d33995617b185d14b22401f75ca86f384e87ff1/h11-0.16.0-py3-none-any.whl", hash = "sha256:63cf8bbe7522de3bf65932fda1d9c2772064ffb3dae62d55932da54b31cb6c86", size = 37515, upload-time = "2025-04-24T03:35:24.344Z" },
 ]
-
-[[package]]
-name = "hackathon-solver"
-version = "0.0.1"
-source = { editable = "packages/hackathon_solver" }
-dependencies = [
-    { name = "dwelly-bot" },
-]
-
-[package.metadata]
-requires-dist = [{ name = "dwelly-bot", editable = "." }]
 
 [[package]]
 name = "httpcore2"

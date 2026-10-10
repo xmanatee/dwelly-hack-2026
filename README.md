@@ -110,7 +110,7 @@ Our testing approach has two complementary paths:
 
 | Path | What it tests | Status |
 | --- | --- | --- |
-| **Dwelly examples → prepared context → Planner → answer** | Decision quality on supplied operational cases. | Data adapter, advisory Planner and [Solver generation/export](packages/hackathon_solver/README.md) exist; shared Planner contract alignment remains pending. |
+| **Dwelly examples → prepared context → Planner → answer** | Decision quality on supplied operational cases. | Data adapter, advisory Planner and [Solver generation/export](src/hackathon_winner/README.md) exist; shared Planner contract alignment remains pending. |
 | **Synthetic world → noisy events → context → plan → execution** | Missing facts, ambiguous identities, conflicting records and failed actions. | 1,180 generated banking cases; separate state/cases/evaluation data and a working local runner. |
 
 The generator direction is reusable across service tracks; the current implemented dataset adapter is banking-specific. We keep future outcomes outside the acting context and evaluate saved decisions afterward. [Evaluation loops, scenario design and optimization TODOs](docs/evaluation/README.md).
@@ -145,3 +145,16 @@ Next: align the advisory Planner with the shared executable-plan contract and So
 See [AGENTS.md](AGENTS.md) for repository conventions. [References and related work](docs/references.md) explain the design reading and implementation dependencies.
 
 Licensed under [Apache 2.0](LICENSE). Third-party libraries and data retain their own terms; source archives and credentials are not committed.
+
+## Run Hackathon Winner
+
+```sh
+uv run hackathon-winner /path/to/cases
+uv run hackathon-winner /path/to/cases --output .cache/winner/evaluation-1
+```
+
+Default output: repository-root `ANSWERS/<original-case-folder>/ANSWER.md` and `REASONING.md`.
+With no arguments, the command uses the two bundled synthetic smoke cases. Default model:
+Vera's Claude Code Sonnet configuration; `--config` selects an API configuration instead.
+The runner imports `dwelly_bot.planner`, includes supplied attachments, preserves model
+failures, and saves context, plans and journals. [Setup, input contract and examples](src/hackathon_winner/README.md).
