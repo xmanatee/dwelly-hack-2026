@@ -11,6 +11,7 @@ import asyncio
 import json
 import os
 import threading
+import time
 import uuid
 from collections.abc import Sequence
 from pathlib import Path
@@ -84,6 +85,7 @@ def call(args: argparse.Namespace) -> int:
     try:
         from elevenlabs.client import ElevenLabs
         from elevenlabs.conversational_ai.conversation import ClientTools, Conversation
+        from elevenlabs.core.api_error import ApiError
     except ImportError:
         raise ValueError("Install the voice extra first: uv sync --extra voice") from None
     agent_id = args.agent_id or setting("ELEVENLABS_AGENT_ID")
@@ -101,23 +103,56 @@ def call(args: argparse.Namespace) -> int:
 
         audio = DefaultAudioInterface()  # type: ignore[no-untyped-call]
     ended = threading.Event()
+    replies: list[float] = []  # arrival times of agent turns, for scripted sessions
+
+    def agent_said(text: str) -> None:
+        replies.append(time.monotonic())
+        print(f"Agent:  {text}", flush=True)
+
+    def wait_for_agent(after: int, quiet: float = 6, limit: float = 120) -> None:
+        """Wait for a new agent turn, then until it stays quiet (tool runs included)."""
+        deadline = time.monotonic() + limit
+        while time.monotonic() < deadline and not ended.is_set():
+            idle = len(replies) > after and time.monotonic() - replies[-1] >= quiet
+            if idle and not bridge.busy:
+                return
+            time.sleep(0.2)
+
     conversation = Conversation(
         ElevenLabs(api_key=api_key),
         agent_id,
         requires_auth=bool(api_key),  # private agents need a signed URL from the API key
         audio_interface=audio,
         client_tools=tools,
-        callback_agent_response=lambda text: print(f"Agent:  {text}", flush=True),
+        callback_agent_response=agent_said,
         callback_user_transcript=lambda text: print(f"Caller: {text}", flush=True),
         callback_end_session=ended.set,
     )
     calls.open(session_id)
-    print(
-        f"Session {session_id}: {'type messages, empty line ends' if args.text else 'speak now, Ctrl+C ends'}"
+    mode = (
+        "scripted caller"
+        if args.say
+        else "type messages, empty line ends"
+        if args.text
+        else "speak now, Ctrl+C ends"
     )
-    conversation.start_session()  # type: ignore[no-untyped-call]
+    print(f"Session {session_id}: {mode}")
     try:
-        if args.text:
+        conversation.start_session()  # type: ignore[no-untyped-call]
+    except ApiError as exc:
+        calls.close(session_id)
+        detail = exc.body.get("detail", exc.body) if isinstance(exc.body, dict) else exc.body
+        message = detail.get("message", detail) if isinstance(detail, dict) else detail
+        raise ValueError(f"ElevenLabs refused the session ({exc.status_code}): {message}") from None
+    try:
+        if args.say:
+            wait_for_agent(0)
+            for line in args.say:
+                print(f"Caller: {line}", flush=True)
+                seen = len(replies)
+                conversation.send_user_message(line)
+                wait_for_agent(seen)
+        elif args.text:
             while not ended.is_set():
                 line = input()
                 if not line.strip():
@@ -174,7 +209,14 @@ def main(argv: Sequence[str] | None = None) -> int:
     live.add_argument(
         "--text", action="store_true", help="Typed conversation instead of microphone"
     )
+    live.add_argument(
+        "--say",
+        action="append",
+        help="Scripted caller turn for a text session (repeatable); ends after the last reply",
+    )
     args = parser.parse_args(argv)
+    if getattr(args, "say", None):
+        args.text = True
     try:
         if args.output.exists():
             raise ValueError(f"Capture directory already exists: {args.output}")

@@ -56,6 +56,11 @@ class ElevenLabsCallBridge:
         self.turns = 0
         self._serial = asyncio.Lock()
 
+    @property
+    def busy(self) -> bool:
+        """True while a request is running through the pipeline."""
+        return self._serial.locked()
+
     async def ask(self, parameters: Mapping[str, object]) -> str:
         """Client-tool handler: returns a CallReply as JSON for the voice agent."""
         async with self._serial:  # one pipeline run at a time keeps speech per request

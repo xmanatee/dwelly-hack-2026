@@ -65,7 +65,8 @@ sequenceDiagram
    conversation retention your plan allows; this repository does not enable session capture.
 8. **Publish.** Copy the agent ID.
 
-Create an API key on the ElevenLabs **API keys** page (conversation access to Agents is enough). Put both values in the ignored `.env`:
+Create an API key on the ElevenLabs **API keys** page and give it **ElevenAgents: Write**
+(a private agent needs it to issue the signed conversation URL; `convai_write`). Put both values in the ignored `.env`:
 
 ```sh
 ELEVENLABS_API_KEY=...
@@ -85,6 +86,12 @@ uv run dwelly-bot voice ask --scope voice-demo-transfer --records examples/voice
 # Live, typed: talks to the real agent without audio.
 uv run dwelly-bot voice call --text --scope voice-demo-transfer --records examples/voice/records.json \
   --plan examples/voice/plan.json --output .cache/voice/text-1
+
+# Live, scripted caller turns (repeat --say); ends after the last reply. Good for checks.
+uv run dwelly-bot voice call --scope voice-demo-transfer --records examples/voice/records.json \
+  --plan examples/voice/plan.json --output .cache/voice/script-1 \
+  --say "Hi, I'm Jamie Rowe. I sent 350 pounds to Kestrel Joinery on the 8th of October. Has it gone?" \
+  --say "No, that's all, thank you. Goodbye."
 
 # Live, microphone and speakers.
 uv run dwelly-bot voice call --scope voice-demo-transfer --records examples/voice/records.json \
