@@ -66,7 +66,7 @@ def case_root(path: Path) -> Path:
         children = [p for p in path.iterdir() if p.is_dir() and not p.name.startswith((".", "__"))]
         if any(main_file(p) for p in children) or len(children) != 1:
             return path
-        path = children[0]
+        path = checked_path(children[0], path)
     return path
 
 

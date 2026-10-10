@@ -513,3 +513,23 @@ def test_winner_rejects_attachment_outside_case(tmp_path: Path) -> None:
     (folder / "attachments/private.txt").symlink_to(private)
     with pytest.raises(ValueError, match="escapes"):
         load(track, RunConfig(), prefix="")
+
+
+def test_winner_wrapper_respects_root_and_preserves_case_ids(tmp_path: Path) -> None:
+    from hackathon_winner.adapters import load
+
+    track = tmp_path / "upload"
+    case = track / "Banking" / "001"
+    case.mkdir(parents=True)
+    (track / "__MACOSX").mkdir()
+    (case / "context.md").write_bytes(b"Customer's note: \xff")
+    [loaded] = load(track, RunConfig(), prefix="")
+    assert loaded.case_id == "001" and "\ufffd" in loaded.history
+    with pytest.raises(ValueError, match="Unknown case IDs"):
+        load(track, RunConfig(), prefix="", ids=["missing"])
+
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    (outside / "wrapper").symlink_to(track / "Banking", target_is_directory=True)
+    with pytest.raises(ValueError, match="escapes"):
+        load(outside, RunConfig(), prefix="")
