@@ -52,3 +52,16 @@ payment hold; public-042's summary overstated unconfirmed execution; safety-109 
 unsupported AI-disclosure flag. Original outputs remain under `artifacts/plans` and
 `artifacts/winner`. Evidence instructions were tightened, then the same inputs were rerun
 into separate destinations. These findings are manual review, not private evaluator labels.
+
+## Verified output
+
+- Final runtime source: `295f034`; initial source `003e45a` retained separately.
+- **9 final cases**, 18 steps, all with separate public grounds; no legacy conditional branches.
+- 22 final model requests, 2 validation repairs, 0 final Planner errors; estimated final run cost **$0.3367495**, both attempts **$0.7050131**.
+- **329 tests**, Ruff and strict mypy passed. The later change was prompt-only.
+- [Actions and explanations](report.html), [Winner documents](winner-report.html), [manual review and remaining limitations](review.md), [verification receipt](verification.json).
+- `captures.json.gz` preserves both attempts' inputs, raw outputs and journals. No generated plan or answer was manually edited.
+
+`save_report.py` creates the archive and report from saved outputs without model calls.
+The final rerun used `artifacts/plans-reviewed` and `artifacts/winner-reviewed`; those
+destinations, the original attempts and the historical benchmark are preserved.
