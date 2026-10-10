@@ -128,7 +128,7 @@ verification receipt. The separate client-tool demo and its team-recorded verifi
 SQLite serializes claims across processes. Exactly one turn per session runs at a time.
 A completed request replays its stored result after process restart. Changed input under the
 same request ID returns 409; another in-flight turn also returns 409. A closed session rejects
-new work. A request interrupted by process death becomes an explicit timeout after its lease;
+new work; the pipeline also checks activity before collection, planning and execution. A request interrupted by process death becomes an explicit timeout after its lease;
 it is not silently re-executed. A failed request remains failed on replay.
 
 Local captures preserve input, normalized trigger, context, the complete plan, execution

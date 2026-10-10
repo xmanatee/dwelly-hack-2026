@@ -1,3 +1,4 @@
+import asyncio
 import json
 from contextlib import nullcontext
 from datetime import UTC, datetime
@@ -128,3 +129,34 @@ async def test_decision_replay_conflict_and_inactive_call(tmp_path: Path) -> Non
             await executor.execute(normalize(call()), invalid, journal)
     finally:
         journal.close()
+
+
+async def test_context_only_run_obeys_total_deadline_and_preserves_failure(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    started = False
+
+    async def slow_model(messages: list[ModelMessage], info: AgentInfo) -> ModelResponse:
+        nonlocal started
+        started = True
+        await asyncio.sleep(10)
+        raise AssertionError("Deadline should cancel the model")
+
+    config = RunConfig(budget_file=str(tmp_path / "ledger.json")).model_copy(
+        update={"case_timeout_seconds": 0.05}
+    )
+    monkeypatch.setattr("dwelly_bot.configuration.read_config", lambda p: config)
+    monkeypatch.setattr(
+        "dwelly_bot.providers.model_context",
+        lambda p: nullcontext(FunctionModel(slow_model)),
+    )
+    output = tmp_path / "timed-out"
+    with pytest.raises(TimeoutError):
+        await run_local_pipeline(
+            call(), (), HumanReviewPlanner(), output, context_config=tmp_path / "config.json"
+        )
+    assert started
+    assert (output / "failure.json").exists()
+    assert not (output / "plan.json").exists()
+    rows = [json.loads(line) for line in (output / "events.jsonl").read_text().splitlines()]
+    assert any(row.get("kind") == "context_model_trace" for row in rows)

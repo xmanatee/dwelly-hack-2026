@@ -28,3 +28,9 @@ full snapshots to ANSWERS, and keeps partial runs with their own metadata. Git r
 works for branches, tags and commit IDs without cloning over a partially created directory.
 Validation: 24 Winner/evaluation tests, Ruff, strict mypy; workflow YAML and shell syntax
 checked offline. The GitHub workflow itself was not dispatched.
+
+Stage 3: the context model's case deadline now applies even with the offline Planner;
+timeout retains the partial capture and model journal. Session activity is checked before
+collection, before planning and before execution. The HTTP service rejects NaN/infinite
+or nonpositive timeouts. Validation: 24 affected context/product/service tests, including
+model cancellation and a disconnect between collection and planning; strict types.

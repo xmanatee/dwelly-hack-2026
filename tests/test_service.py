@@ -9,7 +9,7 @@ import pytest
 pytest.importorskip("fastapi")
 
 from dwelly_bot.channels.intake import CallInput, Inbound
-from dwelly_bot.context.collector import ContextCollector
+from dwelly_bot.context.collector import ContextCollector, ContextQuery, SourceResult
 from dwelly_bot.execution import MockExecutor
 from dwelly_bot.harness.production import ProductionPipeline
 from dwelly_bot.planning import HumanReviewPlanner, Plan
@@ -150,3 +150,34 @@ def test_expired_work_is_not_rerun_and_inactive_binding_rejected(tmp_path: Path)
     assert store.claim(session, "r1", "digest", "help", -1) is None
     replay = SessionStore(store.path).claim(session, "r1", "digest", "help", 10)
     assert replay is not None and replay[0] == 504
+
+
+async def test_disconnect_during_collection_skips_planner(tmp_path: Path) -> None:
+    active = True
+
+    class ClosingSource:
+        name = "closing"
+
+        async def lookup(self, query: ContextQuery) -> SourceResult:
+            nonlocal active
+            active = False
+            return SourceResult()
+
+    class UnusedPlanner:
+        async def plan(self, context: str) -> Plan:
+            raise AssertionError("Closed requests must not start planning")
+
+    pipeline = ProductionPipeline(
+        ContextCollector((ClosingSource(),)), UnusedPlanner(), MockExecutor()
+    )
+    with pytest.raises(ValueError, match="closed before planning"):
+        await pipeline.run(event(), tmp_path / "capture", is_active=lambda: active)
+    assert (tmp_path / "capture/context.md").exists()
+    assert (tmp_path / "capture/failure.json").exists()
+
+
+@pytest.mark.parametrize("timeout", [float("nan"), float("inf"), -1, 0])
+def test_service_rejects_invalid_deadlines(tmp_path: Path, timeout: float) -> None:
+    store = SessionStore(tmp_path / "state.sqlite")
+    with pytest.raises(ValueError, match="finite and positive"):
+        create_app(store, PipelineBackend(store, (), tmp_path / "out"), timeout=timeout)

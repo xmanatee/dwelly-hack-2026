@@ -1,6 +1,7 @@
 """FastAPI transport: authenticated text turns for ElevenLabs, email or ticket adapters."""
 
 import asyncio
+import math
 from collections.abc import Awaitable, Callable
 from datetime import UTC, datetime
 from typing import Annotated, Any
@@ -24,8 +25,8 @@ type Backend = Callable[[Inbound, str, str], Awaitable[dict[str, Any]]]
 
 
 def create_app(store: SessionStore, backend: Backend, *, timeout: float = 45) -> FastAPI:
-    if timeout <= 0:
-        raise ValueError("Request timeout must be positive")
+    if not math.isfinite(timeout) or timeout <= 0:
+        raise ValueError("Request timeout must be finite and positive")
     app = FastAPI(title="Dwelly case service", version="1", docs_url=None, redoc_url=None)
 
     def authorize(session: str, authorization: str | None) -> Inbound:

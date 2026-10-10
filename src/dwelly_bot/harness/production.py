@@ -49,6 +49,8 @@ class ProductionPipeline[PlanT: BaseModel]:
                 trigger = normalize(event)
                 save_json(output / "trigger.json", trigger.model_dump(mode="json"))
                 journal.returned(entry, trigger.model_dump(mode="json"))
+            if is_active is not None and not is_active():
+                raise ValueError("Session closed before collection")
             with journal.record(
                 "collect", {"scope_id": trigger.scope_id}, kind="context", read_only=True
             ) as entry:
@@ -64,6 +66,8 @@ class ProductionPipeline[PlanT: BaseModel]:
                         "warnings": list(context.warnings),
                     },
                 )
+            if is_active is not None and not is_active():
+                raise ValueError("Session closed before planning")
             with journal.record(
                 "plan",
                 {"context_sha256": file_hash(output / "context.md")},

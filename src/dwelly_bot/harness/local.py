@@ -1,5 +1,6 @@
 """Shared local composition for demo fixtures and synthetic data; effects stay mock."""
 
+import asyncio
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
@@ -37,8 +38,6 @@ async def run_local_pipeline(
 
     async def run(investigator: Investigator | None = None) -> ExecutionResult:
         if planner_config is not None:
-            import asyncio
-
             from dwelly_bot.configuration import read_config
             from dwelly_bot.execution.decision import DecisionExecutor
             from dwelly_bot.planner.service import DecisionPlanner
@@ -66,7 +65,7 @@ async def run_local_pipeline(
 
     config = read_config(context_config)
     profile = profile_for(config)
-    async with model_context(profile) as pool:
+    async with asyncio.timeout(config.case_timeout_seconds), model_context(profile) as pool:
         model = BudgetedModel(
             pool,
             BudgetLedger(ledger_path(config), config.total_budget_usd),
