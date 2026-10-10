@@ -1,0 +1,31 @@
+{
+  "cost_by_role_usd": {
+    "planner": 4.910986399999996,
+    "generator": 2.1235365999999996
+  },
+  "requests_by_role": {
+    "planner": 296,
+    "generator": 105
+  },
+  "call_statuses": {
+    "settled": 401
+  },
+  "repairs": [
+    {
+      "role": "planner",
+      "kind": "evidence_ids",
+      "count": 87
+    },
+    {
+      "role": "generator",
+      "kind": "completion_wording",
+      "count": 6
+    },
+    {
+      "role": "planner",
+      "kind": "schema",
+      "count": 5
+    }
+  ],
+  "note": "Planner role includes skill selection. Repair categories are mechanical journal classifications. Prices are configured accounting ceilings, not an invoice."
+}

@@ -23,6 +23,13 @@ def render(bundle: dict[str, Any], output: Path) -> None:
         collapsed=False,
     )
     report.metrics({k: v for k, v in summary.items() if k != "criteria"})
+    if review := bundle.get("manual_review"):
+        report.text("Manual review · scores are not overwritten", review["scope"], collapsed=False)
+        report.table("Confirmed issues and judge limitations", review["findings"])
+        report.text("Next experiments", "\n\n".join(review["priorities"]), collapsed=False)
+    if diagnostics := bundle.get("diagnostics"):
+        report.metrics(diagnostics["cost_by_role_usd"], title="Winner cost by role · USD")
+        report.table("Repairs before final output", diagnostics["repairs"])
     report.table(
         "Criteria · all assigned decisions",
         [{"Criterion": k, **v} for k, v in summary["criteria"].items()],
