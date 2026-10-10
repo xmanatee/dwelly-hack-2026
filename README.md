@@ -22,7 +22,7 @@ Python 3.12 · Pydantic AI · uv · [Apache 2.0](LICENSE)
 The case desk shows requests, decisions and operator review. The ElevenLabs voice integration
 lets a caller ask about a case and hear the pipeline's response in the same conversation.
 The recorded voice scenario uses a prepared demo plan; external banking actions remain simulated.
-[Voice setup](examples/voice/README.md) · [Video details](demo/README.md).
+[Live demo: 2–3 minute runbook](demo/LIVE-DEMO.md) · [Voice setup](examples/voice/README.md) · [Video details](demo/README.md).
 
 **Reality Test:** all **30 Banking & Financial Services challenges** have generated
 [answers and reasoning](ANSWERS/README.md), with plans, evidence references and local traces.

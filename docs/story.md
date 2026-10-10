@@ -1,27 +1,42 @@
 # Project story
 
-[← Project](../README.md) · [Demo storyboard](../demo/script.md)
+[← Project](../README.md) · [Product demo](../demo/README.md) · [Live voice runbook](../demo/LIVE-DEMO.md)
 
-## The idea
+## The problem
 
-Operational service requests arrive through different channels, but the difficult work is shared: establish what is known, decide the right next step, and make the result observable.
+A customer says a payment was sent; a record shows a debit; the recipient reports no money.
+A useful service agent must separate established facts, conflicting evidence and missing
+information before choosing a concrete next action.
 
-Dwelly-bot makes those responsibilities explicit. A context investigator gathers useful evidence. A Planner applies knowledge to that evidence and chooses concrete actions. An executor carries them out and records what happened. A human handoff is a legitimate decision, not a failure to produce a long answer.
+## Our approach
 
-## Why this architecture fits the hackathon
+```mermaid
+flowchart LR
+    T[Email / call / ticket] --> C[Scoped context]
+    C --> P[Shared model Planner]
+    K[Selected banking skills] --> P
+    P --> E[Mock operational execution]
+    D[Released challenge evidence] --> P
+    P --> W[Winner answer + reasoning]
+```
 
-The Planner is our central hypothesis: a reusable decision component can serve both a live operational workflow and a case-based evaluation. A contest adapter supplies prepared evidence; production builds it from sources. The same Planner is intended to sit behind both.
+Context collection and decision-making are separate components. The Planner selects relevant
+skills, applies them to supplied facts and produces a structured decision with explicit actions
+and evidence-linked grounds. Product model mode and Hackathon Winner import this same component.
+A missing material fact can lead to a concrete question or human handoff.
 
-We aim to sharpen that component using Dwelly cases and synthetic operating scenarios: incomplete records, misleading signals, ambiguous identities and failed actions. The two loops help distinguish a poor decision from a context-gathering or execution failure.
+## What we can show
 
-## Say today / update before launch
+| Evidence | What it establishes | Boundary |
+| --- | --- | --- |
+| [30 final challenge outputs](../ANSWERS/README.md) | Opus 5.5 high completed the Planner → answer/reasoning path for every banking case. | No independent correctness score; all bank actions are proposals. |
+| [Synthetic banking world](../local_testing/banking/README.md) | Separate state, incoming cases and evaluator material; scoped context and local pipeline. | Prepared decision-time snapshots, not a live bank database. |
+| [Recorded product demo](../demo/dashboard.mp4) | Case desk and review workflow over earlier development results. | Dashboard metrics are not final challenge scores. |
+| [Voice demo](../demo/voice-call.mp4) | ElevenLabs conversation connected to the local tool/pipeline. | Prepared fixture plan; no live model decision or real operator transfer. |
 
-| Accurate today | Replace with measured evidence later |
-| --- | --- |
-| The pipeline runs through email, call and ticket fixtures. | Real channel integration and operational outcomes. |
-| Context reads synthetic bank snapshots and threads; three live model smokes are captured. | Broad retrieval quality and temporal entity-state coverage. |
-| The Planner interface and action profiles are implemented. | Vera's final model, skill hierarchy and decision examples. |
-| Local arithmetic and persistent mock receipts work. | Provider-confirmed effects and recovery behavior. |
-| Historical banking experiments are saved. | A new evaluation of this Planner and Solver. |
+## Next steps
 
-The final launch story should replace these slots with actual implementation links, an observed case and a playable demo. Do not describe the current stub as an advanced multi-agent planner or transfer the earlier agent's scores to it.
+Measure decision quality on held-out cases, connect authorized real action adapters, and
+connect canonical model plans to the live speech path. Today, explicit mock receipts and
+preserved inputs make the boundary visible. After the hackathon freeze, implementation,
+prompts, plans and generated results remain unchanged; these pages document existing behavior.

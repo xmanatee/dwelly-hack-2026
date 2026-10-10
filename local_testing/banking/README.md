@@ -102,8 +102,11 @@ mock receipt database; by default `.cache/local-bank/<dataset-hash>/receipts.sql
 plan reuse receipts. Always use a fresh `--output` directory. Each run saves input, normalized
 trigger, context text/records, plan, action receipts, local journal and dataset hashes.
 
-No ElevenLabs key is needed yet: call triggers contain transcripts and session metadata.
-The future voice adapter can submit the same input contract.
+No ElevenLabs key is needed for these local call replays: triggers contain transcripts and
+session metadata. A separate [live voice runner](../../demo/LIVE-DEMO.md) already connects
+ElevenLabs to normalized JSON/SQLite sources and a fixture plan. It does not directly load
+this synthetic dataset or expose the model Planner; the model-backed HTTP service is a
+separate integration.
 
 ## Inspect the data
 

@@ -1,6 +1,6 @@
 # Voice demo: ElevenLabs agent → Dwelly call pipeline
 
-[← Voice channel](../../docs/voice/README.md)
+[← Voice channel](../../docs/voice/README.md) · [2–3 minute live demo](../../demo/LIVE-DEMO.md)
 
 A caller talks to an ElevenLabs voice agent. When the agent needs the bank's answer it calls the
 client tool `ask_dwelly`. Our local process receives that call over the WebSocket it opened to
@@ -98,8 +98,10 @@ uv run dwelly-bot voice call --scope voice-demo-transfer --records examples/voic
   --plan examples/voice/plan.json --output .cache/voice/call-1
 ```
 
-`--plan` replays the prepared demo plan. Without it the placeholder planner always hands off to a
-person and says so. When the real planner is available, `voice` uses the same `Planner` contract.
+`--plan` replays the prepared demo plan. Without it the placeholder planner always proposes a
+human handoff and says so; the handoff is simulated. This client-tool runner does not accept
+`--planner-config` and does not call the canonical model Planner. The separate HTTP service
+supports model planning; see the [transport distinction](../../demo/LIVE-DEMO.md#other-test-data-and-the-model-planner).
 `--context-config` enables the paid context investigator, `--sqlite` reads a normalized database.
 
 Each tool call writes a normal pipeline capture under `--output/<session>-<n>/`

@@ -18,13 +18,14 @@ The `voice` extra includes PyAudio: a full-extras installation needs PortAudio d
 headers (`portaudio19-dev` on Ubuntu; `portaudio` via Homebrew on macOS). For HTTP-only
 work, install `--extra server` without the microphone extra.
 
-Copy `.env.example` to `.env` only when enabling a model provider. Set the provider's key: `ANTHROPIC_API_KEY`, `OPENROUTER_API_KEY` or `OPENAI_API_KEY`. Never commit credentials. Offline demos need none of these.
+On a fresh checkout, copy `.env.example` to `.env` only when enabling a provider; preserve an existing `.env`. Set the provider's key: `ANTHROPIC_API_KEY`, `OPENROUTER_API_KEY` or `OPENAI_API_KEY`. Never commit credentials. Offline demos need none of these.
 
 ## Entry points
 
 | Command | Use |
 | --- | --- |
 | `dwelly-bot local run` | Full product pipeline over the [synthetic bank](../../local_testing/banking/README.md); optional model collector and shared decision Planner. |
+| `dwelly-bot voice ask` / `voice call` | Offline bridge check or live ElevenLabs conversation using normalized records and a fixture plan; [runbook](../../demo/LIVE-DEMO.md). |
 | `dwelly-bot service` | Provision trusted sessions and serve authenticated turns; install `--extra server`. |
 | `hackathon-winner` | Case folders → shared Planner → ANSWER/REASONING and traces. |
 | `dwelly-bot demo` | Current trigger/context/Planner/mock-execution path. |
@@ -97,4 +98,4 @@ uv run pytest -q tests/test_intake_context.py tests/test_context_sources.py \
 
 Use `uv run dwelly-bot check` for the full offline gate. These checks do not call paid models. Follow [repo sync](../../.agents/skills/dwelly-bot-repo-sync/SKILL.md) before edits/pushes and [the experiment workflow](../../.agents/skills/dwelly-bot-experiment/SKILL.md) for model, prompt, retrieval or tool behavior changes. Preserve other contributors' changes and original run outputs.
 
-The current implementation has an authenticated voice/text webhook backend but no live bank connector. Provider audio deployment still needs account configuration and verification. Context-source permissions and cross-entity joins must be defined with the actual data. [Remaining integration work](../architecture/integration-status.md).
+The current implementation has an authenticated voice/text webhook backend and a local ElevenLabs client-tool runner, but no live bank connector. The local voice demo needs `ELEVENLABS_API_KEY` and `ELEVENLABS_AGENT_ID`; it uses a prepared plan and no Anthropic call. Live device/provider availability must be checked on the presentation machine. Context-source permissions and cross-entity joins must be defined with the actual data. [Remaining integration work](../architecture/integration-status.md).

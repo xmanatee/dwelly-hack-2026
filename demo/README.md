@@ -1,6 +1,6 @@
 # Product and voice demos
 
-[← Project](../README.md) · [Submission metadata](../SUBMISSION.md)
+[← Project](../README.md) · [Submission metadata](../SUBMISSION.md) · [Live demo runbook](LIVE-DEMO.md)
 
 [![Watch the main product demo](dashboard-preview.jpg)](dashboard.mp4)
 

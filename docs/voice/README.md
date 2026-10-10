@@ -5,8 +5,9 @@
 The optional FastAPI service connects text turns from ElevenLabs webhook tools or another
 trusted channel adapter to the same context collector and Planner used by the local bot.
 ElevenLabs owns speech and turn-taking; the backend owns the banking decision. The service
-runs locally without an ElevenLabs account. A managed audio conversation additionally needs
-an ElevenLabs agent and an HTTPS route to the running service.
+runs locally without an ElevenLabs account. This webhook route additionally needs
+an ElevenLabs agent and an HTTPS route to the running service. The existing local client-tool
+route needs no HTTPS endpoint; use the [live demo runbook](../../demo/LIVE-DEMO.md).
 
 ```mermaid
 flowchart LR
