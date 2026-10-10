@@ -42,3 +42,16 @@ uv run dwelly-bot demo --input examples/production/call.json \
   --planner-config src/hackathon_winner/config.json \
   --output .cache/product/model-call
 ```
+
+## Stage 2 evidence
+
+Optional FastAPI/Uvicorn service with CLI-provisioned session bindings, bearer authentication,
+SQLite request claims/results, same-input replay after restart, serialized turns, timeouts,
+closed-session checks and bounded incoming text. It invokes the common product harness and
+adds previous customer assertions without promoting model output to bank evidence. A closed
+session invalidates execution after planning. ElevenLabs webhook setup is documented against
+primary documentation; no vendor account resources or recordings are created.
+
+The server extra is optional for users; the full CI gate now installs all extras. Offline
+ASGI tests cover auth/scope, replay/conflict, timeout, pipeline captures/history and disconnect.
+A live provider audio conversation still requires account provisioning and has not been run.

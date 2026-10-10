@@ -1,5 +1,6 @@
 """One orchestration path for all channels, with replaceable context/planner/executor."""
 
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any, Protocol
 
@@ -28,7 +29,12 @@ class ProductionPipeline[PlanT: BaseModel]:
         self.executor = executor
 
     async def run(
-        self, event: Inbound, output: Path, *, dataset: dict[str, Any] | None = None
+        self,
+        event: Inbound,
+        output: Path,
+        *,
+        dataset: dict[str, Any] | None = None,
+        is_active: Callable[[], bool] | None = None,
     ) -> ExecutionResult:
         """Create a new immutable capture; channel replies are executed plan actions."""
         output.mkdir(parents=True, exist_ok=False)
@@ -67,6 +73,8 @@ class ProductionPipeline[PlanT: BaseModel]:
                 plan = await self.planner.plan(context.text)
                 save_json(output / "plan.json", plan.model_dump(mode="json"))
                 journal.returned(entry, plan.model_dump(mode="json"))
+            if is_active is not None and not is_active():
+                raise ValueError("Session closed before execution")
             result = await self.executor.execute(trigger, plan, journal)
             save_json(output / "result.json", result.model_dump(mode="json"))
             return result

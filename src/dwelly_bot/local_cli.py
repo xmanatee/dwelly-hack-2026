@@ -10,6 +10,7 @@ import sqlite3
 from collections.abc import Sequence
 from contextlib import closing
 from pathlib import Path
+from typing import Any
 
 from dwelly_bot.adapters.synthetic_banking.sources import bank_sources, connect
 from dwelly_bot.channels.intake import Inbound, inbound_adapter
@@ -46,6 +47,29 @@ def local_event(dataset: Path, case: str, channel: str | None = None) -> Inbound
     return inbound_adapter.validate_python(data)
 
 
+def dataset_manifest(dataset: Path) -> dict[str, Any]:
+    """Validate one prepared runtime snapshot without exposing evaluation labels."""
+    manifest = json.loads((dataset / "manifest.json").read_text())
+    if not isinstance(manifest, dict):
+        raise ValueError("Dataset manifest must be a JSON object")
+    db_path = dataset / "state" / "decision.sqlite"
+    if (
+        manifest.get("format") != "dwelly-synthetic-bank-v1"
+        or file_hash(db_path) != manifest.get("runtime_sha256")
+        or manifest.get("read_query_policy_sha256")
+        != file_hash(Path(__file__).parent / "adapters/synthetic_banking/read_queries.json")
+    ):
+        raise ValueError("Dataset manifest/runtime hash mismatch; rebuild into a fresh directory")
+    case_paths = sorted((dataset / "cases").glob("SYN-*.json"))
+    if not case_paths:
+        raise ValueError("Dataset contains no incoming cases")
+    if "cases_sha256" in manifest and manifest["cases_sha256"] != {
+        p.name: file_hash(p) for p in case_paths
+    }:
+        raise ValueError("Dataset case hash mismatch; preserve originals and rebuild")
+    return manifest
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
@@ -78,26 +102,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     run.add_argument("--output", type=Path, required=True)
     args = parser.parse_args(argv)
     try:
-        manifest = json.loads((args.dataset / "manifest.json").read_text())
-        if not isinstance(manifest, dict):
-            raise ValueError("Dataset manifest must be a JSON object")
+        manifest = dataset_manifest(args.dataset)
         db_path = args.dataset / "state" / "decision.sqlite"
-        if (
-            manifest.get("format") != "dwelly-synthetic-bank-v1"
-            or file_hash(db_path) != manifest.get("runtime_sha256")
-            or manifest.get("read_query_policy_sha256")
-            != file_hash(Path(__file__).parent / "adapters/synthetic_banking/read_queries.json")
-        ):
-            raise ValueError(
-                "Dataset manifest/runtime hash mismatch; rebuild into a fresh directory"
-            )
         case_paths = sorted((args.dataset / "cases").glob("SYN-*.json"))
-        if not case_paths:
-            raise ValueError("Dataset contains no incoming cases")
-        if "cases_sha256" in manifest and manifest["cases_sha256"] != {
-            p.name: file_hash(p) for p in case_paths
-        }:
-            raise ValueError("Dataset case hash mismatch; preserve originals and rebuild")
         if args.command == "list":
             if args.limit < 1:
                 raise ValueError("--limit must be positive")

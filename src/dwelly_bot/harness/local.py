@@ -1,5 +1,6 @@
 """Shared local composition for demo fixtures and synthetic data; effects stay mock."""
 
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
@@ -21,6 +22,7 @@ async def run_local_pipeline(
     context_config: Path | None = None,
     planner_config: Path | None = None,
     dataset: dict[str, Any] | None = None,
+    is_active: Callable[[], bool] | None = None,
 ) -> ExecutionResult:
     if output.exists():
         raise FileExistsError(f"Capture directory already exists: {output}")
@@ -41,12 +43,12 @@ async def run_local_pipeline(
                     ContextCollector(sources, investigator=investigator),
                     DecisionPlanner(event, config, output / "planner.jsonl"),
                     DecisionExecutor(state),
-                ).run(event, output, dataset=dataset)
+                ).run(event, output, dataset=dataset, is_active=is_active)
         return await ProductionPipeline(
             ContextCollector(sources, investigator=investigator),
             planner,
             MockExecutor(state_path=state),
-        ).run(event, output, dataset=dataset)
+        ).run(event, output, dataset=dataset, is_active=is_active)
 
     if context_config is None:
         return await run()

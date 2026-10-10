@@ -10,6 +10,8 @@ Python **3.12**, [uv](https://docs.astral.sh/uv/), macOS/Linux or WSL. The share
 uv sync --locked
 # Add only when working with data analysis and saved evaluation:
 uv sync --locked --extra analysis --extra evaluation
+# Full offline gate, including HTTP/voice service and synthetic adapters:
+uv sync --locked --all-extras
 ```
 
 Copy `.env.example` to `.env` only when enabling a model provider. Set the provider's key: `ANTHROPIC_API_KEY`, `OPENROUTER_API_KEY` or `OPENAI_API_KEY`. Never commit credentials. Offline demos need none of these.

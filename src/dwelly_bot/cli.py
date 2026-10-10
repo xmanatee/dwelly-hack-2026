@@ -8,6 +8,7 @@ from importlib import import_module
 from typing import cast
 
 COMMANDS = {
+    "service": ("service.cli", "Authenticated text/voice adapter with durable sessions"),
     "local": ("local_cli", "Run the product pipeline with the synthetic banking world"),
     "actions": ("planning.cli", "Print production/contest action JSON schemas"),
     "demo": ("demo_cli", "Run the offline trigger/context/planner/mock-execution pipeline"),
