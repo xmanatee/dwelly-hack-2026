@@ -12,7 +12,7 @@ from typing import Any
 from dwelly_bot.configuration import read_settings
 from dwelly_bot.evaluation.checks import pointer
 from dwelly_bot.experiments.bundle import comparability, validate, verified_outcome
-from dwelly_bot.reporting.evaluations import evaluation_rows
+from dwelly_bot.reporting.evaluations import evaluation_rows, judge_summary
 from dwelly_bot.reporting.models import Report, ReportProfile
 from dwelly_bot.reporting.page import render as render_report
 from dwelly_bot.reporting.resources import summarize as resources
@@ -191,6 +191,12 @@ def build(bundle: dict[str, Any], profile: ReportProfile | None = None) -> Repor
     report.subtitle = bundle.get("notice", "")
     if not changes:
         report.metrics({"Assigned attempts": sum(row["assigned"] for row in summaries)})
+    if judged := judge_summary(bundle):
+        report.table(
+            "Model review by criterion",
+            judged,
+            note="Model judgments over saved evidence; these are not verified operational outcomes. See evaluation details for reasons and paired cases.",
+        )
     if changes:
         report.records("Case comparison", changes)
     report.records("Cases", records)

@@ -1,9 +1,41 @@
 """Discover saved assessment fields without a report-specific metric registry."""
 
+from collections import Counter
 from typing import Any
 
 from dwelly_bot.experiments.bundle import comparability
 from dwelly_bot.storage import fingerprint
+
+
+def judge_summary(bundle: dict[str, Any]) -> list[dict[str, Any]]:
+    """Keep model judgments separate from independently verified operational outcomes."""
+    rows = []
+    for run in bundle["runs"]:
+        criteria = {
+            item["criterion"]: item.get("label", item["criterion"])
+            for case in run["cases"]
+            for item in case.get("judge", [])
+        }
+        for criterion, label in criteria.items():
+            counts = Counter(
+                item["status"]
+                for case in run["cases"]
+                if case.get("judge_status") == "available"
+                for item in case.get("judge", [])
+                if item["criterion"] == criterion
+            )
+            rows.append(
+                {
+                    "Run": run.get("label", run["id"]),
+                    "Criterion": label,
+                    "Pass": counts["pass"],
+                    "Fail": counts["fail"],
+                    "Unknown": counts["unknown"],
+                    "Not reviewed": len(run["cases"]) - sum(counts.values()),
+                    "Assigned": len(run["cases"]),
+                }
+            )
+    return rows
 
 
 def measurements(case: dict[str, Any], manifest: dict[str, Any]) -> dict[str, dict[str, Any]]:

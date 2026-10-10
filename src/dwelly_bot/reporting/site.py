@@ -27,13 +27,16 @@ async def main() -> None:
     output.mkdir(parents=True, exist_ok=True)
     profile = ReportProfile.model_validate(read_settings(Path("experiments/report.toml")))
     cards = []
+    corpus = Path("dataset")
     reference_path = Path("experiments/baseline/reference.json")
     specs = sorted(Path("experiments").glob("*/spec.json"))
     if specs and not reference_path.is_file():
         raise ValueError("Published experiments require an accepted baseline")
     if reference_path.is_file():
         reference = SavedRun.model_validate(load_json(reference_path))
-        entries = [("baseline", "Reference run", reference.load())]
+        saved_baseline = reference.load()
+        corpus = reference.corpus(saved_baseline["runs"][0]["manifest"]["dataset"])
+        entries = [("baseline", "Reference run", saved_baseline)]
         for path in specs:
             comparison = Comparison.model_validate(load_json(path))
             entries.append((path.parent.name, comparison.description, comparison.bundle()))
@@ -71,7 +74,7 @@ async def main() -> None:
             )
     with tempfile.TemporaryDirectory(prefix="analysis-", dir=output) as scratch:
         ctx = AnalysisContext(
-            Path("dataset"),
+            corpus,
             Path(scratch) / "analysis",
             Path(".cache/analysis"),
             parameters={"sample": 8},
