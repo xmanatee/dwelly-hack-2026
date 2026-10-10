@@ -82,7 +82,12 @@ def summarize(rows: list[dict[str, Any]]) -> dict[str, Any]:
         for finding in findings:
             counts.setdefault(finding["criterion"], Counter())[finding["status"]] += 1
         core = [f for f in findings if f["criterion"] != "reference_assessable"]
-        passed = len(core) == 5 and all(f["status"] == "pass" for f in core)
+        passed = (
+            row["execution_status"] == "success"
+            and row["judge_status"] == "available"
+            and len(core) == 5
+            and all(f["status"] == "pass" for f in core)
+        )
         strict += passed
         scenarios.setdefault(row["scenario"], []).append(passed)
     return {
@@ -151,15 +156,12 @@ async def evaluate(
                     "judge": [],
                     "judge_status": "not_run",
                 }
-                if case["execution_status"] != "error":
-                    try:
-                        row.update(review_fields(await judge.review(case)))
-                    except Exception as error:
-                        row.update(
-                            judge_status="error", judge_error=f"{type(error).__name__}: {error}"
-                        )
-                        if isinstance(error, InvalidReview):
-                            row["judge_record"] = error.record
+                try:
+                    row.update(review_fields(await judge.review(case)))
+                except Exception as error:
+                    row.update(judge_status="error", judge_error=f"{type(error).__name__}: {error}")
+                    if isinstance(error, InvalidReview):
+                        row["judge_record"] = error.record
                 save_json(path, row)
                 print(f"judge {case['id']}: {row['judge_status']}", flush=True)
                 return row

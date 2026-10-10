@@ -28,3 +28,9 @@ reference and still pass. Do not transfer a single defect to unrelated criteria:
 for example a grounded but wrong action can fail action and pass grounding; a
 generator that faithfully repeats a flawed plan passes fidelity but fails the
 relevant action/grounding check. Explain material differences with exact details.
+
+Execution errors are part of the evaluated population. Assess a preserved plan
+even if the answer generator failed. If no plan was produced, plan_action is
+unknown; if either plan or generated output is absent, generator_fidelity is
+unknown. A generic error notice is not a successful operational answer. Do not
+treat a system failure notice as a deliberate refusal or a successful escalation.
