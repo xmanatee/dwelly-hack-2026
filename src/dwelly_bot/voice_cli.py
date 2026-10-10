@@ -8,14 +8,18 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import contextlib
 import json
 import os
+import queue
 import re
+import sys
 import threading
 import time
 import uuid
 from collections.abc import Sequence
 from pathlib import Path
+from typing import Any
 
 from dotenv import dotenv_values
 
@@ -88,6 +92,99 @@ def ask(args: argparse.Namespace) -> int:
     return 0 if json.loads(reply)["status"] != "failed" else 1
 
 
+def audio_device(p: Any, spec: str | None, kind: str) -> int | None:
+    """Resolve a device index; by default follow the operating system's current device.
+
+    PortAudio's own default can differ from the device Windows is playing to (for example
+    speakers while headphones are active). The MME "Sound Mapper" follows Windows' choice.
+    """
+    channels = "maxOutputChannels" if kind == "output" else "maxInputChannels"
+    devices = [p.get_device_info_by_index(i) for i in range(p.get_device_count())]
+    devices = [d for d in devices if d[channels] > 0]
+    if spec is None:
+        if sys.platform != "win32":
+            return None
+        mapper = f"Microsoft Sound Mapper - {'Output' if kind == 'output' else 'Input'}"
+        return next((int(d["index"]) for d in devices if d["name"] == mapper), None)
+    if spec.isdigit():
+        return int(spec)
+    found = [d for d in devices if spec.casefold() in str(d["name"]).casefold()]
+    if not found:
+        names = ", ".join(f"{d['index']}: {d['name']}" for d in devices)
+        raise ValueError(f"No {kind} device matches {spec!r}. Available: {names}")
+    return int(found[0]["index"])
+
+
+def call_audio(speaker: str | None = None, mic: str | None = None) -> Any:
+    """Microphone/speaker interface on chosen devices that shuts down cleanly.
+
+    The SDK ends the session from inside PyAudio's input callback, and PyAudio cannot stop a
+    stream from its own callback (it times out and prints a traceback). Shutdown therefore moves
+    to a separate thread when it is requested from the callback.
+    """
+    from elevenlabs.conversational_ai.default_audio_interface import DefaultAudioInterface
+
+    class CallAudio(DefaultAudioInterface):
+        def start(self, input_callback: Any) -> None:
+            self._closed = threading.Event()
+            self._callback_thread: int | None = None
+            self.input_callback = input_callback
+            self.output_queue: queue.Queue[bytes] = queue.Queue()
+            self.should_stop = threading.Event()
+            self.output_thread = threading.Thread(target=self._output_thread, daemon=True)
+            self.p = self.pyaudio.PyAudio()
+            self.in_stream = self.p.open(
+                format=self.pyaudio.paInt16,
+                channels=1,
+                rate=16000,
+                input=True,
+                input_device_index=audio_device(self.p, mic, "input"),
+                stream_callback=self._in_callback,
+                frames_per_buffer=self.INPUT_FRAMES_PER_BUFFER,
+                start=True,
+            )
+            self.out_stream = self.p.open(
+                format=self.pyaudio.paInt16,
+                channels=1,
+                rate=16000,
+                output=True,
+                output_device_index=audio_device(self.p, speaker, "output"),
+                frames_per_buffer=self.OUTPUT_FRAMES_PER_BUFFER,
+                start=True,
+            )
+            self.output_thread.start()
+
+        def _in_callback(self, in_data: bytes, *rest: Any) -> tuple[None, int]:
+            self._callback_thread = threading.get_ident()
+            if not self.should_stop.is_set():
+                self.input_callback(in_data)
+            done = self.should_stop.is_set()
+            return (None, self.pyaudio.paComplete if done else self.pyaudio.paContinue)
+
+        def stop(self) -> None:
+            self.should_stop.set()
+            if threading.get_ident() == self._callback_thread:
+                threading.Thread(target=self._shutdown, daemon=True).start()
+            else:
+                self._shutdown()
+
+        def _shutdown(self) -> None:
+            if self._closed.is_set():
+                return
+            self._closed.set()
+            self.output_thread.join()
+            for step in (
+                self.in_stream.stop_stream,
+                self.in_stream.close,
+                self.out_stream.close,
+                self.p.terminate,
+            ):
+                with contextlib.suppress(OSError):
+                    step()
+
+    return CallAudio()  # type: ignore[no-untyped-call]
+
+
 def call(args: argparse.Namespace) -> int:
     try:
         from elevenlabs.client import ElevenLabs
@@ -104,11 +201,7 @@ def call(args: argparse.Namespace) -> int:
     bridge = build_bridge(args, calls, session_id)
     tools = ClientTools()
     tools.register(TOOL_NAME, bridge.ask, is_async=True)
-    audio = None
-    if not args.text:
-        from elevenlabs.conversational_ai.default_audio_interface import DefaultAudioInterface
-
-        audio = DefaultAudioInterface()  # type: ignore[no-untyped-call]
+    audio = None if args.text else call_audio(args.speaker, args.mic)
     ended = threading.Event()
     replies: list[float] = []  # arrival times of agent turns, for scripted sessions
 
@@ -226,6 +319,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         action="append",
         help="Scripted caller turn for a text session (repeatable); ends after the last reply",
     )
+    live.add_argument("--speaker", help="Output device index or name part; default: system device")
+    live.add_argument("--mic", help="Input device index or name part; default: system device")
     args = parser.parse_args(argv)
     if getattr(args, "say", None):
         args.text = True
