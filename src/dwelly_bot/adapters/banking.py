@@ -78,6 +78,34 @@ def initial_view(index: str, history: str, *, events: int = 2) -> tuple[str, str
     return request[1].strip(), visible + "\n", matches[events - 1][1]
 
 
+def decision_input(
+    identifier: str,
+    request: str,
+    number: str,
+    decision_time: str,
+    visible_events: int,
+    *,
+    attachments: bool,
+) -> dict[str, Any]:
+    """The solver's case input; plan evaluation builds the same fields for its cut-off points."""
+    return {
+        "request": request,
+        "organizer_id": number,
+        "track": TRACK,
+        "decision_time": decision_time,
+        "visible_events": visible_events,
+        "evidence_directory": identifier,
+        "task": "Review the available case evidence and give the next supported response and action plan. Clearly state what remains unverified and which actions require a bank operator.",
+        "capabilities": "Read-only case evidence and arithmetic. No bank systems, customer messaging or operational write tools are connected.",
+        "attachment_policy": (
+            "Only the listed attachment text is available at this decision point. "
+            "A supplied file does not establish bank receipt, validation, authorisation or execution."
+            if attachments
+            else "Attachments are withheld: availability at this decision time has not been established."
+        ),
+    }
+
+
 class BankingAdapter:
     name = DATASET_NAME
     dataset_root = DATASET
@@ -95,22 +123,14 @@ class BankingAdapter:
                     id=row["id"],
                     dataset=self.name,
                     title=f"Banking case {number}",
-                    input={
-                        "request": row["request"],
-                        "organizer_id": number,
-                        "track": TRACK,
-                        "decision_time": row["decision_time"],
-                        "visible_events": row["visible_events"],
-                        "evidence_directory": row["id"],
-                        "task": "Review the available case evidence and give the next supported response and action plan. Clearly state what remains unverified and which actions require a bank operator.",
-                        "capabilities": "Read-only case evidence and arithmetic. No bank systems, customer messaging or operational write tools are connected.",
-                        "attachment_policy": (
-                            "Only the listed attachment text is available at this decision point. "
-                            "A supplied file does not establish bank receipt, validation, authorisation or execution."
-                            if record.view_version == 2
-                            else "Attachments are withheld: availability at this decision time has not been established."
-                        ),
-                    },
+                    input=decision_input(
+                        row["id"],
+                        row["request"],
+                        number,
+                        row["decision_time"],
+                        row["visible_events"],
+                        attachments=record.view_version == 2,
+                    ),
                     metadata={
                         "split": "development",
                         "organizer_id": number,

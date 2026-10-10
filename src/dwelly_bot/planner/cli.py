@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import json
 from collections.abc import Sequence
 from contextlib import AbstractAsyncContextManager, nullcontext
 from pathlib import Path
@@ -106,10 +107,49 @@ async def run(
     return sorted(rows, key=lambda row: order[row["case_id"]])
 
 
+def evaluate(argv: Sequence[str]) -> int:
+    from dwelly_bot.evaluation.plans import build_items, score, write_items
+
+    parser = argparse.ArgumentParser(prog="dwelly-bot plan eval", description="Planner evaluation")
+    commands = parser.add_subparsers(dest="command", required=True)
+    build = commands.add_parser("build", help="Write decision-point inputs and references")
+    build.add_argument("--cases", type=Path, required=True, help="Track folder of NNN/ cases")
+    build.add_argument("--labels", type=Path, help="Safety labels.json; one item per label")
+    build.add_argument("--prefix", default="banking", help="Item ID prefix")
+    build.add_argument("--attachments", action="store_true", help="Include attachment text")
+    build.add_argument("--config", type=Path, help="Run config for tools and playbook")
+    build.add_argument("--output", type=Path, required=True, help="New output directory")
+    rate = commands.add_parser("score", help="Score saved plans against references")
+    rate.add_argument("--references", type=Path, required=True)
+    rate.add_argument("--plans", type=Path, required=True, help="Directory of *.plan.json")
+    rate.add_argument("--output", type=Path, help="Write the full score JSON here")
+    args = parser.parse_args(argv)
+    if args.command == "build":
+        config = read_config(args.config) if args.config else RunConfig()
+        labels = json.loads(args.labels.read_text()) if args.labels else None
+        inputs, references = build_items(
+            args.cases,
+            config=config,
+            prefix=args.prefix,
+            labels=labels,
+            attachments=args.attachments,
+        )
+        write_items(args.output, inputs, references)
+        print(f"{len(inputs)} decision points. Output: {args.output}")
+        return 0
+    result = score(json.loads(args.references.read_text()), args.plans)
+    if args.output:
+        save_json(args.output, result)
+    print(json.dumps(result["summary"], indent=2))
+    for pair, count in result["confusion"].items():
+        print(f"  {count:3d}  {pair}")
+    return 0
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="dwelly-bot plan", description=__doc__)
     source = parser.add_mutually_exclusive_group(required=True)
-    source.add_argument("--input", type=Path, nargs="+", help="PlanInput JSON files")
+    source.add_argument("--input", type=Path, nargs="+", help="PlanInput JSON files or directories")
     source.add_argument("--dataset", help="Registered dataset adapter, e.g. dwelly-banking")
     parser.add_argument("--dataset-root", type=Path)
     parser.add_argument("--ids", help="Comma-separated case IDs")
@@ -118,10 +158,17 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument(
         "--inputs-only", action="store_true", help="Write planner inputs without model calls"
     )
+    if argv and argv[0] == "eval":
+        return evaluate(argv[1:])
     args = parser.parse_args(argv)
     config = read_config(args.config)
+    files = [
+        found
+        for path in args.input or []
+        for found in (sorted(path.glob("*.input.json")) if path.is_dir() else [path])
+    ]
     inputs = (
-        [PlanInput.model_validate_json(path.read_text()) for path in args.input]
+        [PlanInput.model_validate_json(path.read_text()) for path in files]
         if args.input
         else dataset_inputs(
             args.dataset, args.dataset_root, args.ids.split(",") if args.ids else None, config

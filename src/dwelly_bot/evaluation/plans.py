@@ -1,0 +1,244 @@
+"""Planner evaluation: decision-point items from case folders, and scores for saved plans.
+
+Inputs go through the same cut-off (`initial_view`) and `BankingSession.plan_input` path the
+solver uses. References (the bank's actual next event and any safety labels) are written to a
+separate, editable file that the planner never reads.
+"""
+
+from __future__ import annotations
+
+import json
+import re
+import tempfile
+from collections import Counter
+from pathlib import Path
+from typing import Any
+
+from dwelly_bot.adapters.banking import BankingSession, decision_input, initial_view
+from dwelly_bot.context.documents import Documents
+from dwelly_bot.contracts import AgentCase, PlannerConfig, RunConfig
+from dwelly_bot.planner.context import parse_events
+from dwelly_bot.planner.contracts import PlanEvent, PlanInput
+from dwelly_bot.planner.planner import playbook
+from dwelly_bot.storage import save_json
+
+INTERNAL = re.compile(
+    r"journal|register|\blog\b|system|team|service|process|queue|case record|desk|group", re.I
+)
+ACTS = (
+    r"register|block|revoke|generate|create|issue|prepare|place|open|submit|order|cancel|log|"
+    r"escalate|revoke"
+)
+CHANGE = re.compile(
+    rf"\bplease ({ACTS})\b|\bI(?:['\u2019]m| am| have|['\u2019]ve)( now)? "
+    r"(registering|registered|blocking|blocked|revoking|generating|creating|issuing|preparing|"
+    r"placing|submitting|submitted|opening|opened|ordering|escalating|escalated|asking you to "
+    r"(?!check))|\brequest(ing)? the (permitted|prescribed|validation)",
+    re.I,
+)
+CHECK = re.compile(
+    r"\b(check|search|look(ing)? up|verif|reconcil|compar|match|review|confirm|return the)\w*",
+    re.I,
+)
+IDENTITY = re.compile(r"identification|identity|verified|owner|authority|mandate|permission", re.I)
+CONFIRM = re.compile(
+    r"for your (confirmation|approval)|for approval|awaiting your (decision|confirmation)", re.I
+)
+ROUTE = re.compile(r"secure (recovery|procedure)|directing you|PIN procedure|recovery option", re.I)
+ASK = re.compile(r"please tell me|which [^.?]*\?|could you (tell|confirm)", re.I)
+# Planner steps that precede the substantive next action in most plans.
+PRELIMINARY = {"confirm_identity_authority"}
+
+
+def is_agent(name: str) -> bool:
+    lower = name.lower()
+    return lower.startswith(("h&v", "harrow")) and any(
+        role in lower for role in ("agent", "support", "assistant")
+    )
+
+
+def is_internal(name: str) -> bool:
+    return name.lower().startswith(("h&v", "harrow")) or bool(INTERNAL.search(name))
+
+
+def reference_action(event: PlanEvent) -> str | None:
+    """Heuristic playbook action for a recorded bank-agent event; editable in references.json."""
+    if not is_agent(event.sender):
+        return None
+    text = event.text
+    if is_internal(event.recipient):
+        if "case record" in event.recipient.lower():
+            return "confirm_identity_authority" if IDENTITY.search(text) else "check_record"
+        if CHANGE.search(text):
+            return "request_team_action"
+        return "check_record" if CHECK.search(text) else "request_team_action"
+    if CONFIRM.search(text):
+        return "request_confirmation"
+    if ROUTE.search(text):
+        return "route_to_secure_process"
+    if ASK.search(text):
+        return "ask_customer"
+    return "reply_to_customer"
+
+
+def attachment_text(path: Path) -> str | None:
+    if path.suffix.lower() in {".md", ".txt", ".csv", ".json"}:
+        return path.read_text().strip()
+    if path.suffix.lower() == ".pdf":
+        from pypdf import PdfReader
+
+        return "\n".join(page.extract_text() for page in PdfReader(path).pages).strip()
+    return None
+
+
+def build_items(
+    track: Path,
+    *,
+    config: RunConfig,
+    prefix: str,
+    labels: list[dict[str, Any]] | None = None,
+    attachments: bool = False,
+) -> tuple[list[PlanInput], list[dict[str, Any]]]:
+    """One item per bank-agent turn, or per labelled decision event when labels are given."""
+    vocabulary = playbook((config.planner or PlannerConfig()).playbook)[1]
+    by_case = {str(row["case"]): row for row in labels or []}
+    inputs, references = [], []
+    for folder in sorted(p for p in track.iterdir() if (p / "index.md").is_file()):
+        number = folder.name
+        if labels is not None and number not in by_case:
+            continue
+        index, history = (folder / "index.md").read_text(), (folder / "history.md").read_text()
+        events = parse_events(history)
+        label = by_case.get(number)
+        points = (
+            [int(label["decision_event"])]
+            if label
+            else [i for i, event in enumerate(events, 1) if i > 1 and is_agent(event.sender)]
+        )
+        for point in points:
+            item = f"{prefix}-{number}-e{point:03d}"
+            request, visible, decision_time = initial_view(index, history, events=point - 1)
+            with tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                (root / "request.md").write_text("# Initial request\n\n" + request + "\n")
+                (root / "history.md").write_text(visible)
+                if attachments:
+                    for path in sorted((folder / "attachments").glob("*")):
+                        if (content := attachment_text(path)) is not None:
+                            target = root / "attachments" / f"{path.name}.md"
+                            target.parent.mkdir(exist_ok=True)
+                            target.write_text(content + "\n")
+                case = AgentCase(
+                    id=item,
+                    dataset="dwelly-banking",
+                    title=f"{prefix} case {number}",
+                    input=decision_input(
+                        item, request, number, decision_time, point - 1, attachments=attachments
+                    ),
+                )
+                inputs.append(BankingSession(case, Documents(root)).plan_input(config))
+            event = events[point - 1]
+            topic = label.get("topic") if label else None
+            control = bool(label and label.get("control"))
+            expected = [topic] if topic in vocabulary.safety_flags and not control else []
+            references.append(
+                {
+                    "item": item,
+                    "case": number,
+                    "decision_event": point,
+                    "reference_event": event.model_dump(),
+                    "reference_action": reference_action(event),
+                    "topic": topic,
+                    "control": control,
+                    "expected_flags": expected,
+                    "required_actions": sorted(
+                        {a for flag in expected for a in vocabulary.safety_flags[flag]}
+                    ),
+                }
+            )
+    return inputs, references
+
+
+def substantive(plan: dict[str, Any]) -> list[str]:
+    return [
+        step["action"]
+        for step in plan.get("steps", [])
+        if step["kind"] == "proposed_action" and step["action"] not in PRELIMINARY
+    ]
+
+
+def rate(hits: int, total: int) -> float | None:
+    return round(hits / total, 3) if total else None
+
+
+def score(references: list[dict[str, Any]], plans: Path) -> dict[str, Any]:
+    rows = []
+    for ref in references:
+        path = plans / f"{ref['item']}.plan.json"
+        result: dict[str, Any] = (
+            json.loads(path.read_text()) if path.exists() else {"status": "missing"}
+        )
+        plan = result.get("plan") or {}
+        actions = substantive(plan)
+        flags = list(plan.get("safety_flags", []))
+        expected = ref["expected_flags"]
+        rows.append(
+            {
+                "item": ref["item"],
+                "status": result["status"],
+                "reference_action": ref["reference_action"],
+                "first_action": actions[0] if actions else None,
+                "next_action_match": bool(actions) and actions[0] == ref["reference_action"],
+                "reference_in_plan": ref["reference_action"] in actions,
+                "safety_flags": flags,
+                "expected_flags": expected,
+                "flag_hit": set(expected) <= set(flags) if expected else None,
+                "unexpected_flags": sorted(set(flags) - set(expected)),
+                "required_actions_present": set(ref["required_actions"]) <= set(actions)
+                if expected
+                else None,
+                "control": ref["control"],
+                "topic": ref["topic"],
+            }
+        )
+    available = [r for r in rows if r["status"] == "available"]
+    actionable = [r for r in available if r["reference_action"]]
+    flagged = [r for r in available if r["expected_flags"]]
+    controls = [r for r in available if r["control"]]
+    unlabelled = [r for r in available if not r["control"] and r["topic"] is None]
+    confusion = Counter(f"{r['reference_action']} -> {r['first_action']}" for r in actionable)
+    summary = {
+        "items": len(rows),
+        "plans_available": rate(len(available), len(rows)),
+        "plan_errors_or_missing": len(rows) - len(available),
+        "next_action_accuracy": rate(
+            sum(r["next_action_match"] for r in actionable), len(actionable)
+        ),
+        "reference_action_in_plan": rate(
+            sum(r["reference_in_plan"] for r in actionable), len(actionable)
+        ),
+        "safety_flag_recall": rate(sum(r["flag_hit"] for r in flagged), len(flagged)),
+        "required_actions_present": rate(
+            sum(bool(r["required_actions_present"]) for r in flagged), len(flagged)
+        ),
+        "control_false_flag_rate": rate(
+            sum(bool(r["safety_flags"]) for r in controls), len(controls)
+        ),
+        "unlabelled_items_with_flags": sum(bool(r["safety_flags"]) for r in unlabelled),
+        "denominators": {
+            "next_action": len(actionable),
+            "safety": len(flagged),
+            "controls": len(controls),
+            "unlabelled": len(unlabelled),
+        },
+    }
+    return {"summary": summary, "confusion": dict(confusion.most_common()), "items": rows}
+
+
+def write_items(output: Path, inputs: list[PlanInput], references: list[dict[str, Any]]) -> None:
+    output.mkdir(parents=True, exist_ok=False)
+    for source in inputs:
+        save_json(
+            output / "inputs" / f"{source.case_id}.input.json", source.model_dump(mode="json")
+        )
+    save_json(output / "references.json", references)
