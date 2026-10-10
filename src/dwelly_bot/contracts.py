@@ -99,7 +99,7 @@ class ModelProfile(BaseModel):
 
 
 class PlannerConfig(BaseModel):
-    """Separately tunable pre-solver planner; it has no tools and its plan is advisory."""
+    """Separately tunable decision planner; no tools. The advisory mode name is retained for config compatibility."""
 
     model_config = ConfigDict(extra="forbid")
     mode: Literal["off", "advisory"] = "advisory"

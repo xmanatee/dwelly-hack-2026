@@ -297,8 +297,14 @@ def test_predict_retains_failures_and_continues_batch(
                                 {
                                     "id": "s1",
                                     "kind": "proposed_action",
-                                    "action": "reply_to_customer",
-                                    "purpose": "Explain the next step",
+                                    "action": "refer_specialist",
+                                    "instruction": "Send the supplied request to the human review role",
+                                    "rationale": {
+                                        "explanation": "A request arrived",
+                                        "evidence": ["request"],
+                                        "criterion": "Reply with the next supported action",
+                                        "source": "general:planner",
+                                    },
                                 }
                             ],
                         },
@@ -385,7 +391,13 @@ def test_winner_default_and_custom_output_preserve_case_folders(
                         "id": "s1",
                         "kind": "proposed_action",
                         "action": "reply_to_customer",
-                        "purpose": "Explain what is not confirmed",
+                        "instruction": "Explain what is not confirmed",
+                        "rationale": {
+                            "explanation": "The request lacks confirmation",
+                            "evidence": ["request"],
+                            "criterion": "Preserve uncertainty",
+                            "source": "general:evidence",
+                        },
                     }
                 ],
             }

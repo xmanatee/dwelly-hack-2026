@@ -58,10 +58,10 @@ The model, routing, skill hierarchy and number of passes are deliberately open. 
 
 ## Concurrent team implementation
 
-The team has added an [advisory case Planner](../../src/dwelly_bot/planner/README.md) and
+The team has added an [case Planner](../../src/dwelly_bot/planner/README.md) and
 [Solver package](../../src/hackathon_winner/README.md). That Planner currently accepts
-`PlanInput` and emits its own advisory schema. The local runner continues to use the shared
+`PlanInput` and emits its own decision schema. The local runner continues to use the shared
 `planning.Planner` protocol and human-review stub. A deliberate adapter/alignment step is
-needed before substituting it for executable plans; its advice is not silently executed.
+needed before substituting it for executable plans; its decisions are not silently executed.
 
-The advisory Planner now selects [modular runtime skills](../../src/dwelly_bot/planner/skills/README.md) with a structured model call before planning. Common evidence and triage modules remain always loaded; selected skills and hashes are journalled. This does not change the local executable-plan stub or its contract.
+The case Planner now selects [modular runtime skills](../../src/dwelly_bot/planner/skills/README.md) with a structured model call before planning. Common evidence and triage modules remain always loaded; selected skills and hashes are journalled. This does not change the local executable-plan stub or its contract.

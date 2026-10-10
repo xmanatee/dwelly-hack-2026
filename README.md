@@ -31,7 +31,7 @@ Dwelly-bot separates that work into three components: **gather the evidence, dec
 | --- | --- | --- |
 | **Trigger** | Normalize email, call or ticket; preserve its reply route. | Typed inputs and local fixtures. |
 | **Context** | Identify useful information and read authorized sources. | JSON/SQLite readers and synthetic-bank sources; optional Pydantic AI investigator. |
-| **Planner** | Apply knowledge to the available facts; choose concrete actions. | Public `text → Plan` API and action profiles. Local runner uses a human-review stub; a separate [advisory Planner](src/dwelly_bot/planner/README.md) also exists. |
+| **Planner** | Apply knowledge to the available facts; choose concrete actions. | Public `text → Plan` API and action profiles. Local runner uses a human-review stub; a separate [case Planner](src/dwelly_bot/planner/README.md) also exists. |
 | **Execution** | Run the selected steps and record their results. | Mock communication/handoff/ticket actions; local arithmetic; durable mock receipts. |
 
 Replying in the original channel is a plan action. The executor does not make a second business decision or silently send an extra response.
@@ -52,7 +52,7 @@ flowchart LR
     D --> F[Winner: ANSWER + REASONING]
 ```
 
-**Implemented case Planner:** a structured selection call chooses relevant [banking skills](src/dwelly_bot/planner/skills/README.md), then the Planner combines them with general evidence/safety rules and emits a validated advisory plan. Hackathon Winner imports this component directly. The local executable-plan pipeline still uses its stub; specialist sub-agents are not implemented. [Planner design and Vera's TODOs](docs/planner/README.md).
+**Implemented case Planner:** a structured selection call chooses relevant [banking skills](src/dwelly_bot/planner/skills/README.md), then the Planner combines them with general evidence/safety rules and emits a validated decision with concrete instructions and evidence-linked grounds. Hackathon Winner imports this component directly. The local executable-plan pipeline still uses its stub; specialist sub-agents are not implemented. [Planner design and Vera's TODOs](docs/planner/README.md).
 
 ## Quickstart
 
@@ -136,7 +136,7 @@ Voice will use the same context/planning/execution core. [Voice integration slot
 
 Source adapters establish access boundaries; names and email addresses remain search hints. A plan is intent, a mock receipt is a simulation, and neither proves an external bank operation occurred. Public examples are development data, not final Reality Test submissions.
 
-Next: align the advisory Planner with the shared executable-plan contract and Solver, evaluate the combined decision core, add temporal entity snapshots and real channel/voice adapters. Live banking effects, final voice integration and a recorded demo are not implemented. [Detailed gaps and ownership](docs/architecture/integration-status.md).
+Next: align the case Planner with the shared executable-plan contract and Solver, evaluate the combined decision core, add temporal entity snapshots and real channel/voice adapters. Live banking effects, final voice integration and a recorded demo are not implemented. [Detailed gaps and ownership](docs/architecture/integration-status.md).
 
 ## Explore and contribute
 

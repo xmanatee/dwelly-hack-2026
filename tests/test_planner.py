@@ -49,14 +49,26 @@ PLAN: dict[str, Any] = {
             "id": "s1",
             "kind": "solver_tool",
             "action": "read_document",
-            "purpose": "Read the history",
+            "instruction": "Read the history",
+            "rationale": {
+                "explanation": "Use the supplied transfer evidence",
+                "evidence": ["event-001"],
+                "criterion": "Use recorded transaction facts",
+                "source": "general:evidence",
+            },
             "arguments": {"document": "history.md"},
         },
         {
             "id": "s2",
             "kind": "proposed_action",
             "action": "request_team_action",
-            "purpose": "Register the return request",
+            "instruction": "Register the return request",
+            "rationale": {
+                "explanation": "The verified customer requested a return",
+                "evidence": ["event-002"],
+                "criterion": "Initiate an authorised customer request",
+                "source": "general:planner",
+            },
             "target": "payment team",
             "requires": ["s1"],
         },
@@ -64,7 +76,13 @@ PLAN: dict[str, Any] = {
             "id": "s3",
             "kind": "proposed_action",
             "action": "reply_to_customer",
-            "purpose": "Report registration only",
+            "instruction": "Report registration only",
+            "rationale": {
+                "explanation": "Do not promise funds back",
+                "evidence": ["event-002"],
+                "criterion": "A request is not proof of recovery",
+                "source": "general:evidence",
+            },
             "requires": ["s2"],
         },
     ],
@@ -189,7 +207,7 @@ async def test_solver_receives_advisory_plan_and_snapshot_keeps_it(
     subject = session(tmp_path)
     output = await subject.run(runtime)
     assert output.agent_disposition == "escalated"
-    assert "Advisory plan from a separate planner" in seen["instructions"]
+    assert "Planner decision of record" in seen["instructions"]
     assert "Registration does not confirm a return" in seen["instructions"]
     assert subject.snapshot()["plan"]["status"] == "available"
     assert [r["role"] for r in runtime.role_records] == ["planner", "subject"]
@@ -210,7 +228,7 @@ async def test_planner_failure_never_blocks_the_solver(tmp_path: Path, journal: 
     subject = session(tmp_path)
     await subject.run(runtime)
     assert subject.snapshot()["plan"]["status"] == "error"
-    assert "Advisory plan" not in seen["instructions"]
+    assert "Planner decision of record" not in seen["instructions"]
 
 
 async def test_planner_off_by_default_and_when_disabled(tmp_path: Path, journal: Journal) -> None:

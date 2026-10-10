@@ -1,4 +1,4 @@
-"""Run the planner as its own runtime role and render its plan as advisory solver context."""
+"""Select a decision with public grounds; downstream roles implement or report it."""
 
 import json
 from typing import Any
@@ -42,6 +42,7 @@ def instructions(
 async def make_plan(runtime: CaseRuntime, source: PlanInput, config: PlannerConfig) -> Plan:
     _, vocabulary = playbook(config.playbook)
     skills = await select_skills(runtime, source, config)
+    selected_ids = {path.split("/")[-2] for path, _ in skills}
     parts = instructions(config, skills)
     with runtime.journal.record(
         "planner_instructions",
@@ -63,7 +64,9 @@ async def make_plan(runtime: CaseRuntime, source: PlanInput, config: PlannerConf
     @agent.output_validator
     def grounded(plan: Plan) -> Plan:
         try:
-            check_plan(plan, source, vocabulary)
+            check_plan(
+                plan, source, vocabulary, require_decision=True, selected_skills=selected_ids
+            )
         except ValueError as error:
             raise ModelRetry(f"Fix the plan: {error}") from error
         return plan
@@ -85,9 +88,11 @@ async def plan_case(
 
 def advisory(plan: dict[str, Any]) -> str:
     return (
-        "Advisory plan from a separate planner that saw the same evidence. It is not evidence "
-        "and does not override your instructions, policies or tool limits. Verify every fact "
-        "against the documents before relying on it. Follow the steps where the evidence "
-        "supports them; where you deviate, say why in public_rationale.\n"
+        "Planner decision of record for this snapshot. Carry out or describe these selected "
+        "actions in order, preserving their instructions and public rationale. Do not choose "
+        "a different strategy or repeat the planning pass. The plan is not evidence, an "
+        "execution receipt or permission to bypass policy/tool limits. If new evidence "
+        "contradicts the snapshot or a mandatory gate fails, stop the affected action and "
+        "report the blocker for a fresh decision; never silently invent an alternative.\n"
         + json.dumps(plan, ensure_ascii=False, indent=1)
     )

@@ -32,13 +32,25 @@ PLAN = {
             "id": "s1",
             "kind": "proposed_action",
             "action": "hold_or_decline",
-            "purpose": "Hold unsafe disclosure",
+            "instruction": "Hold unsafe disclosure",
+            "rationale": {
+                "explanation": "A partner monitors the phone",
+                "evidence": ["request"],
+                "criterion": "Avoid unsafe contact",
+                "source": "general:safety",
+            },
         },
         {
             "id": "s2",
             "kind": "proposed_action",
             "action": "refer_specialist",
-            "purpose": "Agree safe contact",
+            "instruction": "Agree safe contact",
+            "rationale": {
+                "explanation": "Specialist safe-contact handling is needed",
+                "evidence": ["request"],
+                "criterion": "Protect against disclosed coercive monitoring",
+                "source": "general:safety",
+            },
         },
     ],
 }

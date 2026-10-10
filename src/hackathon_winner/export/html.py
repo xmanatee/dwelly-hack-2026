@@ -85,13 +85,15 @@ def case_section(folder: Path, summary: dict[str, Any]) -> str:
     steps = "".join(
         f"<tr><td>{html.escape(s['id'])}</td><td>{html.escape(s['kind'])}</td>"
         f"<td><code>{html.escape(s['action'])}</code></td>"
-        f"<td>{html.escape(s.get('target') or '')}</td><td>{html.escape(s['purpose'])}</td></tr>"
+        f"<td>{html.escape(s.get('target') or '')}</td>"
+        f"<td>{html.escape(s.get('instruction', s.get('purpose', '')))}</td>"
+        f"<td><pre>{html.escape(json.dumps(s.get('rationale'), ensure_ascii=False, indent=2))}</pre></td></tr>"
         for s in plan.get("steps", [])
     )
     plan_block = (
         f"<p><strong>Intent:</strong> {html.escape(plan.get('intent', ''))}<br>"
         f"<strong>Identity/authority:</strong> {html.escape(plan.get('identity_authority', ''))}</p>"
-        f"<table><thead><tr><th>Step</th><th>Kind</th><th>Action</th><th>Target</th><th>Purpose</th>"
+        f"<table><thead><tr><th>Step</th><th>Kind</th><th>Action</th><th>Target</th><th>Instruction</th><th>Decision grounds</th>"
         f"</tr></thead><tbody>{steps}</tbody></table>"
         if steps
         else f"<p>{html.escape(plan.get('error', 'No plan.'))}</p>"

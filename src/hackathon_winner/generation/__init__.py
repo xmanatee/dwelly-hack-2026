@@ -82,7 +82,7 @@ def customer_message(plan: Plan) -> str | None:
 def render_case_plan(plan: CasePlan) -> Generated:
     proposed = [s for s in plan.steps if s.kind == "proposed_action"]
     steps = [
-        f"{i}. [{s.id}] {s.purpose}"
+        f"{i}. [{s.id}] {s.instruction}"
         + (f" ({s.target})" if s.target else "")
         + (f" Only if: {s.condition}." if s.condition else "")
         + (f" Requires: {', '.join(s.requires)}." if s.requires else "")
@@ -121,8 +121,19 @@ def render_case_plan(plan: CasePlan) -> Generated:
         *(f"- Safety flag: `{flag}`" for flag in plan.safety_flags),
         *(f"- Escalate if: {e}" for e in plan.escalate_if),
         *(f"- Must not: {constraint}" for constraint in plan.must_not),
-        *(f"- Prerequisite {s.id}: {s.purpose}" for s in plan.steps if s.kind == "solver_tool"),
+        *(f"- Prerequisite {s.id}: {s.instruction}" for s in plan.steps if s.kind == "solver_tool"),
     ]
+    reasoning += ["", "## Grounds for each action", ""]
+    for step in plan.steps:
+        if step.rationale is None:
+            reasoning.append(f"- {step.id}: no separate rationale recorded in this legacy plan.")
+            continue
+        grounds = step.rationale
+        reasoning.append(
+            f"- **{step.id} — {step.action}:** {grounds.explanation} "
+            f"Criterion: {grounds.criterion} Source: `{grounds.source}`. "
+            f"Evidence: {', '.join(grounds.evidence)}."
+        )
     return Generated(answer="\n".join(answer), reasoning="\n".join(reasoning))
 
 

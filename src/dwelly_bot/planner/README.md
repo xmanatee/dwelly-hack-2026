@@ -1,6 +1,6 @@
 # Planner
 
-Decision-point context in, advisory solver plan out. The planner has no tools; the solver keeps its own instructions, policies and tool limits, and treats the plan as untrusted advice.
+Decision-point context in; **decided next actions with public grounds** out. The Planner has no tools. The solver/Winner preserves its decision; a contradictory new fact or failed execution gate blocks the affected action and requires a fresh decision. A plan is not proof that anything was executed.
 
 ```
 case evidence → PlanInput → select skills → planner + selected knowledge → Plan → solver / Winner
@@ -8,10 +8,12 @@ case evidence → PlanInput → select skills → planner + selected knowledge �
 
 - `contracts.py`: `PlanInput` (request, timed events, documents, datapoints, `solver_tools`) and `Plan` (facts with evidence IDs, identity/authority, safety flags, ordered steps, response guidance, expected disposition).
 - `context.py`: builds `PlanInput` from the adapter's decision-point documents and the solver's own tool bindings, so disabled tools never appear.
-- `validate.py`: steps must use listed solver tools or playbook actions; facts must cite input evidence; safety flags force their required actions; state-changing actions need identity and authority first. A failed check uses the configured repair limit.
+- `validate.py`: steps must use listed solver tools or playbook actions; facts must cite input evidence; safety flags force their required actions; new decisions cannot schedule a state change behind an uncompleted identity check. A failed check uses the configured repair limit.
 - `prompt.md`, `evidence.md`, `safety.md`: always-loaded instructions.
 - [skills/](skills/README.md): eleven focused banking skills, an allowlisted catalog and official sources. `skills.py` selects relevant IDs with a separate structured model call, then loads their Markdown into the Planner.
 - `playbooks/<name>.md|.json`: domain scope and the unchanged action/safety vocabulary.
+
+The existing config value `mode: "advisory"` is retained for compatibility; it now means use the Planner’s decision of record.
 
 Enable it in a run config; omit `model` to reuse the solver's model and account:
 
@@ -31,6 +33,40 @@ uv run dwelly-bot plan --input case.input.json --config configs/planner-claude-c
 ```
 
 `--inputs-only` writes the `PlanInput` JSON without model calls. `configs/planner-claude-code.json` runs the planner through the logged-in `claude` CLI; its ledger records API-equivalent prices as a usage guard.
+
+
+## What a returned step means
+
+`summary` is the selected decision. Each step contains:
+
+| Field | Meaning |
+| --- | --- |
+| `action` | Operation from the allowed vocabulary |
+| `instruction` | Concrete work, case details and recipient/message |
+| `rationale.explanation` | Why this operation was selected |
+| `rationale.evidence` | Actual input event/document IDs |
+| `rationale.criterion` | The observed condition and applicable handling rule |
+| `rationale.source` | Loaded `skill:<id>`, supplied `evidence:<id>`, or `general:planner`, `general:evidence`, `general:safety` |
+| `requires` | Ordering between already-decided operations; never assumed consent or authority |
+
+For example, a disclosed unsafe contact situation can lead to `refer_specialist`, with
+an instruction naming the support role and safe-contact restriction, and grounds linking
+the customer's disclosure to `skill:financial-abuse`. A support need alone is not an
+automatic legal requirement to hand off: the rule and observed criterion must explain
+this particular decision. A named skill is guidance, not a fabricated statute citation.
+
+Live `make_plan` requires grounds for every step and validates evidence/rule references.
+It rejects free-form future `condition`/`escalate_if` branches and read-only non-decisions.
+Missing essential facts lead to a specific request or handoff now; future customer answers
+can trigger a new plan. Validation checks structure/references, not the truth of every
+natural-language explanation; semantic review and evaluation remain necessary.
+
+Historical captures with `purpose` still load into `instruction`; absent historical
+rationales remain `null`, never fabricated. `check_plan` defaults to historical-compatible
+checks; `make_plan` always enables `require_decision=True` and supplies loaded skill IDs.
+The legacy `proposed_action` type name means decided work awaiting execution, not an
+invitation for the next agent to reconsider it. Winner keeps these grounds in REASONING.md
+and displays them alongside each action in its HTML report.
 
 ## Evaluate plans
 

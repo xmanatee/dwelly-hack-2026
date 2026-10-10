@@ -82,3 +82,5 @@ uv run hackathon-winner report --input .cache/winner/evaluation-1
 ```
 
 `generate` accepts `<case>.plan.json` and `<case>.context.md` for the product action schema. Without `--config` it is an offline renderer; supplying config enables model wording. `report` rebuilds HTML from saved outputs without model calls.
+
+New Planner steps separate `instruction` from `rationale` (explanation, observed evidence, criterion and rule source). Both model and template generators preserve these grounds in REASONING.md. Winner formats the chosen next actions; it does not invent later branches or independently choose another strategy.
