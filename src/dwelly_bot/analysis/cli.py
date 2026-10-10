@@ -13,7 +13,10 @@ from datetime import UTC, datetime
 from importlib import import_module
 from importlib.metadata import version
 from pathlib import Path
+from typing import Any
 
+from dwelly_bot.analysis.claude_code import PREFIX as CLAUDE_CODE
+from dwelly_bot.analysis.claude_code import claude_code_model, claude_code_profile
 from dwelly_bot.analysis.session import AnalysisContext, validate_analysis
 from dwelly_bot.budget import BudgetLedger
 from dwelly_bot.configuration import read_config
@@ -81,9 +84,15 @@ async def execute(args: argparse.Namespace) -> Path:
     try:
         if args.run:
             ctx.saved_run()
-        async with (
-            model_context(profile_for(settings)) if args.model_config else nullcontext(None)
-        ) as client:
+        subscription = settings.model.startswith(CLAUDE_CODE)
+        transport: Any = (
+            nullcontext(claude_code_model(settings.model))
+            if subscription
+            else model_context(profile_for(settings))
+            if args.model_config
+            else nullcontext(None)
+        )
+        async with transport as client:
             if client is not None:
                 ledger_path = args.ledger
                 if ledger_path is None:
@@ -97,7 +106,9 @@ async def execute(args: argparse.Namespace) -> Path:
                     BudgetLedger(ledger_path, settings.total_budget_usd),
                     "analysis/" + recipe.parent.name,
                     request_timeout=settings.request_timeout_seconds,
-                    profile=client.connection_profile,
+                    profile=claude_code_profile(settings)
+                    if subscription
+                    else client.connection_profile,
                 )
             report = builder(ctx)
             if inspect.isawaitable(report):

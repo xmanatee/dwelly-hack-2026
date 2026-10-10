@@ -23,4 +23,6 @@ This recipe reads the **public** original index, complete history and text attac
 
 Both recipes are offline by default. Shared helpers support profiling, sample review, text groups, semantic maps, quoted evidence extraction and optional model discovery. Use `configs/analysis.toml` only for explicitly requested paid work; it shares the cumulative Anthropic ledger. Source observations, model interpretations and verified operational effects remain distinct.
 
+Without an API key, `--model-config configs/analysis-claude-code.toml --embedding-model lexical` runs model steps through the logged-in `claude` CLI (Claude Code subscription). Its separate ledger records API-equivalent list prices as a usage guard, not a bill.
+
 Recipes expose `build(ctx) -> Report`. Keep dataset semantics in the recipe and reusable methods under `src/dwelly_bot/analysis/`. Reports contain source hashes, sample counts and limitations; generated HTML/JSON stay ignored under `analysis/artifacts/`. Pages builds only offline source analysis and saved execution reports. Analysis findings may change the agent only through the experiment workflow.

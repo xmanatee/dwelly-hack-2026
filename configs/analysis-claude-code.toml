@@ -1,0 +1,8 @@
+# Claude Code subscription through the local `claude` CLI; no API key. Use with
+# --embedding-model lexical. Costs are API-equivalent list prices tracked in a
+# separate local ledger as a usage guard; the subscription is not billed per call.
+model = "claude-code/sonnet"
+max_tokens = 8192
+request_timeout_seconds = 120
+total_budget_usd = 25
+budget_file = ".cache/claude-code-analysis-budget.json"
