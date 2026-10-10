@@ -71,17 +71,16 @@ def case_folder(tmp_path: Path, history: str = HISTORY) -> Path:
     return folder
 
 
-def test_case_becomes_timed_conversation_without_ending_summaries(tmp_path: Path) -> None:
+def test_case_comes_from_history_only_never_index(tmp_path: Path) -> None:
     case = read_case(case_folder(tmp_path))
     record = to_record(case, "banking")
     assert record.id == "case-007" and record.kind == "conversation"
     assert [s.id for s in record.sources] == [
-        "case-007/request",
         "case-007/event-001",
         "case-007/event-002",
         "case-007/attachments/rows.csv",
     ]
-    event = record.sources[1]
+    event = record.sources[0]
     assert event.speaker == "Customer" and event.timestamp == "2025-07-19 09:47:00 UTC"
     assert event.text == "[Secure chat] Customer → Agent\nHas it been sent?\nPlease check."
     assert [a["text"] is None for a in case["attachments"]] == [True, False]

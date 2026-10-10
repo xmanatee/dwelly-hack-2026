@@ -70,3 +70,25 @@ def case_input(
         datapoints=datapoints,
         solver_tools=tools,
     )
+
+
+def history_view(history: str, *, events: int) -> tuple[str, str, str]:
+    """The first `events` events of a history, from history.md alone.
+
+    Returns the first non-bank message as the request, the visible events as Markdown and
+    the last visible timestamp. The title and total-count header are dropped; at least one
+    later event must remain held out.
+    """
+    parsed = parse_events(history)
+    if not 1 <= events < len(parsed):
+        raise ValueError("A history view needs at least one visible and one held-out event")
+    visible = parsed[:events]
+    customer = next(
+        (e for e in visible if not e.sender.lower().startswith(("h&v", "harrow"))), None
+    )
+    text = "\n\n".join(
+        f"## {e.at} — event {e.id.removeprefix('event-')}\n\n"
+        f"- **Channel:** {e.channel}\n- **From:** {e.sender}\n- **To:** {e.recipient}\n\n{e.text}"
+        for e in visible
+    )
+    return (customer.text if customer else ""), text + "\n", visible[-1].at

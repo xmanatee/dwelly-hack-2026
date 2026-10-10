@@ -1,7 +1,7 @@
 """Planner evaluation: decision-point items from case folders, and scores for saved plans.
 
-Inputs go through the same cut-off (`initial_view`) and `BankingSession.plan_input` path the
-solver uses. References (the bank's actual next event and any safety labels) are written to a
+Inputs are cut from history.md alone (`history_view`; index.md is never read) and built
+through the same `BankingSession.plan_input` path the solver uses. References (the bank's actual next event and any safety labels) are written to a
 separate, editable file that the planner never reads.
 """
 
@@ -15,10 +15,10 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
-from dwelly_bot.adapters.banking import BankingSession, decision_input, initial_view
+from dwelly_bot.adapters.banking import BankingSession, decision_input
 from dwelly_bot.context.documents import Documents
 from dwelly_bot.contracts import AgentCase, PlannerConfig, RunConfig
-from dwelly_bot.planner.context import parse_events
+from dwelly_bot.planner.context import history_view, parse_events
 from dwelly_bot.planner.contracts import PlanEvent, PlanInput
 from dwelly_bot.planner.planner import playbook
 from dwelly_bot.storage import save_json
@@ -104,11 +104,11 @@ def build_items(
     vocabulary = playbook((config.planner or PlannerConfig()).playbook)[1]
     by_case = {str(row["case"]): row for row in labels or []}
     inputs, references = [], []
-    for folder in sorted(p for p in track.iterdir() if (p / "index.md").is_file()):
+    for folder in sorted(p for p in track.iterdir() if (p / "history.md").is_file()):
         number = folder.name
         if labels is not None and number not in by_case:
             continue
-        index, history = (folder / "index.md").read_text(), (folder / "history.md").read_text()
+        history = (folder / "history.md").read_text()
         events = parse_events(history)
         label = by_case.get(number)
         points = (
@@ -118,7 +118,7 @@ def build_items(
         )
         for point in points:
             item = f"{prefix}-{number}-e{point:03d}"
-            request, visible, decision_time = initial_view(index, history, events=point - 1)
+            request, visible, decision_time = history_view(history, events=point - 1)
             with tempfile.TemporaryDirectory() as directory:
                 root = Path(directory)
                 (root / "request.md").write_text("# Initial request\n\n" + request + "\n")
@@ -244,8 +244,8 @@ def build_synthetic_items(
         after = int(case_labels["decision_after_event"])
         full = root / "cases" / SYNTH_TRACK / number
         blind = root / "cases_blind" / SYNTH_TRACK / number
-        index, history = (full / "index.md").read_text(), (full / "history.md").read_text()
-        request, visible, decision_time = initial_view(index, history, events=after)
+        history = (full / "history.md").read_text()
+        request, visible, decision_time = history_view(history, events=after)
         item = f"synthetic-{number}-e{after + 1:03d}"
         with tempfile.TemporaryDirectory() as directory:
             folder = Path(directory)

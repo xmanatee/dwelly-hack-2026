@@ -72,11 +72,13 @@ async def generate(args: argparse.Namespace) -> int:
     return 0
 
 
+DEFAULT_CASES = Path(".cache/datasets/banking-v1/original/Banking & Financial Services")
+
+
 async def predict(args: argparse.Namespace) -> int:
-    """Case evidence -> case planner -> generator -> two files, for every selected case."""
+    """Full history.md -> case planner -> generator -> ANSWER.md and REASONING.md."""
     from datetime import UTC, datetime
 
-    from dwelly_bot.adapters.registry import adapter_for
     from dwelly_bot.contracts import PlannerConfig
     from dwelly_bot.experiments.journal import Journal
     from dwelly_bot.harness.runtime import CaseRuntime
@@ -84,15 +86,15 @@ async def predict(args: argparse.Namespace) -> int:
     from dwelly_bot.planner.contracts import Plan as CasePlan
     from dwelly_bot.planner.planner import plan_case
     from dwelly_bot.storage import save_json
+    from hackathon_solver.adapters import HistoryCase, load
+    from hackathon_solver.export.html import render
     from hackathon_solver.generation import Generated
 
     config = read_config(args.config)
-    adapter = adapter_for(args.dataset)
-    root = args.dataset_root or adapter.dataset_root
-    selected = adapter.load_cases(root, args.ids.split(",") if args.ids else None)
+    selected = load(args.cases, config, ids=args.ids.split(",") if args.ids else None)
     stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     output = args.output or Path("experiments/banking-predictions/artifacts") / stamp
-    development = args.dataset == "dwelly-banking"
+    development = not args.submission
     check_output(output, development=development)
     output.mkdir(parents=True, exist_ok=True)
     context, profile = transport(profile_for(config))
@@ -106,33 +108,30 @@ async def predict(args: argparse.Namespace) -> int:
                 base, ledger, name, config.request_timeout_seconds, profile=profile
             )
 
-        async def one(case: Any) -> None:
+        async def one(case: HistoryCase) -> None:
             async with semaphore:
-                session = adapter.prepare(case, root, config)
-                source = session.plan_input(config)  # type: ignore[attr-defined]
-                text = "\n\n".join(
-                    f"## {name}\n\n{path.read_text()}"
-                    for name, path in session.documents.files.items()  # type: ignore[attr-defined]
-                )
-                journal = Journal(output / "journals" / f"{case.id}.jsonl")
-                planner_model, generator_model = bounded(f"predict/{case.id}/planner"), None
+                journal = Journal(output / "journals" / f"{case.case_id}.jsonl")
+                planner_model, generator_model = bounded(f"predict/{case.case_id}/planner"), None
                 try:
                     planned = await plan_case(
                         CaseRuntime(planner_model, config, journal),
-                        source,
+                        case.source,
                         config.planner or PlannerConfig(),
                     )
                 finally:
                     journal.file.close()
                 details: dict[str, Any] = {"planner": planned.get("error") or "available"}
+                plan: BaseModel
                 if planned["status"] == "available":
-                    plan: Any = CasePlan.model_validate(planned["plan"])
+                    plan = CasePlan.model_validate(planned["plan"])
                     if args.template:
-                        generated = await TemplateGenerator().generate(plan, text)
+                        generated = await TemplateGenerator().generate(plan, case.history)
                         details["kind"] = "template"
                     else:
-                        generator_model = bounded(f"predict/{case.id}/generator")
-                        generated = await ModelGenerator(generator_model).generate(plan, text)
+                        generator_model = bounded(f"predict/{case.case_id}/generator")
+                        generated = await ModelGenerator(generator_model).generate(
+                            plan, case.history
+                        )
                         details.update(kind="model", model=config.model)
                 else:
                     plan = PlannerFailure(error=str(planned.get("error")))
@@ -141,32 +140,38 @@ async def predict(args: argparse.Namespace) -> int:
                         reasoning=f"Planner error: {planned.get('error')}",
                     )
                     details["kind"] = "planner_error"
-                write_case(output, case.id, generated, plan=plan, context=text, generator=details)
+                write_case(
+                    output,
+                    case.case_id,
+                    generated,
+                    plan=plan,
+                    context=case.history,
+                    generator=details,
+                )
                 calls = planner_model.calls + (generator_model.calls if generator_model else [])
                 rows.append(
                     {
-                        "case_id": case.id,
+                        "case_id": case.case_id,
                         "planner": planned["status"],
                         "generator": details["kind"],
                         "requests": len(calls),
                         "cost_usd": sum(c["cost_usd"] for c in calls if c["status"] == "settled"),
                     }
                 )
-                print(f"  {case.id}: {planned['status']} / {details['kind']}", flush=True)
+                print(f"  {case.case_id}: {planned['status']} / {details['kind']}", flush=True)
 
         await asyncio.gather(*(one(case) for case in selected))
-    order = {case.id: i for i, case in enumerate(selected)}
+    order = {case.case_id: i for i, case in enumerate(selected)}
     rows.sort(key=lambda row: order[row["case_id"]])
     save_json(
-        output / "predictions.json", {"dataset": args.dataset, "root": str(root), "cases": rows}
+        output / "predictions.json",
+        {"input": "full history.md", "cases_root": str(args.cases), "cases": rows},
     )
     if development:
         (output / "README.md").write_text(
             "# Development predictions\n\nPublic practice cases, not Reality Test results. "
             "Do not submit them.\n"
         )
-    from hackathon_solver.export.html import render
-
     failed = sum(row["planner"] != "available" for row in rows)
     print(f"{len(rows)} cases, {failed} planner errors. Report: {render(output)}")
     return 0
@@ -187,9 +192,15 @@ def main(argv: Sequence[str] | None = None) -> int:
     run.add_argument(
         "--development", action="store_true", help="Practice cases: refuse an ANSWERS directory"
     )
-    case = commands.add_parser("predict", help="Plan and generate answers for dataset cases")
-    case.add_argument("--dataset", default="dwelly-banking")
-    case.add_argument("--dataset-root", type=Path)
+    case = commands.add_parser(
+        "predict", help="Full history.md -> ANSWER.md and REASONING.md per case"
+    )
+    case.add_argument(
+        "--cases", type=Path, default=DEFAULT_CASES, help="Track folder of NNN/history.md"
+    )
+    case.add_argument(
+        "--submission", action="store_true", help="Real challenge cases; allows an ANSWERS output"
+    )
     case.add_argument("--ids", help="Comma-separated case IDs")
     case.add_argument("--config", type=Path, required=True, help="Planner/generator run config")
     case.add_argument("--output", type=Path, help="Empty directory; default under experiments")

@@ -158,3 +158,25 @@ def test_html_report_escapes_case_text(tmp_path: Path) -> None:
     assert "<script>alert(1)</script>" not in page and "&lt;script&gt;" in page
     assert "<strong>record</strong>" in page and "<code>event-002</code>" in page
     assert "&lt;b&gt;x&lt;/b&gt;" in page and "privacy" in page
+
+
+def test_history_adapter_reads_only_history(tmp_path: Path) -> None:
+    from hackathon_solver.adapters import load
+
+    from dwelly_bot.contracts import RunConfig
+
+    folder = tmp_path / "track" / "005"
+    folder.mkdir(parents=True)
+    (folder / "index.md").write_text("## Next action at escalation\n\nINDEX_SECRET\n")
+    (folder / "history.md").write_text(
+        "# Case 005 history — Wrong recipient\n\nTotal events: 2\n\n"
+        '<a id="event-001"></a>\n## 2025-07-27 09:00:00 UTC — event 001\n\n'
+        "- **Channel:** Secure portal\n- **From:** Harrow & Vale Bank plc\n- **To:** Leona\n\nSent.\n\n"
+        '<a id="event-002"></a>\n## 2025-07-27 09:47:00 UTC — event 002\n\n'
+        "- **Channel:** Verified call\n- **From:** Leona\n- **To:** H&V service agent\n\n"
+        "Please seek a return.\n"
+    )
+    [case] = load(tmp_path / "track", RunConfig())
+    assert case.case_id == "banking-005" and len(case.source.events) == 2
+    assert case.source.request == "Please seek a return."
+    assert "INDEX_SECRET" not in case.source.model_dump_json() + case.history

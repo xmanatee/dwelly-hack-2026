@@ -37,7 +37,7 @@ uv run dwelly-bot plan --input analysis/artifacts/plan-eval/public/inputs --conf
 uv run dwelly-bot plan eval score --references analysis/artifacts/plan-eval/public/references.json --plans analysis/artifacts/plan-eval/public-plans --output analysis/artifacts/plan-eval/public-score.json
 ```
 
-- `build` cuts each case before every bank-agent event with the adapter's `initial_view`, and builds inputs through `BankingSession.plan_input`, exactly as at run time. With `--labels`, it cuts only at each labelled decision event. `--attachments` adds attachment text; the public cases withhold attachments because their availability time is unknown.
+- `build` cuts each case's history.md before every bank-agent event (`history_view`; index.md is never read), and builds inputs through `BankingSession.plan_input`, exactly as at run time. With `--labels`, it cuts only at each labelled decision event. `--attachments` adds attachment text; the public cases withhold attachments because their availability time is unknown.
 - `references.json` holds the bank's actual next event, its heuristic action label, and expected safety flags with their required actions. It is never part of planner input. Review and correct `reference_action` labels by hand; scoring reads the file as given.
 - `score` reports plan availability, next-action accuracy (first substantive proposed action, skipping identity confirmation), whether the reference action appears anywhere in the plan, safety-flag recall, required-action completeness, false flags on control cases, and flags raised on unlabelled cases. The recorded next event is one acceptable action, not the only correct one, so read the confusion pairs before drawing conclusions.
 

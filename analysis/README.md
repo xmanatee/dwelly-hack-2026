@@ -33,5 +33,5 @@ Recipes expose `build(ctx) -> Report`. Keep dataset semantics in the recipe and 
 uv run --extra analysis dwelly-bot analyze run dwelly_bot.analysis.dwelly_cases --data "dwelly-cases/Banking & Financial Services" --deep-analysis --exhaustive --model-config configs/analysis-claude-code.toml --embedding-model lexical --screen-batch 5
 ```
 
-- `--data` is one organizer track folder of `NNN/index.md`, `history.md` and `attachments/` (a local clone of the public cases, or `experiments/safety-cases/…`). Each case is one conversation: initial request, every timed event and extracted attachment text (CSV/TXT/MD/JSON/PDF). Overview, next action and outcome summaries are excluded.
+- `--data` is one organizer track folder of `NNN/history.md` and `attachments/` (a local clone of the public cases, or `experiments/safety-cases/…`). Each case is one conversation from history.md alone: every timed event and extracted attachment text (CSV/TXT/MD/JSON/PDF). index.md is never read.
 - `--exhaustive` deep-reviews, audits, compares and names every record and label; without it those stages sample.
