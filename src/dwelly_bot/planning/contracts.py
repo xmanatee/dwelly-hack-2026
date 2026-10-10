@@ -43,8 +43,16 @@ class Handoff(Contract):
     reason: Text
 
 
+class Calculate(Contract):
+    kind: Literal["calculate"] = "calculate"
+    id: Text
+    expression: Text
+    rounding: Literal["none", "floor", "cents"] = "none"
+    basis: Text  # Explain where operands/rule came from; never invent a debt policy.
+
+
 Action = Annotated[
-    ReplyToTrigger | SendEmail | CallCustomer | UpdateTicket | Handoff,
+    ReplyToTrigger | SendEmail | CallCustomer | UpdateTicket | Handoff | Calculate,
     Field(discriminator="kind"),
 ]
 
@@ -54,6 +62,7 @@ ACTION_CATALOG = {
     "call_customer": "phone, message -> a separate outgoing call",
     "update_ticket": "ticket_id, status (open/pending/closed), note -> a ticket update",
     "handoff": "queue, reason -> a human review request for the current case",
+    "calculate": "expression, rounding, basis -> bounded decimal arithmetic; later messages may use {{action_id.value}}",
 }
 
 

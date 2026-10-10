@@ -11,12 +11,13 @@ from dwelly_bot.planning.contracts import Plan
 
 class ActionReceipt(Contract):
     action_id: str
-    status: Literal["simulated", "failed", "skipped"]
+    status: Literal["simulated", "computed", "failed", "skipped"]
     operation: str
     target: str
     detail: str
     parameters: dict[str, str] = Field(default_factory=dict)
     replayed: bool = False
+    outputs: dict[str, str] = Field(default_factory=dict)
 
 
 class ExecutionResult(Contract):

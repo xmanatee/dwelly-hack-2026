@@ -1,0 +1,6 @@
+{
+  "name": "contest",
+  "execution": "proposal",
+  "allowed_actions": ["reply_to_trigger", "send_email", "call_customer", "update_ticket", "handoff", "calculate"],
+  "handoff_queues": ["human-support"]
+}

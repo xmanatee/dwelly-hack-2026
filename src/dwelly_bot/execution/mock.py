@@ -1,11 +1,16 @@
 """Categorized offline operations with local replay protection and explicit simulation."""
 
+import json
+
+from pydantic_ai import ModelRetry
+
 from dwelly_bot.channels.intake import CallRoute, EmailRoute, Trigger
 from dwelly_bot.execution.contracts import ActionReceipt, ExecutionResult
 from dwelly_bot.experiments.journal import Journal
+from dwelly_bot.planning.catalog import ActionProfile, render_message
 from dwelly_bot.planning.contracts import (
-    ACTION_CATALOG,
     Action,
+    Calculate,
     CallCustomer,
     Handoff,
     Plan,
@@ -13,28 +18,51 @@ from dwelly_bot.planning.contracts import (
     SendEmail,
 )
 from dwelly_bot.storage import fingerprint
+from dwelly_bot.tools.arithmetic import calculate
 
 
 class MockExecutor:
     """No I/O except the shared journal. Replay cache lasts for this instance only."""
 
-    def __init__(self, *, fail_actions: frozenset[str] = frozenset()) -> None:
+    def __init__(
+        self, *, fail_actions: frozenset[str] = frozenset(), profile: ActionProfile | None = None
+    ) -> None:
         self.fail_actions = fail_actions
         self.inactive_calls: set[str] = set()
         self.effects: list[ActionReceipt] = []
         self._receipts: dict[str, tuple[str, ActionReceipt]] = {}
+        self.profile = profile or ActionProfile.load()
+        if self.profile.execution != "mock":
+            raise ValueError("Proposal-only profiles cannot be executed")
 
     @property
     def capabilities(self) -> str:
-        return (
-            "MOCK ONLY: no messages, calls or handoffs occur.\n"
-            + "\n".join(f"- {kind}: {description}" for kind, description in ACTION_CATALOG.items())
-            + "\nAvailable handoff queue: human-support."
+        return "MOCK ONLY: no messages, calls or handoffs occur.\n" + json.dumps(
+            self.profile.catalog(), ensure_ascii=False
         )
 
     def _simulate(self, trigger: Trigger, action: Action) -> ActionReceipt:
         operation: str = action.kind
         target = trigger.scope_id
+        if isinstance(action, Calculate):
+            try:
+                value = calculate(action.expression, action.rounding)
+                return ActionReceipt(
+                    action_id=action.id,
+                    status="computed",
+                    operation=operation,
+                    target="local",
+                    detail="Local arithmetic only; no financial operation.",
+                    outputs=value,
+                )
+            except ModelRetry as exc:
+                return ActionReceipt(
+                    action_id=action.id,
+                    status="failed",
+                    operation=operation,
+                    target="local",
+                    detail=str(exc),
+                )
         if isinstance(action, ReplyToTrigger):
             route = trigger.reply_route
             if isinstance(route, EmailRoute):
@@ -71,7 +99,9 @@ class MockExecutor:
         )
 
     async def execute(self, trigger: Trigger, plan: Plan, journal: Journal) -> ExecutionResult:
+        self.profile.validate_plan(plan)
         receipts: list[ActionReceipt] = []
+        results: dict[str, str] = {}
         blocked = False
         for action in plan.actions:
             key = fingerprint([trigger.scope_id, trigger.event_id, action.id])
@@ -112,15 +142,18 @@ class MockExecutor:
                     else:
                         receipt = previous.model_copy(update={"replayed": True})
                 else:
+                    parameters = action.model_dump(exclude={"id", "kind"})
+                    for field in ("message", "note", "subject"):
+                        if field in parameters:
+                            parameters[field] = render_message(parameters[field], results)
                     receipt = self._simulate(trigger, action).model_copy(
-                        update={"parameters": action.model_dump(exclude={"id", "kind"})}
+                        update={"parameters": parameters}
                     )
                     self._receipts[key] = (digest, receipt)
                     if receipt.status == "simulated":
                         self.effects.append(receipt)
-                receipt = receipt.model_copy(
-                    update={"parameters": action.model_dump(exclude={"id", "kind"})}
-                )
+                if receipt.status == "computed":
+                    results[action.id + ".value"] = receipt.outputs["value"]
                 journal.returned(event, receipt.model_dump(mode="json"))
             blocked = blocked or receipt.status == "failed"
             receipts.append(receipt)
