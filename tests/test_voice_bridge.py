@@ -53,6 +53,7 @@ async def test_reply_is_spoken_in_the_open_call(tmp_path: Path) -> None:
     assert reply["status"] == "answered"
     assert reply["say"].startswith("Your 350 pounds to Kestrel Joinery shows as sent")
     assert reply["handoff"] == "human-support"
+    assert reply["handoff_status"] == "simulated"
     assert reply["reference"] == "s1-001"
     capture = tmp_path / "s1-001"
     trigger = json.loads((capture / "trigger.json").read_text(encoding="utf-8"))
@@ -71,10 +72,8 @@ async def test_reply_is_spoken_in_the_open_call(tmp_path: Path) -> None:
 async def test_closed_call_gets_no_speech_and_no_callback(tmp_path: Path) -> None:
     calls = LiveCalls()  # session never opened, e.g. the caller hung up
     reply = json.loads(await bridge(tmp_path, PLAN, calls).ask({"request": "Status?"}))
-    assert reply["status"] == "no_answer" and reply["say"] == ""
-    receipts = json.loads((tmp_path / "s1-001" / "result.json").read_text(encoding="utf-8"))
-    assert receipts["status"] == "failed"
-    assert receipts["receipts"][1]["detail"].startswith("Voice session is closed")
+    assert reply["status"] == "failed" and reply["say"] == ""
+    assert not (tmp_path / "s1-001").exists()
 
 
 async def test_calculated_value_reaches_the_caller(tmp_path: Path) -> None:
@@ -137,3 +136,47 @@ def test_lock_is_exclusive_across_handles(tmp_path: Path) -> None:
         lock_exclusive(first)
         with pytest.raises(BlockingIOError):
             lock_exclusive(second, blocking=False)
+
+
+async def test_failed_result_discards_partial_speech(tmp_path: Path) -> None:
+    async def failed(event: Inbound, output: Path, live: LiveCalls) -> ExecutionResult:
+        live.say("s1", "Do not deliver a partial success")
+        return ExecutionResult(
+            event_id=event.event_id, status="failed", disposition="failed", receipts=()
+        )
+
+    calls = LiveCalls()
+    calls.open("s1")
+    voice = bridge(tmp_path, PLAN, calls)
+    voice.run = failed
+    reply = json.loads(await voice.ask({"request": "Status?"}))
+    assert reply["status"] == "failed" and not reply["say"] and not reply["handoff"]
+    assert calls.take("s1") == ()
+
+
+def test_voice_state_cannot_modify_source_database(tmp_path: Path) -> None:
+    import sqlite3
+
+    source = tmp_path / "source.sqlite"
+    with sqlite3.connect(source) as db:
+        db.execute("CREATE TABLE source_data (id TEXT)")
+    before = source.read_bytes()
+    with pytest.raises(SystemExit) as error:
+        voice_main(
+            [
+                "ask",
+                "--scope",
+                "test",
+                "--sqlite",
+                str(source),
+                "--state",
+                str(source),
+                "--request",
+                "Status?",
+                "--output",
+                str(tmp_path / "output"),
+            ]
+        )
+    assert error.value.code == 2
+    assert source.read_bytes() == before
+    assert not (tmp_path / "output").exists()

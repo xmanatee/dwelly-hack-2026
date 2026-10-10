@@ -26,6 +26,10 @@ async def run_local_pipeline(
     is_active: Callable[[], bool] | None = None,
     live_calls: LiveCalls | None = None,
 ) -> ExecutionResult:
+    if planner_config is not None and live_calls is not None:
+        raise ValueError(
+            "Canonical Planner speech rendering is not connected; use the HTTP decision service"
+        )
     if output.exists():
         raise FileExistsError(f"Capture directory already exists: {output}")
     if state is not None and state.resolve().is_relative_to(output.resolve()):

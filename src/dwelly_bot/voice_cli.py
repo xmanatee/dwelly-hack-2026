@@ -62,6 +62,7 @@ def build_bridge(
             state=args.state,
             context_config=args.context_config,
             live_calls=live,
+            is_active=lambda: live.is_open(session_id),
         )
 
     return ElevenLabsCallBridge(
@@ -79,7 +80,10 @@ def ask(args: argparse.Namespace) -> int:
     calls.open(session_id)
     bridge = build_bridge(args, calls, session_id)
     parameters = {"request": args.request, "caller_name": args.caller_name or "", "reference": ""}
-    reply = asyncio.run(bridge.ask(parameters))
+    try:
+        reply = asyncio.run(bridge.ask(parameters))
+    finally:
+        calls.close(session_id)
     print(json.dumps(json.loads(reply), indent=2, ensure_ascii=False))
     return 0 if json.loads(reply)["status"] != "failed" else 1
 
@@ -122,6 +126,10 @@ def call(args: argparse.Namespace) -> int:
                 return
             time.sleep(0.2)
 
+    def disconnected() -> None:
+        calls.close(session_id)
+        ended.set()
+
     conversation = Conversation(
         ElevenLabs(api_key=api_key),
         agent_id,
@@ -130,7 +138,7 @@ def call(args: argparse.Namespace) -> int:
         client_tools=tools,
         callback_agent_response=agent_said,
         callback_user_transcript=lambda text: print(f"Caller: {text}", flush=True),
-        callback_end_session=ended.set,
+        callback_end_session=disconnected,
     )
     calls.open(session_id)
     mode = (
@@ -222,6 +230,14 @@ def main(argv: Sequence[str] | None = None) -> int:
     if getattr(args, "say", None):
         args.text = True
     try:
+        if args.state:
+            if args.state.resolve().is_relative_to(args.output.resolve()):
+                raise ValueError("Receipt state must be outside the capture directory")
+            if any(
+                p and args.state.resolve() == p.resolve()
+                for p in (args.records, args.sqlite, args.plan, args.context_config)
+            ):
+                raise ValueError("Receipt state must be separate from input/source files")
         if args.output.exists():
             raise ValueError(f"Capture directory already exists: {args.output}")
         args.output.mkdir(parents=True)

@@ -28,6 +28,7 @@ class CallReply(Contract):
     status: Literal["answered", "no_answer", "failed"]
     say: str
     handoff: str | None = None
+    handoff_status: Literal["simulated", "sent"] | None = None
     disposition: str | None = None
     reference: str
 
@@ -67,12 +68,16 @@ class ElevenLabsCallBridge:
             self.turns += 1
             reference = f"{self.session_id}-{self.turns:03d}"
             request = _text(parameters, "request")
-            if not request:
+            if not self.calls.is_open(self.session_id):
+                return CallReply(
+                    status="failed", say="", reference=reference, disposition="Call is closed."
+                ).model_dump_json()
+            if not request or len(request) > 16000:
                 return CallReply(
                     status="failed",
                     say="",
                     reference=reference,
-                    disposition="Tool call had no request text; summarise the caller's request and retry.",
+                    disposition="Request must contain between 1 and 16000 characters.",
                 ).model_dump_json()
             name, ref = _text(parameters, "caller_name"), _text(parameters, "reference")
             event = CallInput(
@@ -97,6 +102,13 @@ class ElevenLabsCallBridge:
                     disposition="The case system could not complete this request.",
                 ).model_dump_json()
             spoken = self.calls.take(self.session_id)
+            if result.status == "failed" or not self.calls.is_open(self.session_id):
+                return CallReply(
+                    status="failed",
+                    say="",
+                    reference=reference,
+                    disposition="Execution failed or the call closed; no completion confirmed.",
+                ).model_dump_json()
             handoffs = [
                 r.parameters.get("queue", r.target)
                 for r in result.receipts
@@ -106,6 +118,16 @@ class ElevenLabsCallBridge:
                 status="answered" if spoken else "no_answer",
                 say=" ".join(spoken),
                 handoff=", ".join(handoffs) or None,
+                handoff_status=(
+                    "simulated"
+                    if any(
+                        r.operation == "handoff" and r.status == "simulated"
+                        for r in result.receipts
+                    )
+                    else "sent"
+                )
+                if handoffs
+                else None,
                 disposition=result.disposition,
                 reference=reference,
             ).model_dump_json()

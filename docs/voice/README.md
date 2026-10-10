@@ -177,3 +177,7 @@ mock executor (`--plan` fixture or human-review stub), not `--planner-config`.
 | Credentials and setup | `ELEVENLABS_API_KEY` (needs ElevenAgents: Write) and `ELEVENLABS_AGENT_ID` in `.env`. |
 | Transport / integration code | [channels/elevenlabs.py](../../src/dwelly_bot/channels/elevenlabs.py), [voice_cli.py](../../src/dwelly_bot/voice_cli.py). |
 | Measured behavior | 2026-10-10 scripted text session: greeting → one `ask_dwelly` call → reply read back faithfully → goodbye; capture shows `handoff: simulated`, `speak_in_call: sent`. **TODO** — audio latency, interruption and disconnect observations. |
+The client-tool result includes `handoff_status`: a `simulated` handoff is not a real
+transfer to an operator. A closed call is rejected before the pipeline; failed execution
+returns `failed` and discards queued partial speech. Provider disconnect closes the local
+queue immediately. `--state` must be outside captures and separate from all source files.
