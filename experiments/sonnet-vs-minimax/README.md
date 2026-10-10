@@ -23,3 +23,7 @@ uv run --extra evaluation dwelly-bot experiment evaluate --input ACTOR_RESULTS -
 ```
 
 The corpus root is pinned in each new reference; moving a run cannot silently revert it to the historical default dataset. Evaluations hash the exact public-reference payload as well as rubric, prompts, model settings and native checks. Input documents, outputs and cost receipts are retained in compressed evidence. The working tree's pre-existing change to `experiments/baseline/report.html` is unrelated to execution and is intentionally excluded from these commits; run receipts will honestly record a dirty tree.
+
+## Provider failure
+
+OpenRouter returned HTTP 402 after 30/50 candidate cases and 30/50 baseline reviews. This incomplete attempt is retained, including 20 failed candidate cases and 20 failed reviews. Completion continues in [the direct Anthropic experiment](../sonnet-vs-minimax-anthropic/README.md); no incomplete result is presented as the final comparison.
