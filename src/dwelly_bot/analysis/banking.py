@@ -18,7 +18,7 @@ async def build(ctx: AnalysisContext) -> Report:
             "documents": [
                 {
                     "id": str(p.relative_to(ctx.data)),
-                    "case_id": p.parent.name,
+                    "case_id": p.relative_to(ctx.data / "documents").parts[0],
                     "text": p.read_text(),
                     "lines": len(p.read_text().splitlines()),
                 }
@@ -39,7 +39,7 @@ async def build(ctx: AnalysisContext) -> Report:
         ]
     report = Report(
         title="Banking development cases",
-        subtitle="Initial requests and evidence available after event 002",
+        subtitle="Initial requests and evidence at each declared decision point",
     )
     report.metrics(
         {"Cases": len(cases), "Visible documents": len(documents), "Trusted outcome labels": 0}
@@ -51,7 +51,7 @@ async def build(ctx: AnalysisContext) -> Report:
                 channels[line.removeprefix("- **Channel:** ")] += 1
     report.text(
         "Findings and limits",
-        f"{len(cases)} public development cases have a request and a two-event history prefix. Later events, overview/outcome summaries and attachments are excluded. The {sum(channels.values())} visible events describe intake context; they do not establish that the requested bank action succeeded. Channel counts count events, not customers. Repeated fictional names must not join cases. The next operational check is to obtain the specific bank record through an authorised integration.",
+        f"{len(cases)} public development cases have a request and an explicitly bounded history prefix. Later events and overview/outcome summaries are excluded. Reviewed snapshots may include attachments available at the cutoff; the historical v1 baseline excluded them all. The {sum(channels.values())} visible events describe observed context; they do not establish that the requested bank action succeeded. Channel counts count events, not customers. Repeated fictional names must not join cases. The separate banking_review recipe supports retrospective study of complete public examples without exposing future evidence to this agent view.",
     )
     report.chart(
         "Visible event channels",

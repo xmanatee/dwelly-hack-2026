@@ -2,6 +2,8 @@
 
 The first baseline assigns all 50 public banking development cases. Its tracked configuration uses Anthropic with the existing cumulative $20 account cap; the ledger also includes spend incurred before this dataset. Read costs as configured-rate estimates. Correctness has no trusted labels and remains unknown.
 
+This is the historical v1 control: two events and no attachments. The [data-contract correction](banking-data-contract/README.md) introduces a reviewed snapshot that includes the early CSV in case 041 and configurable decision points. Its adapter changes are offline-tested but have not been run or adopted as a new baseline. The existing reference/results are preserved; freshness now correctly reports changed execution code. Changing evidence requires a new control round, not a claim of improvement on identical inputs.
+
 Recorded baseline: **50/50 executed**, **$0.7832** estimated new spend, 150 model requests. All 50 pass answer-presence, evidence-read and observed-citation checks. Outcomes remain unknown for all 50; dispositions are 35 requiring human review and 15 needing information. Execution commit: `037fd29c2f61907f41927a222a146352847b332a`.
 
 Inspected cases 001, 035 and 039 through retrieval, answer, saved grading, report and faithful export. Draft handover wording still needs review: case 001 says “I’m passing this” inside a proposed response although no handover was sent. Case 035 similarly uses “We have recorded” in a draft. These outputs are preserved unchanged; checks of citation existence do not catch unsupported action wording. No improvement or independent quality score is claimed.
@@ -46,3 +48,5 @@ uv run dwelly-bot export --input RESULTS.json.gz --output EMPTY_DIRECTORY
 ```
 
 Native checks inspect saved execution, answer presence, retrieval and cited-line existence. They do not infer operational correctness or safety. Optional paid judging is separate and requires explicit model configuration; it is not ground truth. Faithful export preserves actual outputs and failures. Public development results are not Reality Test submissions. No challenge adapter or unseen-case results are claimed yet.
+
+Use `dwelly_bot.analysis.banking_review` to inspect saved outputs beside complete public examples and later evidence; see [analysis usage](../analysis/README.md). The recorded actions are retrospective reference material, not callable tools. Public development export to `ANSWERS/` is rejected; use an ignored `experiments/NAME/artifacts/review-export/` folder, which is labelled as development-only.

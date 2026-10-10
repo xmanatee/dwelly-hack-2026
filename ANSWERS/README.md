@@ -7,3 +7,5 @@
 - Generated from the saved run, including failed/missing cases; export makes no model calls and never replaces failed answers.
 
 The organizer public examples must not be submitted here. Keep their probe exports under ignored experiment artifacts. Only the separately released Reality Test population belongs in the final `ANSWERS/` submission. Organizer IDs must be validated against its inventory before export; the manifest records every folder mapping.
+
+The current `dwelly-banking` adapter is development-only. Both export and the run command's output preflight reject `--output ANSWERS` / `--answers ANSWERS` for it. Other destinations receive a development review notice. No challenge adapter is implemented yet; the generic numbered export alone does not establish Reality Test eligibility or organizer-ID compatibility.

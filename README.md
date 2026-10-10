@@ -13,6 +13,7 @@ Use Python 3.12 and [uv](https://docs.astral.sh/uv/getting-started/installation/
 ```sh
 uv sync --locked --extra analysis
 uv run python dataset/fetch.py
+uv run python dataset/fetch.py --archive dataset/release.zip --profile configs/banking-development.json --root .cache/datasets/banking-reviewed
 uv run dwelly-bot check
 uv run dwelly-bot agent doctor
 ```
@@ -21,11 +22,12 @@ Copy `.env.example` to `.env` and supply `ANTHROPIC_API_KEY` for the configured 
 
 ```sh
 # Paid execution; uses the cumulative account cap in the tracked configuration.
-uv run dwelly-bot run dwelly-banking --config experiments/baseline/config.json
-# Inspect saved baseline freshness without rerunning it.
-uv run dwelly-bot experiment baseline check experiments/baseline/reference.json
-# Offline analysis and local project overview.
-uv run --extra analysis dwelly-bot analyze run dwelly_bot.analysis.banking --data dataset
+uv run dwelly-bot run dwelly-banking --dataset-root .cache/datasets/banking-reviewed --config experiments/banking-data-contract/config.json --experiment banking-data-contract
+# Offline analysis of the corrected decision-time view.
+uv run --extra analysis dwelly-bot analyze run dwelly_bot.analysis.banking --data .cache/datasets/banking-reviewed
+# Compare historical baseline answers with later public evidence, without rerunning them.
+uv run --extra analysis dwelly-bot analyze run dwelly_bot.analysis.banking_review --data dataset --run experiments/baseline/results.json.gz
+# Local overview of saved results and the historical corpus.
 uv run --extra analysis python -m dwelly_bot.reporting.site
 ```
 
@@ -35,13 +37,15 @@ uv run --extra analysis python -m dwelly_bot.reporting.site
 
 ```mermaid
 flowchart LR
-    D[Pinned public examples] --> V[Initial request and first two events]
+    D[Pinned public examples] --> V[Explicit cutoff and available attachments]
     V --> A[Banking case agent]
     A --> T[Read · search · calculate]
     T --> A
     A --> S[Response · proposed action · public rationale]
     S --> E[Saved observable checks]
     E --> R[HTML report and faithful export]
+    D --> H[Retrospective public-case review]
+    S --> H
 ```
 
 The adapter owns the case identity, evidence boundary and saved checks. The shared Pydantic AI harness owns tool permissions, limits and local journals. The model pool and process-safe budget ledger are shared by execution and optional analysis/judging. Reporting and analysis do not run the agent. No vendor telemetry, usage reports or session exporters are enabled.
@@ -55,18 +59,19 @@ Account ledgers live under ignored `.cache/accounts/`. Settled amounts and unres
 ## Data and assumptions
 
 - The [organizer public examples](https://github.com/DwellyOrg/HackatonPublicCases) are development material. This project assigns all 50 banking cases, preserving IDs `001`–`050` as `banking-001`–`banking-050` so track-local numbers remain unambiguous.
-- The development decision point is after event 002. The initial request and first two events are visible; outcome-revealing titles, status, summaries, later events and attachments are withheld. Attachment availability at that time is not established.
-- Original bytes and the pinned ZIP remain in the ignored dataset. Models and source analysis only read derived visible views. Reinstall verifies hashes and refuses changed data.
+- The organizer asks developers to study complete cases, choose a decision point, expose only evidence available then, and compare decisions with later evidence. The recorded outcome is not the only acceptable decision. [Our data contract](dataset/README.md) separates those views.
+- The historical baseline chose event 002 and excluded every attachment. The reviewed profile keeps that default with configurable per-case cutoffs and includes case 041's CSV, uploaded in event 001. Eight later attachments stay withheld. This corrected input has not yet been benchmarked; the saved baseline remains historical evidence, and its execution fingerprint no longer matches current code.
+- Original bytes and the pinned ZIP remain in the ignored dataset. Acting models and the default analysis recipe read only visible views. An explicitly invoked retrospective recipe reads complete public cases and can display saved answers beside the reference evidence. Reinstall verifies hashes and refuses changed data or profiles.
 - Public histories are examples, not trusted labels. Saved checks test answer presence, actual retrieval and whether cited lines were observed. They do **not** establish semantic correctness, safety or successful operations; outcome correctness remains unknown.
 - Synthetic timestamps are case-local. Matching fictional names do not join separate cases.
 
 ## Known limitations
 
-There is no live bank integration, outgoing messaging, confirmed handover, attachment processing at the chosen cutoff, or independent outcome grading. The adapter currently accepts the public development format only. Reality Test ingestion needs the released challenge format and must preserve its organizer IDs and supplied evidence without reading hidden evaluation material. Public development exports must not be submitted as Reality Test answers. A complete development run is not proof of readiness for unseen cases.
+There is no live bank integration, outgoing messaging, confirmed handover or independent outcome grading. Available text attachments are supported; available PDF/image attachments cause an explicit unsupported-media error. The adapter accepts the public development format only. Reality Test ingestion needs the released challenge format and must preserve its organizer IDs and supplied evidence without reading hidden evaluation material. Public development exports are labelled as practice and blocked from the conventional `ANSWERS/` destination. A complete development run is not proof of readiness for unseen cases.
 
 ## Next steps
 
-Validate response and action quality with reviewed examples; integrate only organizer-supplied operational tools and authority rules; support timestamped attachment availability; implement and validate the released challenge input contract before the code freeze. Keep all unseen Reality Test cases isolated from development and tuning.
+Record a new control on the reviewed snapshot; validate response and action quality against later public evidence; implement available PDF/image reading; integrate only supplied operational tools and authority rules; implement and validate the released challenge input contract before the code freeze. Keep all unseen Reality Test cases isolated from development and tuning.
 
 ## Development
 

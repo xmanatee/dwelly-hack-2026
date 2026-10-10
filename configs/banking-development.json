@@ -1,0 +1,16 @@
+{
+  "name": "banking-reviewed-intake-v2",
+  "default_after_event": 2,
+  "after_event": {},
+  "attachments": {
+    "031": [{"path": "attachments/statement-031.pdf", "available_after_event": 4, "basis": "Event 004 says the named statement was placed in the account owner's secure portal."}],
+    "032": [{"path": "attachments/statement-032.pdf", "available_after_event": 6, "basis": "Event 006 explicitly identifies the file ready in the secure portal; the document's January 2024 period is not its availability time."}],
+    "033": [{"path": "attachments/transactions-033.csv", "available_after_event": 5, "basis": "Event 005 identifies the CSV available in the secure portal."}],
+    "038": [{"path": "attachments/account-confirmation-038.pdf", "available_after_event": 4, "basis": "Event 004 identifies the issued file and its availability to the verified account holder."}],
+    "039": [{"path": "attachments/sessions-039.txt", "available_after_event": 6, "basis": "Event 006 attaches the permitted extract. July session timestamps do not make the extract available before the October request."}],
+    "040": [{"path": "attachments/payment-record-040.pdf", "available_after_event": 5, "basis": "Event 005 explicitly identifies the record made available in the secure portal."}],
+    "041": [{"path": "attachments/batch-041.csv", "available_after_event": 1, "basis": "Event 001 records the customer's upload of this exact file. Its contents are input evidence; they do not establish bank receipt, validation, authorisation or payment."}],
+    "042": [{"path": "attachments/validation-042.txt", "available_after_event": 4, "basis": "Event 004 identifies the validation report available in the secure portal."}],
+    "049": [{"path": "attachments/merchant-report-049.csv", "available_after_event": 5, "basis": "Event 005 identifies the available report file. Its July reporting period is not its October availability time."}]
+  }
+}

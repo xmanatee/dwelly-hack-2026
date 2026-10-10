@@ -109,7 +109,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         from dwelly_bot.reporting.submission import check_destination, export
 
         if args.answers:
-            check_destination(args.answers)
+            check_destination(args.answers, dataset=args.dataset)
         output = asyncio.run(
             execute(
                 args.dataset,

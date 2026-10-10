@@ -4,6 +4,7 @@
 - Before editing, and again before an authorized push, follow [dwelly-bot-repo-sync](.agents/skills/dwelly-bot-repo-sync/SKILL.md). Work on `main`; preserve concurrent changes.
 - Agent behaviour, model/config, runtime prompts/skills, retrieval or tool changes: follow [dwelly-bot-experiment](.agents/skills/dwelly-bot-experiment/SKILL.md).
 - Data exploration: use [analyze](.agents/skills/analyze/SKILL.md); [analysis/README.md](analysis/README.md) owns recipe usage. Analysis findings become agent changes only through the experiment workflow.
+- Banking data semantics: [dataset/README.md](dataset/README.md) owns the organizer contract. Full public-case study is retrospective; runtime evidence is an explicit decision-time projection. Preserve development/challenge identity, review attachment availability, and never replay later history as live tool results.
 - Report styling, docs, tests and coding instructions: relevant offline checks; no paid benchmark by default.
 - After each successfully addressed request, commit this task's changes. Use quick, targeted validation; do not regenerate artifacts or run heavy checks unless needed or requested. Push only when requested.
 - Format Python with Ruff; keep lint, strict types and affected tests passing.

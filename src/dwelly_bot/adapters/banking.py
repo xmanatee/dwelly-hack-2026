@@ -5,6 +5,8 @@ import re
 from pathlib import Path
 from typing import Any, Literal
 
+from pydantic import BaseModel, ConfigDict, Field, model_validator
+
 from dwelly_bot.context.documents import Documents
 from dwelly_bot.contracts import AgentCase, RunConfig, SolutionOutput
 from dwelly_bot.harness.runtime import CaseRuntime
@@ -13,6 +15,41 @@ from dwelly_bot.tools.arithmetic import calculate
 
 TRACK = "Banking & Financial Services"
 DATASET_NAME = "dwelly-banking"
+
+
+class DevelopmentCase(BaseModel):
+    """The installed view contract; public examples can never become challenge cases."""
+
+    model_config = ConfigDict(extra="forbid", strict=True)
+    id: str
+    organizer_id: str = Field(pattern=r"^\d{3}$")
+    track: Literal["Banking & Financial Services"]
+    split: Literal["development"]
+    request: str = Field(min_length=1)
+    decision_time: str
+    visible_events: int = Field(ge=1)
+    sources: list[str]
+    view_version: Literal[1, 2] = 1
+    decision_profile: str | None = None
+    evidence_documents: list[str] = Field(default_factory=lambda: ["request.md", "history.md"])
+
+    @model_validator(mode="after")
+    def identity_and_view(self) -> "DevelopmentCase":
+        if self.id != f"banking-{self.organizer_id}":
+            raise ValueError("Invalid organizer case identity")
+        names = self.evidence_documents
+        if len(names) != len(set(names)) or not {"request.md", "history.md"} <= set(names):
+            raise ValueError("Invalid evidence document inventory")
+        if any(
+            not re.fullmatch(r"(?:attachments/)?[\w.-]+\.md", name) or ".." in name
+            for name in names
+        ):
+            raise ValueError("Invalid evidence document path")
+        if self.view_version == 1 and (self.visible_events != 2 or len(names) != 2):
+            raise ValueError("Historical v1 means two events with no attachments")
+        if self.view_version == 2 and not self.decision_profile:
+            raise ValueError("A v2 view needs an explicit decision profile")
+        return self
 
 
 def initial_view(index: str, history: str, *, events: int = 2) -> tuple[str, str, str]:
@@ -46,11 +83,9 @@ class BankingAdapter:
         rows = json.loads((root / "cases.json").read_text())
         cases = []
         for row in rows:
+            record = DevelopmentCase.model_validate(row)
+            row = record.model_dump()
             number = row["organizer_id"]
-            if not re.fullmatch(r"\d{3}", number) or row["id"] != f"banking-{number}":
-                raise ValueError("Invalid organizer case identity")
-            if row["track"] != TRACK or row["split"] != "development":
-                raise ValueError("Expected Banking development data")
             cases.append(
                 AgentCase(
                     id=row["id"],
@@ -65,9 +100,20 @@ class BankingAdapter:
                         "evidence_directory": row["id"],
                         "task": "Review the available case evidence and give the next supported response and action plan. Clearly state what remains unverified and which actions require a bank operator.",
                         "capabilities": "Read-only case evidence and arithmetic. No bank systems, customer messaging or operational write tools are connected.",
-                        "attachment_policy": "Attachments are withheld: availability at this decision time has not been established.",
+                        "attachment_policy": (
+                            "Only the listed attachment text is available at this decision point. "
+                            "A supplied file does not establish bank receipt, validation, authorisation or execution."
+                            if record.view_version == 2
+                            else "Attachments are withheld: availability at this decision time has not been established."
+                        ),
                     },
-                    metadata={"split": "development", "organizer_id": number},
+                    metadata={
+                        "split": "development",
+                        "organizer_id": number,
+                        "evidence_documents": record.evidence_documents,
+                        "view_version": record.view_version,
+                        "decision_profile": record.decision_profile,
+                    },
                     sources=row["sources"],
                 )
             )
@@ -87,7 +133,21 @@ class BankingAdapter:
         folder = root / "documents" / case.id
         if not folder.resolve().is_relative_to((root / "documents").resolve()):
             raise ValueError("Case evidence escapes its root")
-        return BankingSession(case, Documents(folder))
+        documents = Documents(folder)
+        expected = set(case.metadata.get("evidence_documents", ["request.md", "history.md"]))
+        if set(documents.files) != expected:
+            raise ValueError("Case evidence differs from the declared decision-point inventory")
+        history = (folder / "history.md").read_text()
+        events = re.findall(r"^## (\d{4}-\d{2}-\d{2} [\d:]+ UTC) — event (\d+)\s*$", history, re.M)
+        if (
+            not events
+            or len(events) != case.input["visible_events"]
+            or [int(event[1]) for event in events] != list(range(1, len(events) + 1))
+            or [event[0] for event in events] != sorted(event[0] for event in events)
+            or events[-1][0] != case.input["decision_time"]
+        ):
+            raise ValueError("History does not match the declared decision point")
+        return BankingSession(case, documents)
 
     def grade_saved(
         self, case: AgentCase, root: Path, config: RunConfig, execution: dict[str, Any]
@@ -100,7 +160,10 @@ class BankingAdapter:
             for e in execution.get("tool_events", [])
             if e.get("tool") == "read_document" and e.get("status") == "returned"
         ]
-        citations = re.findall(r"([\w-]+\.md):L(\d+)(?:-L?(\d+))?", answer + "\n" + rationale)
+        citations = re.findall(
+            r"(?<![\w./-])((?:[\w-]+/)*[\w.-]+\.md):L(\d+)(?:-L?(\d+))?",
+            answer + "\n" + rationale,
+        )
         observed = set()
         for event in reads:
             result = event.get("result", {})

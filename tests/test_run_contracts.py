@@ -713,8 +713,11 @@ def test_run_exports_failed_answers_and_rejects_occupied_destination_before_exec
         return result
 
     monkeypatch.setattr(agent_cli, "execute", execute)
-    destination = tmp_path / "ANSWERS"
+    destination = tmp_path / "development-review"
     argv = ["run", "dwelly-banking", "--concurrency", "10", "--answers", str(destination)]
+    with pytest.raises(ValueError, match="Public development"):
+        agent_cli.main([*argv[:-1], str(tmp_path / "ANSWERS")])
+    assert calls == 0
     assert agent_cli.main(argv) == 1
     assert calls == 1 and (destination / "2/REASONING.md").exists()
     with pytest.raises(ValueError, match="empty directory"):

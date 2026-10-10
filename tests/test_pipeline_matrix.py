@@ -21,7 +21,11 @@ async def test_shared_pipeline(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) 
     root = tmp_path / "dataset"
     docs = root / "documents/banking-001"
     docs.mkdir(parents=True)
-    (docs / "history.md").write_text("Payment authorised.\nRecipient credit unconfirmed.\n")
+    (docs / "request.md").write_text("Has my payment arrived?\n")
+    (docs / "history.md").write_text(
+        "## 2025-01-01 08:00:00 UTC — event 001\nPayment authorised.\n"
+        "## 2025-01-01 09:00:00 UTC — event 002\nRecipient credit unconfirmed.\n"
+    )
     (root / "cases.json").write_text(
         json.dumps(
             [
@@ -57,7 +61,7 @@ async def test_shared_pipeline(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) 
                     info.output_tools[0].name,
                     {
                         "answer": "Credit is unconfirmed; a bank operator must obtain the recipient-bank record.",
-                        "public_rationale": "history.md:L1-L2 records authorisation but no confirmation of credit.",
+                        "public_rationale": "history.md:L2 records authorisation; history.md:L4 has no confirmation of credit.",
                         "agent_disposition": "needs_info",
                     },
                 )

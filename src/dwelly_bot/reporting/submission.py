@@ -12,7 +12,12 @@ from dwelly_bot.experiments.bundle import validate, verified_outcome
 from dwelly_bot.storage import fingerprint, load_json, save_json
 
 
-def check_destination(directory: Path) -> None:
+def check_destination(directory: Path, *, dataset: str | None = None) -> None:
+    if dataset == "dwelly-banking" and directory.name.upper() == "ANSWERS":
+        raise ValueError(
+            "Public development examples cannot be submitted in ANSWERS; "
+            "export a review copy under experiment artifacts instead"
+        )
     if directory.exists() and (
         not directory.is_dir() or any(path.name != "README.md" for path in directory.iterdir())
     ):
@@ -24,9 +29,18 @@ def export(bundle: dict[str, Any], directory: Path, run_id: str | None = None) -
     runs = [r for r in bundle["runs"] if run_id is None or r["id"] == run_id]
     if len(runs) != 1:
         raise ValueError("Select exactly one saved run for ANSWERS export")
-    check_destination(directory)
+    development = runs[0]["manifest"].get("dataset") == "dwelly-banking"
+    check_destination(directory, dataset=runs[0]["manifest"].get("dataset"))
     run = runs[0]
     directory.mkdir(parents=True, exist_ok=True)
+    if development:
+        readme = directory / "README.md"
+        previous = readme.read_text() if readme.exists() else ""
+        readme.write_text(
+            "# Development review export\n\n"
+            "These are public practice cases, not Reality Test results. Do not submit them.\n\n"
+            + previous
+        )
     mapping = []
     for index, case in enumerate(run["cases"], 1):
         target = directory / str(index)
@@ -88,7 +102,12 @@ def export(bundle: dict[str, Any], directory: Path, run_id: str | None = None) -
         )
     save_json(
         directory / "manifest.json",
-        {"run_id": run["id"], "run_manifest": run["manifest"], "cases": mapping},
+        {
+            "run_id": run["id"],
+            "run_manifest": run["manifest"],
+            "cases": mapping,
+            "purpose": "development_review" if development else "saved_run_export",
+        },
     )
 
 
