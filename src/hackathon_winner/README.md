@@ -95,3 +95,18 @@ with `python -m dwelly_bot.evaluation.winner`. That evaluator checks input hashe
 uses the shared model pool and budget, and resumes saved reviews without rerunning
 the Planner. Its report separates wrong actions, generator drift, unsupported
 facts, safety issues and limitations of the historical reference itself.
+
+## Manual workflow reruns
+
+The GitHub workflow writes each attempt into a fresh directory and preserves its files as
+an Actions artifact even when generation fails. With commit enabled, successful runs are
+saved under `winner-runs/<run-id>-<attempt>/`. A full successful run also replaces the complete
+`ANSWERS/` snapshot; earlier committed answers remain in Git history. An `ids` subset stays
+in its own run directory so a new subset cannot silently inherit an old full-run report.
+Partial/failed runs do not replace the submission. The workflow is manual and is not
+triggered by ordinary code pushes. Artifact handling follows the official
+[upload-artifact contract](https://github.com/actions/upload-artifact).
+
+Local output remains immutable. The `.winner-run` marker reserves a directory before model
+calls, preventing concurrent writers from mixing journals and results. Keep that marker
+with captures; use a new directory for a new attempt.

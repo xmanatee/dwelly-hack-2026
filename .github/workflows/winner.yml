@@ -20,7 +20,7 @@ on:
         description: Optional comma-separated case IDs (rerun only these)
         default: ""
       commit:
-        description: Commit ANSWERS/ to main
+        description: Commit the run; full successful runs also update ANSWERS/
         type: boolean
         default: true
 permissions:
@@ -43,6 +43,8 @@ jobs:
       IDS: ${{ inputs.ids }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
       - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
       - name: Check the API key secret
         run: |
@@ -60,8 +62,10 @@ jobs:
             unzip -q .cache/cases.zip -d .cache/cases/zip
             SRC=".cache/cases/zip/$CASES_PATH"
           else
-            git clone --depth 1 --branch "$CASES_REF" "https://github.com/$CASES_REPO" .cache/cases/repo \
-              || { git clone "https://github.com/$CASES_REPO" .cache/cases/repo && git -C .cache/cases/repo checkout "$CASES_REF"; }
+            git init .cache/cases/repo
+            git -C .cache/cases/repo remote add origin "https://github.com/$CASES_REPO"
+            git -C .cache/cases/repo fetch --depth 1 origin "$CASES_REF"
+            git -C .cache/cases/repo checkout --detach FETCH_HEAD
             SRC=".cache/cases/repo/$CASES_PATH"
           fi
           find "$SRC" -name __MACOSX -type d -prune -exec rm -rf {} +
@@ -76,25 +80,46 @@ jobs:
           from dwelly_bot.contracts import RunConfig
           from hackathon_winner.adapters import load
           cfg = RunConfig.model_validate(json.loads(Path("src/hackathon_winner/config.json").read_text()))
-          cases = load(Path(os.environ["SRC"]), cfg, prefix="")
+          ids = [item.strip() for item in os.environ["IDS"].split(",") if item.strip()] or None
+          cases = load(Path(os.environ["SRC"]), cfg, ids=ids, prefix="")
           print(f"{len(cases)} cases load; model {cfg.model}")
           PY
       - name: Run Winner
+        id: winner
         run: |
-          OUT=ANSWERS
+          OUT=".cache/winner/run-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          echo "output=$OUT" >> "$GITHUB_OUTPUT"
           ARGS=()
-          if [ -n "$IDS" ]; then OUT=".cache/winner/retry-$GITHUB_RUN_ID"; ARGS+=(--ids "$IDS"); fi
+          if [ -n "$IDS" ]; then ARGS+=(--ids "$IDS"); fi
           uv run hackathon-winner "$SRC" --output "$OUT" "${ARGS[@]}"
-          if [ -n "$IDS" ]; then
-            for d in "$OUT"/*/; do n=$(basename "$d"); [ -f "$d/ANSWER.md" ] && rm -rf "ANSWERS/$n" && cp -r "$d" "ANSWERS/$n"; done
-          fi
-          ls ANSWERS
-      - name: Commit ANSWERS
-        if: ${{ inputs.commit }}
+      - name: Preserve results even after failed generation
+        if: ${{ always() && steps.winner.outputs.output != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: winner-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ steps.winner.outputs.output }}
+          include-hidden-files: true
+          if-no-files-found: warn
+      - name: Commit the successful run
+        if: ${{ success() && inputs.commit }}
+        env:
+          WINNER_OUTPUT: ${{ steps.winner.outputs.output }}
         run: |
+          RUN_ARCHIVE="winner-runs/$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          mkdir -p winner-runs
+          test ! -e "$RUN_ARCHIVE"
+          cp -R "$WINNER_OUTPUT" "$RUN_ARCHIVE"
+          git add -f "$RUN_ARCHIVE"
+          if [ -z "$IDS" ]; then
+            # Complete replacement keeps case files, journals and report from the same run.
+            # Prior committed answers remain in Git and their immutable run archive.
+            rm -rf ANSWERS
+            cp -R "$WINNER_OUTPUT" ANSWERS
+            git add -f ANSWERS
+          fi
           git config user.name "dwelly-bot winner"
           git config user.email "actions@users.noreply.github.com"
-          git add -f ANSWERS
-          git commit -m "Reality Test answers from workflow run $GITHUB_RUN_ID" || { echo "Nothing to commit"; exit 0; }
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Winner results from workflow run $GITHUB_RUN_ID attempt $GITHUB_RUN_ATTEMPT"
           for i in 1 2 3 4; do git pull --rebase -q origin main && git push origin HEAD:main && exit 0; sleep $((i * 5)); done
           exit 1

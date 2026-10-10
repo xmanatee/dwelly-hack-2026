@@ -17,7 +17,7 @@ from dwelly_bot.harness.runtime import CaseRuntime
 from dwelly_bot.models import BudgetedModel
 from dwelly_bot.planning.contracts import Plan
 from dwelly_bot.providers import ledger_path, profile_for
-from hackathon_winner.export import CASE, check_output, write_case
+from hackathon_winner.export import CASE, prepare_output, write_case
 from hackathon_winner.generation import Generator, ModelGenerator, TemplateGenerator
 from hackathon_winner.runner import DEFAULT_CASES, DEFAULT_CONFIG, DEFAULT_OUTPUT, run_cases
 from hackathon_winner.tracing import failure_notice, record_trace
@@ -40,7 +40,7 @@ def cases(directory: Path) -> list[tuple[str, Plan, str]]:
 
 async def generate(args: argparse.Namespace) -> int:
     inputs = cases(args.input)
-    check_output(args.output, development=args.development)
+    prepare_output(args.output, development=args.development)
     context: AbstractAsyncContextManager[Any] = nullcontext(None)
     ledger = None
     if args.config:
@@ -145,7 +145,9 @@ def main(argv: Sequence[str] | None = None) -> int:
                 args.directory or args.cases or DEFAULT_CASES,
                 output=args.output,
                 config=read_config(args.config),
-                ids=args.ids.split(",") if args.ids else None,
+                ids=[item.strip() for item in args.ids.split(",") if item.strip()]
+                if args.ids
+                else None,
                 template=args.template,
             )
         )

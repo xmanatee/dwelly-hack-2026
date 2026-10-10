@@ -18,7 +18,7 @@ from dwelly_bot.models import BudgetedModel
 from dwelly_bot.paths import ROOT
 from dwelly_bot.providers import ledger_path, profile_for
 from dwelly_bot.storage import save_json
-from hackathon_winner.export import check_output, write_case
+from hackathon_winner.export import prepare_output, write_case
 from hackathon_winner.generation import ModelGenerator, TemplateGenerator
 from hackathon_winner.tracing import PlannerFailure, failure_notice, record_trace
 
@@ -56,8 +56,7 @@ async def run_cases(
     planner_config = config.planner or PlannerConfig()
     if planner_config.mode == "off":
         raise ValueError("predict requires an enabled Planner")
-    check_output(output, development=False)
-    output.mkdir(parents=True, exist_ok=True)
+    prepare_output(output, development=False)
     context, profile = transport(profile_for(config))
     planner_context, planner_profile = transport(planner_config.model or profile_for(config))
     ledger = BudgetLedger(ledger_path(config), config.total_budget_usd)

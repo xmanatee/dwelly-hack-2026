@@ -20,3 +20,11 @@ service remains the model-backed integration; the client-tool voice path retains
 Stage 1 validation: 16 affected voice/product/service tests passed. Regressions cover
 closed-call rejection, failed execution with queued speech, simulated handoff metadata and
 source SQLite preservation. No provider session or model call was made.
+
+Stage 2: Winner now exclusively reserves output before model calls; a concurrent-writer
+regression preserves the submission README and permits exactly one writer. The manual
+workflow saves attempts separately, uploads failed-run captures, publishes only successful
+full snapshots to ANSWERS, and keeps partial runs with their own metadata. Git ref fetching
+works for branches, tags and commit IDs without cloning over a partially created directory.
+Validation: 24 Winner/evaluation tests, Ruff, strict mypy; workflow YAML and shell syntax
+checked offline. The GitHub workflow itself was not dispatched.

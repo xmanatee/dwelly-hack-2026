@@ -24,6 +24,17 @@ def check_output(directory: Path, *, development: bool) -> None:
         raise ValueError("Write into an empty directory; existing answers are never overwritten")
 
 
+def prepare_output(directory: Path, *, development: bool) -> None:
+    """Exclusively claim a run directory before journals or model calls are started."""
+    check_output(directory, development=development)
+    directory.mkdir(parents=True, exist_ok=True)
+    try:
+        with (directory / ".winner-run").open("x", encoding="utf-8") as stream:
+            stream.write("Reserved by Hackathon Winner; retain this marker with the run.\n")
+    except FileExistsError as exc:
+        raise ValueError("Another Winner run has already claimed this output directory") from exc
+
+
 def write_case(
     directory: Path,
     case_id: str,

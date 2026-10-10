@@ -533,3 +533,37 @@ def test_winner_wrapper_respects_root_and_preserves_case_ids(tmp_path: Path) -> 
     (outside / "wrapper").symlink_to(track / "Banking", target_is_directory=True)
     with pytest.raises(ValueError, match="escapes"):
         load(outside, RunConfig(), prefix="")
+
+
+def test_only_one_writer_can_claim_an_empty_output(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Barrier
+
+    from hackathon_winner import export
+
+    output = tmp_path / "answers"
+    output.mkdir()
+    (output / "README.md").write_text("Keep the submission guide")
+    barrier = Barrier(2)
+    original = export.check_output
+
+    def checked(directory: Path, *, development: bool) -> None:
+        original(directory, development=development)
+        barrier.wait(timeout=5)  # Both processes observe the same empty directory.
+
+    monkeypatch.setattr(export, "check_output", checked)
+
+    def claim() -> bool:
+        try:
+            export.prepare_output(output, development=False)
+        except ValueError:
+            return False
+        return True
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        assert sorted(pool.map(lambda _: claim(), range(2))) == [False, True]
+    assert (output / "README.md").read_text() == "Keep the submission guide"
+    with pytest.raises(ValueError, match="never overwritten"):
+        original(output, development=False)
