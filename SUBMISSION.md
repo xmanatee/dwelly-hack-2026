@@ -5,7 +5,7 @@
 - Project: dwelly-bot
 - Team: Unsettled
 - Track: Banking & Financial Services
-- Members: pending
+- Members: Mikhail Nemilov, Vera Shishkina, Egor Pavaliev, Nikita Opletin
 - Public repository URL: https://github.com/xmanatee/dwelly-hack-2026
 - Frozen source commit: pending
 - Reality Test result commit: pending
