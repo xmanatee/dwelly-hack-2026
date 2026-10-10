@@ -38,7 +38,7 @@ def checked_path(path: Path, folder: Path) -> Path:
 
 
 def attachment_text(path: Path) -> str:
-    if path.suffix.lower() in {".md", ".txt", ".csv", ".json"}:
+    if path.suffix.lower() in {".md", ".txt", ".csv", ".json", ".eml"}:
         return path.read_text(encoding="utf-8", errors="replace")
     if path.suffix.lower() == ".pdf":
         try:
