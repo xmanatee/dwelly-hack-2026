@@ -10,6 +10,7 @@ import argparse
 import asyncio
 import json
 import os
+import re
 import threading
 import time
 import uuid
@@ -29,6 +30,8 @@ from dwelly_bot.harness.local import run_local_pipeline
 from dwelly_bot.paths import ROOT
 from dwelly_bot.planning import HumanReviewPlanner, Plan, Planner
 from dwelly_bot.storage import save_json
+
+AUDIO_TAG = re.compile(r"\[[a-z][a-z ]{0,30}\]\s*")
 
 
 def setting(name: str) -> str | None:
@@ -107,7 +110,8 @@ def call(args: argparse.Namespace) -> int:
 
     def agent_said(text: str) -> None:
         replies.append(time.monotonic())
-        print(f"Agent:  {text}", flush=True)
+        # Expressive-mode audio tags such as "[sympathetic]" shape the voice, not the words.
+        print(f"Agent:  {AUDIO_TAG.sub('', text).strip()}", flush=True)
 
     def wait_for_agent(after: int, quiet: float = 6, limit: float = 120) -> None:
         """Wait for a new agent turn, then until it stays quiet (tool runs included)."""
