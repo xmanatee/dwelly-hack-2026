@@ -4,7 +4,7 @@
 
 ## Environment
 
-Python **3.12**, [uv](https://docs.astral.sh/uv/), macOS/Linux or WSL. The shared budget ledger uses POSIX `fcntl` locks. Dependencies are pinned in `uv.lock`.
+Python **3.12**, [uv](https://docs.astral.sh/uv/), macOS/Linux or WSL. The shared budget ledger uses POSIX `fcntl` or Windows byte locks. Dependencies are pinned in `uv.lock`.
 
 ```sh
 uv sync --locked
@@ -13,6 +13,10 @@ uv sync --locked --extra analysis --extra evaluation
 # Full offline gate, including HTTP/voice service and synthetic adapters:
 uv sync --locked --all-extras
 ```
+
+The `voice` extra includes PyAudio: a full-extras installation needs PortAudio development
+headers (`portaudio19-dev` on Ubuntu; `portaudio` via Homebrew on macOS). For HTTP-only
+work, install `--extra server` without the microphone extra.
 
 Copy `.env.example` to `.env` only when enabling a model provider. Set the provider's key: `ANTHROPIC_API_KEY`, `OPENROUTER_API_KEY` or `OPENAI_API_KEY`. Never commit credentials. Offline demos need none of these.
 

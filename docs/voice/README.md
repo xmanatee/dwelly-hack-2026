@@ -121,7 +121,7 @@ expires at its TTL; the backend cannot infer a remote microphone disconnect.
 The backend does not create or reconfigure vendor agents, select a voice automatically,
 start calls, enable provider recording or upload a dataset. Use the managed provider's voice,
 language and deployment settings for the actual account and record those choices with a live
-verification receipt. There is no fabricated voice ID or claimed audio demo in this repository.
+verification receipt. The separate client-tool demo and its team-recorded verification are described below; this HTTP service does not provision them.
 
 ## Storage and failure behavior
 
@@ -139,7 +139,7 @@ is retained as a prior assertion. No audio is stored and no vendor telemetry is 
 These local artifacts can contain sensitive text; deployment owners must configure retention
 and access to the private state/capture directory. The server disables access logs by default.
 
-All external actions currently return `execution: mock` / `external_effects: false`.
+All external actions in this HTTP service return `execution: mock` / `external_effects: false`.
 Real banking, email, ticket or telephone effects require provider-specific authenticated
 executors and receipt reconciliation. This service does not claim those integrations exist.
 

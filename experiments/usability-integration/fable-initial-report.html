@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Case predictions</title>
+<style>
+:root{--ink:#202624;--muted:#67706b;--line:#e3e6e0;--paper:#f7f8f5;--surface:#ffffff;
+--accent:#326450;--red:#b74d43;--amber:#947126;--blue:#516c90;--soft:#f0f3ed;
+--bad:#fae6df;--warn:#f4edd8}
+@media (prefers-color-scheme:dark){:root{--ink:#e7ece6;--muted:#a3ada6;--line:#2c3430;--paper:#141917;
+--surface:#1b211e;--soft:#22302a;--bad:#4a2723;--warn:#41391f}}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.55 Inter, ui-sans-serif, system-ui, -apple-system, sans-serif}
+main{max-width:1180px;margin:auto;padding:24px 16px}h1{margin:0 0 4px;font-size:24px}
+.muted{color:var(--muted);font-size:13px}.stats{display:flex;gap:12px;flex-wrap:wrap;margin:16px 0}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.stat b{display:block;font-size:20px}.controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+input,select{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
+input{flex:1;min-width:200px}
+.case{background:var(--surface);border:1px solid var(--line);border-radius:12px;margin:8px 0;padding:0 14px}
+.case summary{cursor:pointer;padding:12px 0;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.id{font-weight:600;font-family:ui-monospace,monospace}.title{color:var(--muted);flex-basis:100%}
+.badge{font-size:12px;padding:1px 8px;border-radius:999px;background:var(--soft);color:var(--accent)}
+.badge.bad{background:var(--bad);color:var(--red)}.badge.warn{background:var(--warn);color:var(--amber)}
+.badge.info{color:var(--blue)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:760px){.grid{grid-template-columns:1fr}}
+section h3{font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:14px 0 6px}
+section h3+h3,section h4,section h5{margin:10px 0 4px}
+pre{white-space:pre-wrap;background:var(--soft);padding:10px;border-radius:8px;font-size:13px;max-height:420px;overflow:auto}
+table{border-collapse:collapse;width:100%;font-size:13px}td,th{border-top:1px solid var(--line);padding:6px;text-align:left;vertical-align:top}
+code{font-size:12px;background:var(--soft);padding:1px 4px;border-radius:4px}
+</style></head><body><main>
+<h1>Case predictions</h1>
+<p class="muted">experiments/usability-integration/artifacts/winner-c729639 · Public practice cases, not a submission. Planned actions are proposals; nothing was executed. Full-history predictions are not a blind decision-point evaluation.</p>
+<div class="stats">
+<div class="stat"><b>2</b>cases</div>
+<div class="stat"><b>1</b>plans available</div>
+<div class="stat"><b>6</b>model requests</div>
+<div class="stat"><b>$1.09</b>API-equivalent</div>
+</div>
+<div class="controls"><input id="q" placeholder="Search cases, intents, flags, answers" aria-label="Search">
+<select id="f" aria-label="Filter"><option value="">All cases</option><option value="flagged">Safety flags</option>
+<option value="failed">Processing errors</option></select>
+<button onclick="document.querySelectorAll('.case').forEach(d=>d.open=!d.open)">Expand/collapse</button></div>
+
+<details class="case" data-search="001   processing could not be completed; this case requires human review.
+" data-ok="0" data-flagged="0">
+<summary><span class="id">001</span><span class="badge bad">error</span><span class="badge bad">planner_error</span><span class="title">UnexpectedModelBehavior: Exceeded maximum output retries (1)</span></summary>
+<div class="grid">
+<section><h3>ANSWER.md</h3><p>Processing could not be completed; this case requires human review.</p></section>
+<section><h3>REASONING.md</h3><p>Planner error: UnexpectedModelBehavior: Exceeded maximum output retries (1)</p></section>
+</div>
+<section><h3>Plan</h3><p>UnexpectedModelBehavior: Exceeded maximum output retries (1)</p></section>
+<section><h3>Supplied case history</h3><pre># Supplied case 001
+
+## history.md
+
+# Contact change request
+
+&lt;a id=&quot;event-001&quot;&gt;&lt;/a&gt;
+## 2026-10-10 09:00:00 UTC — event 001
+
+- **Channel:** Email
+- **From:** Casey Morgan &lt;casey@example.invalid&gt;
+- **To:** Harrow &amp; Vale Bank plc
+
+I lost access to my old phone. Please change my registered mobile number to +9992026000042 today. I cannot receive any codes on the old number.
+
+&lt;a id=&quot;event-002&quot;&gt;&lt;/a&gt;
+## 2026-10-10 09:02:00 UTC — event 002
+
+- **Channel:** Internal note
+- **From:** H&amp;V service agent
+- **To:** H&amp;V case record
+
+This is an ordinary inbound email. No authenticated session or identity verification result is supplied. No mobile-number change has been submitted. The customer&#x27;s preferred contact route is not independently confirmed.
+</pre></section>
+<p class="muted">3 model requests · API-equivalent $0.4994 · generator: planner_error</p>
+</details>
+<details class="case" data-search="002 customer asks whether to re-send a £120 transfer (tx-0042) that the recipient says has not arrived.  # decision
+
+**disposition: needs_info.** advise the verified customer (jules rowan) **not** to re-send the £120 transfer at this point. the bank transfer journal records tx-0042 (£120) with status &quot;sent&quot; and no recall, return or duplicate initiated. &quot;sent&quot; does not establish that the recipient&#x27;s account has been credited, and no receiving-bank confirmation exists in the record. a second payment now would risk a duplicate while tx-0042 is still outstanding. the material gap (credited / rejected / returned) is to be closed by a payment trace, not by guessing or by re-paying.
+
+nothing below has been executed. all actions are proposed and pending.
+
+# proposed actions (in order)
+
+1. **s1 – reply_to_customer (jules rowan, verified call):** deliver the message below: do not pay again now; journal shows tx-0042 £120 &quot;sent&quot;; no recall/return/duplicate initiated; &quot;sent&quot; ≠ recipient credit; uploaded screen cannot add to the journal; a trace is being requested with no promised timing or outcome; ask the recipient to check with their bank quoting tx-0042 / £120.00.
+2. **s2 – request_team_action (payments operations team):** request a trace of tx-0042 (gbp 120.00, journal status &quot;sent&quot;, customer jules rowan, who reports authorising it &quot;yesterday&quot;, i.e. 2026-10-09 by the customer&#x27;s account, and recipient non-receipt) with the receiving bank: confirm whether funds were credited, rejected or returned, and record the journal transfer date/time and recipient details on the case. **no recall and no duplicate payment are to be initiated** as part of this request.
+3. **s3 – ask_customer (jules rowan, verified call):** ask the customer to confirm the recipient account name, sort code and account number they intended tx-0042 to reach, so these can be compared against the recipient details recorded in the journal for tx-0042.
+4. **s4 – reply_to_customer (jules rowan) — depends on s2 acknowledgement:** only once the payments operations team has acknowledged the trace request, tell the customer the trace has been logged and its result is still pending. if no acknowledgement is received, tell the customer only that the trace request remains pending and has not been confirmed. (draft held separately as not sent.)
+
+# message to the customer (s1 + s3, pending delivery)
+
+&gt; please do not send the £120 again at this point. our transfer journal records tx-0042 for £120 with status sent, and no recall, return or duplicate has been initiated. sent means it left your account and was released; it does not confirm the recipient&#x27;s bank has credited their account, and we have no confirmation from the receiving bank yet. paying again now could create a duplicate while tx-0042 is still in progress. the payment screen you uploaded shows processing but has no capture time, so it cannot tell us more than our journal does. we are requesting a trace of tx-0042 with the receiving bank; we cannot promise when it will arrive or what the trace will find. meanwhile, please ask the recipient to check with their bank quoting reference tx-0042 and £120.00.
+&gt;
+&gt; to help us check the payment against our records, could you please confirm the recipient&#x27;s account name, sort code and account number that you intended tx-0042 to go to? we will compare these with the details recorded in our transfer journal for tx-0042.
+
+# what is still needed before the case can move on
+
+- receiving-bank trace result for tx-0042 (credited, rejected or returned).
+- recorded transfer date/time of tx-0042 from the journal.
+- the recipient details the customer intended, for comparison with the journal entry.
+- capture time of the uploaded payment screen (to explain &quot;processing&quot; vs journal &quot;sent&quot;).
+
+
+## future message draft — not sent
+
+use only after confirmed execution of: s2.
+
+&gt; following up on transfer tx-0042 (£120): the trace request with the receiving bank has now been logged with our payments operations team. the result is still pending, so we cannot yet confirm whether the funds have been credited, returned or rejected, and we cannot give an arrival time. please continue not to send the payment again while tx-0042 is outstanding. we will update you when the trace result is recorded.
+" data-ok="1" data-flagged="0">
+<summary><span class="id">002</span><span class="badge ">available</span><span class="badge info">needs_info</span><span class="title">Advise the verified customer not to pay again now: the bank transfer journal records TX-0042 (£120) as &#x27;sent&#x27; with no recall, return or duplicate initiated, so a second payment risks a duplicate. Recipient credit is not established by any supplied record. Request a payment trace of TX-0042 from the payments operations team, and ask the customer for the recipient account details they intended so these can be compared with the journal. Report back only what the trace confirms.</span></summary>
+<div class="grid">
+<section><h3>ANSWER.md</h3><h3>Decision</h3>
+<p><strong>Disposition: needs_info.</strong> Advise the verified customer (Jules Rowan) <strong>not</strong> to re-send the £120 transfer at this point. The bank transfer journal records TX-0042 (£120) with status &quot;sent&quot; and no recall, return or duplicate initiated. &quot;Sent&quot; does not establish that the recipient&#x27;s account has been credited, and no receiving-bank confirmation exists in the record. A second payment now would risk a duplicate while TX-0042 is still outstanding. The material gap (credited / rejected / returned) is to be closed by a payment trace, not by guessing or by re-paying.</p>
+<p>Nothing below has been executed. All actions are proposed and pending.</p>
+<h3>Proposed actions (in order)</h3>
+<ol>
+<li><strong>s1 – reply_to_customer (Jules Rowan, verified call):</strong> Deliver the message below: do not pay again now; journal shows TX-0042 £120 &quot;sent&quot;; no recall/return/duplicate initiated; &quot;sent&quot; ≠ recipient credit; uploaded screen cannot add to the journal; a trace is being requested with no promised timing or outcome; ask the recipient to check with their bank quoting TX-0042 / £120.00.</li>
+<li><strong>s2 – request_team_action (Payments operations team):</strong> Request a trace of TX-0042 (GBP 120.00, journal status &quot;sent&quot;, customer Jules Rowan, who reports authorising it &quot;yesterday&quot;, i.e. 2026-10-09 by the customer&#x27;s account, and recipient non-receipt) with the receiving bank: confirm whether funds were credited, rejected or returned, and record the journal transfer date/time and recipient details on the case. <strong>No recall and no duplicate payment are to be initiated</strong> as part of this request.</li>
+<li><strong>s3 – ask_customer (Jules Rowan, verified call):</strong> Ask the customer to confirm the recipient account name, sort code and account number they intended TX-0042 to reach, so these can be compared against the recipient details recorded in the journal for TX-0042.</li>
+<li><strong>s4 – reply_to_customer (Jules Rowan) — depends on s2 acknowledgement:</strong> Only once the payments operations team has acknowledged the trace request, tell the customer the trace has been logged and its result is still pending. If no acknowledgement is received, tell the customer only that the trace request remains pending and has not been confirmed. (Draft held separately as NOT SENT.)</li>
+</ol>
+<h3>Message to the customer (s1 + s3, pending delivery)</h3>
+<p>&gt; Please do not send the £120 again at this point. Our transfer journal records TX-0042 for £120 with status sent, and no recall, return or duplicate has been initiated. Sent means it left your account and was released; it does not confirm the recipient&#x27;s bank has credited their account, and we have no confirmation from the receiving bank yet. Paying again now could create a duplicate while TX-0042 is still in progress. The payment screen you uploaded shows Processing but has no capture time, so it cannot tell us more than our journal does. We are requesting a trace of TX-0042 with the receiving bank; we cannot promise when it will arrive or what the trace will find. Meanwhile, please ask the recipient to check with their bank quoting reference TX-0042 and £120.00. &gt; &gt; To help us check the payment against our records, could you please confirm the recipient&#x27;s account name, sort code and account number that you intended TX-0042 to go to? We will compare these with the details recorded in our transfer journal for TX-0042.</p>
+<h3>What is still needed before the case can move on</h3>
+<ul>
+<li>Receiving-bank trace result for TX-0042 (credited, rejected or returned).</li>
+<li>Recorded transfer date/time of TX-0042 from the journal.</li>
+<li>The recipient details the customer intended, for comparison with the journal entry.</li>
+<li>Capture time of the uploaded payment screen (to explain &quot;Processing&quot; vs journal &quot;sent&quot;).</li>
+</ul>
+<h4>Future message draft — NOT SENT</h4>
+<p>Use only after confirmed execution of: s2.</p>
+<p>&gt; Following up on transfer TX-0042 (£120): the trace request with the receiving bank has now been logged with our payments operations team. The result is still pending, so we cannot yet confirm whether the funds have been credited, returned or rejected, and we cannot give an arrival time. Please continue not to send the payment again while TX-0042 is outstanding. We will update you when the trace result is recorded.</p></section>
+<section><h3>REASONING.md</h3><h3>REASONING.md — Case 002: Payment status discrepancy (TX-0042)</h3>
+<h4>1. Situation and history</h4>
+<ul>
+<li><strong>event-001 (2026-10-10 10:00 UTC, verified call, Jules Rowan → H&amp;V service agent):</strong> The customer reports that they authorised a £120 transfer &quot;yesterday&quot;, that the recipient says nothing arrived, that they have uploaded the payment screen, and asks whether they should pay again. This is the <strong>customer&#x27;s report</strong>; the date &quot;yesterday&quot; (2026-10-09 by implication) is the customer&#x27;s assertion, not a recorded payment date.</li>
+<li><strong>event-002 (2026-10-10 10:01 UTC, internal note, agent → case record):</strong> The <strong>authenticated record</strong>. Identity and account authority were verified on this call. The bank transfer journal lists TX-0042 for £120 with status &quot;sent&quot;. The note explicitly says this does not establish recipient credit. No recall, return or duplicate payment has been initiated. The uploaded screen is customer-supplied evidence, not a receiving-bank confirmation.</li>
+<li><strong>attachments/payment-screen.txt:</strong> A customer-uploaded text transcription, authenticity not independently verified. Shows Reference TX-0042, Amount GBP 120.00, Screen status &quot;Processing&quot;, Capture time not supplied.</li>
+</ul>
+<p>The full input is saved in <code>context.md</code>.</p>
+<h4>2. Evidence and gaps</h4>
+<p><strong>What is established (event-002):</strong></p>
+<ul>
+<li>Identity and account authority: verified on the call. The customer may therefore receive account-specific information.</li>
+<li>TX-0042, £120, journal status &quot;sent&quot;. The reference and amount in the journal match the reference and amount on the customer&#x27;s screen (attachments/payment-screen.txt), so the transaction being discussed is identified by reference and amount.</li>
+<li>No recall, return or duplicate has been initiated.</li>
+</ul>
+<p><strong>What is not established:</strong></p>
+<ul>
+<li><strong>Recipient credit.</strong> Neither event-002 nor the attachment says anything about what the receiving bank did. &quot;Sent&quot; is a payer-side release stage only.</li>
+<li><strong>Transfer date/time.</strong> The journal note (event-002) does not record when TX-0042 was sent. &quot;Yesterday&quot; (event-001) is unverified.</li>
+<li><strong>Recipient details.</strong> The journal note does not record the recipient account the payment went to, and the customer has not stated the recipient they intended. A mismatch cannot be ruled in or out.</li>
+<li><strong>Screen timing.</strong> The attachment shows &quot;Processing&quot; while the journal shows &quot;sent&quot;. Because the capture time is not supplied, this could simply be an earlier snapshot; it cannot be resolved from the supplied material and the screen cannot be treated as stronger than the journal.</li>
+<li><strong>Cause of non-receipt.</strong> Nothing in the record indicates fraud, sanctions screening, balance issues or any other cause. The plan&#x27;s <code>must_not</code> correctly forbids suggesting one.</li>
+</ul>
+<p><strong>Contradictions:</strong> The only apparent conflict is &quot;Processing&quot; (customer screen) vs &quot;sent&quot; (journal). Given the unknown capture time and the unverified nature of the transcription, the journal is treated as authoritative and the screen as corroboration of reference and amount only.</p>
+<h4>3. Why this plan</h4>
+<p>The plan is preserved as the decision of record; each step&#x27;s grounds are set out below.</p>
+<p><strong>s1 – reply_to_customer (do not pay again).</strong></p>
+<ul>
+<li>*Explanation:* The authoritative journal shows TX-0042 as sent with no return or duplicate. If the customer pays again while TX-0042 is still outstanding, both payments may complete, producing a duplicate. Recipient credit is not proven by any supplied record, so the reply states only the &quot;sent&quot; stage and explicitly says it is not receiving-bank confirmation.</li>
+<li>*Evidence:* event-001, event-002, attachments/payment-screen.txt.</li>
+<li>*Criterion:* State only the payment stage the supplied record proves; a payer-side screen is not evidence of recipient credit; do not promise arrival times.</li>
+<li>*Source:* skill:payments (a handling rule of the payments skill, not a quoted bank policy clause or a legal obligation).</li>
+<li>The message also asks the recipient to check with their bank quoting TX-0042 / £120.00 — a low-risk step that uses only the established reference and amount.</li>
+</ul>
+<p><strong>s2 – request_team_action (payment trace).</strong></p>
+<ul>
+<li>*Explanation:* The journal proves &quot;sent&quot; only; the material gap is whether the receiving bank credited, rejected or returned the funds. That can only be answered by a named trace with the receiving bank. The request also asks operations to record the journal transfer date/time and recipient details, closing two further gaps. It expressly excludes initiating any recall or duplicate, consistent with event-002 (none initiated) and with the aim of not creating a second payment.</li>
+<li>*Evidence:* event-002, event-001.</li>
+<li>*Criterion:* Request a named lookup/trace only for a material gap; distinguish release/sent from recipient credit.</li>
+<li>*Source:* skill:payments.</li>
+<li>The request text carries &quot;customer reports authorisation on 2026-10-09&quot;; this is passed on as the customer&#x27;s report (derived from &quot;yesterday&quot; on 2026-10-10), not as a recorded date, per <code>must_not</code>.</li>
+</ul>
+<p><strong>s3 – ask_customer (intended recipient details).</strong></p>
+<ul>
+<li>*Explanation:* The note does not record the recipient details. If the customer&#x27;s intended recipient differs from the recipient recorded against TX-0042, the case is a misdirected payment rather than a delay, and handling would differ. This is a specific fact only the customer can supply. Account name, sort code and account number are ordinary payee details; no PIN, password, card number or one-time code is requested.</li>
+<li>*Evidence:* event-002, request.</li>
+<li>*Criterion:* Identify the exact transaction by reference, amount, date and parties before treating non-receipt as a delay.</li>
+<li>*Source:* skill:payments.</li>
+</ul>
+<p><strong>s4 – reply_to_customer (trace status, conditional on s2).</strong></p>
+<ul>
+<li>*Explanation:* Telling the customer the trace &quot;has been logged&quot; is a claim about an executed action and must wait for the payments operations team&#x27;s acknowledgement. Without acknowledgement the customer may only be told the request remains pending and unconfirmed.</li>
+<li>*Evidence:* event-002.</li>
+<li>*Criterion:* A request is not a completed action; report recorded status and what it does not confirm.</li>
+<li>*Source:* general:evidence.</li>
+</ul>
+<p><strong>Alternatives considered within the plan&#x27;s scope:</strong> Instructing the customer to re-pay is excluded because the journal shows a live &quot;sent&quot; payment with no return — duplicate risk is the dominant hazard. Initiating a recall is not selected because there is no evidence the payment went to a wrong recipient; s3 is the step that would surface such evidence, and any recall would require a fresh decision. Treating the screen&#x27;s &quot;Processing&quot; as proof the payment is stuck is not supported because the capture time is unknown.</p>
+<h4>4. Execution boundaries</h4>
+<ul>
+<li>s1, s2 and s3 have no execution dependencies on each other; s1 and s3 are both addressed to the customer on the verified call and can be delivered together.</li>
+<li>s4 depends on s2: it may only be delivered in its &quot;logged&quot; form after the payments operations team acknowledges the trace request. If no acknowledgement arrives, only the &quot;remains pending and has not been confirmed&quot; form may be used.</li>
+<li>No recall, return, duplicate payment, refund or fraud/sanctions referral is proposed. If s2&#x27;s trace or s3&#x27;s answer reveals a misdirected payment, a rejection or a return, that is new information requiring a fresh decision; this plan does not pre-decide those branches.</li>
+<li><code>escalate_if</code> is empty and no safety flags are raised; the plan stops at <code>needs_info</code>.</li>
+</ul>
+<h4>5. Expected result and limits</h4>
+<p><strong>What the proposed steps could achieve:</strong> The customer is protected from creating a duplicate payment and is given an accurate description of what the bank&#x27;s own record proves. The trace request, once executed and acknowledged, is the mechanism that can establish credit, rejection or return. The recipient-details question allows the misdirection possibility to be checked against the journal.</p>
+<p><strong>What remains unconfirmed:</strong> Whether the recipient has been credited; when TX-0042 was actually sent; the recipient recorded in the journal; why the customer&#x27;s screen showed &quot;Processing&quot;; and when (or whether) the funds will arrive. None of these is to be stated or implied until the trace result and journal details are on the case.</p>
+<p><strong>Constraints preserved:</strong> The customer message states the journal status &quot;sent&quot;, that &quot;sent&quot; is not recipient credit, that no recall/return/duplicate has been initiated, that they should not pay again now, that a trace is being requested with its result unknown, and that their uploaded screen cannot serve as receiving-bank confirmation. It does not say whether the recipient was credited, does not promise an arrival time, refund or recall outcome, does not claim the trace has been executed, does not treat 2026-10-09 as a recorded date, does not suggest any cause for the delay, and does not instruct the customer to resend.</p></section>
+</div>
+<section><h3>Plan</h3><p><strong>Intent:</strong> Customer asks whether to re-send a £120 transfer (TX-0042) that the recipient says has not arrived.<br><strong>Identity/authority:</strong> established</p><table><thead><tr><th>Step</th><th>Kind</th><th>Action</th><th>Target</th><th>Instruction</th><th>Decision grounds</th></tr></thead><tbody><tr><td>s1</td><td>proposed_action</td><td><code>reply_to_customer</code></td><td>Jules Rowan (verified call)</td><td>Tell the customer: &#x27;Please do not send the £120 again at this point. Our transfer journal records TX-0042 for £120 with status sent, and no recall, return or duplicate has been initiated. Sent means it left your account and was released; it does not confirm the recipient&#x27;s bank has credited their account, and we have no confirmation from the receiving bank yet. Paying again now could create a duplicate while TX-0042 is still in progress. The payment screen you uploaded shows Processing but has no capture time, so it cannot tell us more than our journal does. We are requesting a trace of TX-0042 with the receiving bank; we cannot promise when it will arrive or what the trace will find. Meanwhile, please ask the recipient to check with their bank quoting reference TX-0042 and £120.00.&#x27;</td><td><pre>{
+  &quot;explanation&quot;: &quot;The authoritative journal shows TX-0042 as sent with no return or duplicate, so a repeat payment would risk a duplicate; recipient credit is not proven by any supplied record, so the reply states only the &#x27;sent&#x27; stage.&quot;,
+  &quot;evidence&quot;: [
+    &quot;event-001&quot;,
+    &quot;event-002&quot;,
+    &quot;attachments/payment-screen.txt&quot;
+  ],
+  &quot;criterion&quot;: &quot;State only the payment stage the supplied record proves; a payer-side screen is not evidence of recipient credit; do not promise arrival times.&quot;,
+  &quot;source&quot;: &quot;skill:payments&quot;
+}</pre></td></tr><tr><td>s2</td><td>proposed_action</td><td><code>request_team_action</code></td><td>Payments operations team</td><td>Request a trace of transfer TX-0042 (GBP 120.00, journal status &#x27;sent&#x27;, customer Jules Rowan, customer reports authorisation on 2026-10-09 and recipient non-receipt) with the receiving bank: confirm whether the funds were credited, rejected or returned, and record the journal transfer date/time and recipient details on the case. No recall or duplicate is to be initiated as part of this request.</td><td><pre>{
+  &quot;explanation&quot;: &quot;The journal proves &#x27;sent&#x27; only; the material gap is whether the recipient bank credited or returned the funds, which requires a named trace rather than guessing.&quot;,
+  &quot;evidence&quot;: [
+    &quot;event-002&quot;,
+    &quot;event-001&quot;
+  ],
+  &quot;criterion&quot;: &quot;Request a named lookup/trace only for a material gap; distinguish release/sent from recipient credit.&quot;,
+  &quot;source&quot;: &quot;skill:payments&quot;
+}</pre></td></tr><tr><td>s3</td><td>proposed_action</td><td><code>ask_customer</code></td><td>Jules Rowan (verified call)</td><td>Ask the customer to confirm the recipient&#x27;s account name, sort code and account number they intended TX-0042 to go to, so these can be compared with the details recorded in the transfer journal for TX-0042.</td><td><pre>{
+  &quot;explanation&quot;: &quot;The note does not record the recipient details; a mismatch between intended and recorded recipient would change the handling (misdirected payment) and is a specific fact the customer can supply.&quot;,
+  &quot;evidence&quot;: [
+    &quot;event-002&quot;,
+    &quot;request&quot;
+  ],
+  &quot;criterion&quot;: &quot;Identify the exact transaction by reference, amount, date and parties before treating non-receipt as a delay.&quot;,
+  &quot;source&quot;: &quot;skill:payments&quot;
+}</pre></td></tr><tr><td>s4</td><td>proposed_action</td><td><code>reply_to_customer</code></td><td>Jules Rowan</td><td>Once the trace request has been acknowledged by the payments operations team, tell the customer that the trace of TX-0042 has been logged and that the result is still pending; if acknowledgement is not received, state that the trace request remains pending and has not been confirmed.</td><td><pre>{
+  &quot;explanation&quot;: &quot;Reporting the trace must depend on its execution acknowledgement; otherwise the customer is told only that it remains pending.&quot;,
+  &quot;evidence&quot;: [
+    &quot;event-002&quot;
+  ],
+  &quot;criterion&quot;: &quot;A request is not a completed action; report recorded status and what it does not confirm.&quot;,
+  &quot;source&quot;: &quot;general:evidence&quot;
+}</pre></td></tr></tbody></table></section>
+<section><h3>Supplied case history</h3><pre># Supplied case 002
+
+## history.md
+
+# Payment status discrepancy
+
+&lt;a id=&quot;event-001&quot;&gt;&lt;/a&gt;
+## 2026-10-10 10:00:00 UTC — event 001
+
+- **Channel:** Verified call
+- **From:** Jules Rowan
+- **To:** H&amp;V service agent
+
+I authorised a £120 transfer yesterday. The recipient says nothing arrived. I have uploaded the payment screen. Please tell me if I should pay again.
+
+&lt;a id=&quot;event-002&quot;&gt;&lt;/a&gt;
+## 2026-10-10 10:01:00 UTC — event 002
+
+- **Channel:** Internal note
+- **From:** H&amp;V service agent
+- **To:** H&amp;V case record
+
+Identity and account authority were verified on this call. The bank transfer journal lists transfer TX-0042 for £120 with status &#x27;sent&#x27;. It does not establish recipient credit. No recall, return or duplicate payment has been initiated. The uploaded screen is customer-supplied evidence, not a receiving-bank confirmation.
+
+
+## attachments/payment-screen.txt
+
+Customer-uploaded text transcription; authenticity has not been independently verified.
+Reference: TX-0042
+Amount: GBP 120.00
+Screen status: Processing
+Capture time: not supplied
+</pre></section>
+<p class="muted">3 model requests · API-equivalent $0.5865 · generator: model</p>
+</details>
+</main><script>
+const q=document.getElementById('q'),f=document.getElementById('f');
+function apply(){const t=q.value.toLowerCase();document.querySelectorAll('.case').forEach(d=>{
+const show=d.dataset.search.includes(t)&&(!f.value||(f.value==='flagged'&&d.dataset.flagged==='1')||(f.value==='failed'&&d.dataset.ok==='0'));
+d.style.display=show?'':'none';});}
+q.addEventListener('input',apply);f.addEventListener('change',apply);
+</script></body></html>

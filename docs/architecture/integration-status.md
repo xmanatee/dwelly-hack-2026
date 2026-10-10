@@ -7,8 +7,8 @@
 | Intake | Typed email, call and ticket; original reply route; authenticated HTTP turns bound to a trusted session | Real email/ticket provider webhooks and their signature verification are deployment adapters. |
 | Context | Read-only investigator, JSON/SQLite and synthetic-bank sources, scoped/time-filtered records, source errors and exact `context.md` | Real tenant permissions and identifiers must come from trusted integration; PNG OCR and complete temporal entity versions are absent. |
 | Planner | Shared canonical `Plan`, skill selection, concrete decisions and evidence-linked grounds; product `DecisionPlanner` and Winner `make_plan` | No guarantee of semantic correctness; stronger-model routing and specialist sub-agents are not implemented. |
-| Execution | Canonical `DecisionExecutor`, dependency validation, durable mock receipts, replay/conflict checks, original-channel routing and session closure guard | All bank/email/ticket/call effects are simulated. Live adapters need provider authority, idempotency and reconciliation. |
-| Voice / text service | FastAPI/Uvicorn, session-scoped bearer tokens, SQLite request state, one active turn, timeout/close handling and replay after restart | ElevenLabs audio needs account setup, HTTPS and a trusted lifecycle handler; a real audio conversation has not been verified. |
+| Execution | Canonical `DecisionExecutor`, dependency validation, durable mock receipts, replay/conflict checks, original-channel routing and session closure guard | Canonical-plan effects remain simulated; the separate fixture voice path can queue speech. Live bank adapters need provider authority, idempotency and reconciliation. |
+| Voice / text service | FastAPI/Uvicorn, session-scoped bearer tokens, SQLite request state, one active turn, timeout/close handling and replay after restart | Webhook mode needs HTTPS and a lifecycle handler. The team also added a local ElevenLabs WebSocket client-tool bridge with fixture speech; audio interruption/latency still need verification. |
 | Winner | Folder input, supplied context and attachments, shared Planner, ANSWER/REASONING, labeled future drafts, failures and journals | Full supplied history is retrospective unless an explicit decision-time input is prepared. |
 | Storage | Dataset state, incoming cases and private evaluation material separated; source hashes; independent session and action-receipt SQLite | Local deployment only. Retention, backups and distributed locking depend on the deployment. |
 | Evaluation | Saved-result scoring, public/synthetic preparation, model judge and existing report workflows | Historical scores are not a fresh quality baseline for this integrated product. |
@@ -25,6 +25,13 @@ Planner sees an explicit registry of valid evidence IDs; ambiguous input IDs are
 Winner separates conditional future message drafts from current status and labels them
 NOT SENT. Its generator repairs unknown prerequisite IDs and unsupported completion claims;
 these guards are not a semantic correctness proof.
+
+The team's [local voice bridge](../../examples/voice/README.md) is a second transport:
+`voice ask` works offline, while `voice call` uses the ElevenLabs SDK. It queues the
+fixture planner's `reply_to_trigger` in an open call; all other operations remain mock.
+This is separate from the HTTP service's model-backed path. The client-tool bridge does
+not yet render canonical Planner decisions into spoken text. No additional provider
+session or recording was started by this audit.
 
 ## Synthetic data boundaries
 

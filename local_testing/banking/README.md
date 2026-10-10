@@ -143,3 +143,7 @@ trigger checksums. Original data and earlier captures are never upgraded in plac
 Failed pipeline runs retain `dataset.json` with the partial context and failure receipt.
 Keep `--state` outside `--output`; channel replay requires one unambiguous local contact.
 A failed source read becomes an explicit gap, while other observed evidence is retained.
+
+For an independent model/config experiment on the same event, pass a fresh `--state`
+SQLite path outside `--output`. Reusing the normal receipt store correctly rejects changed
+actions for an already processed event; a new capture directory does not reset that state.

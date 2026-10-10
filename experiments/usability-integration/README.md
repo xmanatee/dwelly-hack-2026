@@ -130,3 +130,25 @@ instruction and repeated the forbidden category. The authority gate remains unch
 The general prompt and repair feedback now explain that category explicitly and distinguish
 verification/support referrals from authorized operations. This is a contract clarification,
 not a scenario-specific answer or adoption of a new quality baseline.
+
+### Follow-up outcome
+
+- Initial Fable Winner smoke: 1/2 available; the contact-change case failed the authority
+  category gate after one repair. [Initial report, including the failure](fable-initial-report.html).
+- After the general category clarification: that case completed Planner and generation without
+  errors. The plan holds the change and uses secure recovery, without scheduling an unauthorized
+  account operation. [Single-case repair report](fable-repair-report.html).
+- Local Fable run with a fresh state completed collector → Planner → mock execution.
+  The earlier idempotency-conflict run is preserved alongside it.
+- Team voice/WebSocket commits were integrated. `voice ask` exercised the existing fixture
+  reply queue offline. No additional ElevenLabs session, recording or vendor resource was created.
+- Final combined gate: **352 tests**, Ruff and strict mypy (172 source files) passed. The
+  Linux CI installation now includes PortAudio headers required by the team's new PyAudio extra;
+  that remote workflow has not been claimed as executed here.
+
+Follow-up calls: **19 model requests**, configured-price upper bound **$2.4106862**, including
+unsuccessful attempts. [Follow-up verification](followup-verification.json) and
+[unchanged follow-up captures](followup-captures.tar.gz) retain per-run source commits, all
+model receipts and file hashes. The initial archive/report above remain unchanged.
+The final single-case repair is an integration check, not an accuracy benchmark or proof of
+improvement on all cases. No baseline acceptance or score substitution was performed.
