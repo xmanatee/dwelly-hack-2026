@@ -1,0 +1,29 @@
+{
+  "provider": "anthropic",
+  "max_tokens": 32768,
+  "max_requests": 12,
+  "max_tool_calls": 20,
+  "case_timeout_seconds": 390,
+  "request_timeout_seconds": 330,
+  "case_concurrency": 15,
+  "total_budget_usd": 100,
+  "account_budget_usd": 100,
+  "max_total_tokens": 500000,
+  "reasoning_enabled": true,
+  "reasoning_effort": "high",
+  "tool_choice_required": false,
+  "run_timeout_seconds": 450,
+  "budget_file": ".cache/accounts/anthropic-winner.json",
+  "input_price_per_million": 10,
+  "output_price_per_million": 50,
+  "model": "claude-fable-5-1",
+  "anthropic_cache": true,
+  "planner": {
+    "mode": "advisory"
+  },
+  "key_envs": [
+    "ANTHROPIC_WINNER_API_KEY"
+  ],
+  "retries": 2,
+  "max_input_tokens": 200000
+}
