@@ -400,3 +400,23 @@ async def test_failures_require_review_but_diagnostics_stay_local(tmp_path: Path
         content = path.read_text()
         assert "traceback" not in content and "Fixture tool failure" not in content
     assert "Fixture tool failure" in (tmp_path / "case/execution.json").read_text()
+
+
+async def test_public_reference_is_explicit_evaluator_input() -> None:
+    rubric = json.loads((ROOT / "rubrics/default.json").read_text())
+    case = copy.deepcopy(probes()[0]["case"])
+    case["reference_evidence"] = {"secret": "INJECTED_REFERENCE"}
+    case["metadata"] = {"outcome": "UNTRUSTED_LABEL"}
+    judge = LlmJudge(FunctionModel(lambda _, info: judge_response(info, rubric, ["TASK"])), rubric)
+    without = await judge.review(case)
+    assert "PUBLIC-REFERENCE" not in without["input_payload"]["evidence"]
+    assert "INJECTED_REFERENCE" not in json.dumps(without["input_payload"])
+    judge.reference_evidence = {case["id"]: {"documents": ["verified retrospective example"]}}
+    with_reference = await judge.review(case)
+    assert (
+        with_reference["input_payload"]["evidence"]["PUBLIC-REFERENCE"]
+        == judge.reference_evidence[case["id"]]
+    )
+    judge.reference_evidence = {}
+    with pytest.raises(KeyError):
+        await judge.review(case)

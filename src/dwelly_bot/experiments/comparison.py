@@ -51,15 +51,25 @@ class SavedRun(BaseModel):
     content_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
     code_revision: str = Field(pattern=r"^[0-9a-f]{64}$")
     config_path: str | None = None
+    dataset_root: str | None = None
 
     @classmethod
-    def freeze(cls, path: Path, *, config_path: Path | None = None) -> SavedRun:
+    def freeze(
+        cls, path: Path, *, config_path: Path | None = None, dataset_root: Path | None = None
+    ) -> SavedRun:
         path = path.resolve()
         bundle = validate(load_json(path))
         if len(bundle["runs"]) != 1:
             raise ValueError("Select a saved bundle containing exactly one run")
         return cls(
             path=str(path.relative_to(ROOT)) if path.is_relative_to(ROOT) else str(path),
+            dataset_root=(
+                str(dataset_root.resolve().relative_to(ROOT))
+                if dataset_root.resolve().is_relative_to(ROOT)
+                else str(dataset_root.resolve())
+            )
+            if dataset_root
+            else None,
             content_hash=fingerprint(bundle),
             code_revision=bundle["runs"][0]["manifest"]["code_revision"],
             config_path=(
@@ -81,6 +91,14 @@ class SavedRun(BaseModel):
             raise ValueError(f"Saved run changed: {self.path}")
         return bundle
 
+    def corpus(self, dataset: str) -> Path:
+        """Resolve the pinned snapshot, retaining compatibility with historical references."""
+        return (
+            (ROOT / self.dataset_root).resolve()
+            if self.dataset_root
+            else adapter_for(dataset).dataset_root
+        )
+
     def require_current(self) -> None:
         run = self.load()["runs"][0]
         manifest = run["manifest"]
@@ -95,7 +113,7 @@ class SavedRun(BaseModel):
         current = manifest["execution_hash"] == execution_hash(config.skills)
         if changed or not current:
             raise ValueError("Baseline/result does not represent the current source; run it again")
-        dataset = adapter_for(manifest["dataset"]).dataset_root
+        dataset = self.corpus(manifest["dataset"])
         if manifest["dataset_hash"] != dataset_hash(dataset):
             raise ValueError("Dataset changed; start a new baseline round")
         require_evidence(run)
@@ -196,6 +214,7 @@ async def run(argv: list[str]) -> int:
     config = read_config(args.config)
     original = RunConfig.model_validate(manifest["resolved_config"])
     adapter = adapter_for(manifest["dataset"])
+    dataset = baseline.corpus(manifest["dataset"])
     # Candidate code/config is expected to differ: never require_current() on the control.
     require_evidence(control)
     if (
@@ -204,7 +223,7 @@ async def run(argv: list[str]) -> int:
         or config.environment_state_mode != original.environment_state_mode
     ):
         raise ValueError("Candidate must preserve the baseline environment")
-    if dataset_hash(adapter.dataset_root) != manifest["dataset_hash"]:
+    if dataset_hash(dataset) != manifest["dataset_hash"]:
         raise ValueError("Dataset differs from the saved baseline; no agent was run")
     directory = ROOT / "experiments" / args.name
     if (directory / "spec.json").exists() or (directory / "results.json.gz").exists():
@@ -213,18 +232,16 @@ async def run(argv: list[str]) -> int:
     if args.config.resolve() != config_path.resolve():
         save_json(config_path, config.model_dump(mode="json"))
     baseline_evaluation = None
-    if evaluator_hash(manifest["dataset"], adapter.dataset_root) != manifest.get(
-        "evaluation_profile_hash"
-    ):
+    if evaluator_hash(manifest["dataset"], dataset) != manifest.get("evaluation_profile_hash"):
         # Saved native checks only: no subject, tools or paid judge.
-        regraded, _ = await grade_bundle(baseline.load(), adapter.dataset_root, adapter, original)
-        grading_profile(regraded, adapter.dataset_root, manifest["dataset"])
+        regraded, _ = await grade_bundle(baseline.load(), dataset, adapter, original)
+        grading_profile(regraded, dataset, manifest["dataset"])
         regraded.pop("baseline_evaluation", None)
         baseline_evaluation = regraded
     output = await execute(
         manifest["dataset"],
         config,
-        dataset_root=adapter.dataset_root,
+        dataset_root=dataset,
         ids=manifest["assigned_case_ids"],
         experiment=args.name,
         artifacts=directory / "artifacts",
@@ -238,7 +255,7 @@ async def run(argv: list[str]) -> int:
         title=args.name,
         description=args.description,
         baseline=baseline,
-        candidate=SavedRun.freeze(published, config_path=config_path),
+        candidate=SavedRun.freeze(published, config_path=config_path, dataset_root=dataset),
     )
     save_json(directory / "spec.json", spec.model_dump())
     html = directory / "comparison.html"
@@ -266,6 +283,7 @@ def baseline(argv: list[str]) -> int:
     )
     parser.add_argument("--output", type=Path, help="Adopted baseline reference")
     parser.add_argument("--config", type=Path, help="Tracked run configuration (init only)")
+    parser.add_argument("--dataset-root", type=Path, help="Pinned corpus location (init only)")
     args = parser.parse_args(argv)
     if args.action == "check":
         SavedRun.model_validate_json(args.input.read_text()).require_current()
@@ -276,12 +294,16 @@ def baseline(argv: list[str]) -> int:
     if args.action == "init":
         if args.config is None:
             parser.error("init requires --config")
-        adopted = SavedRun.freeze(args.input, config_path=args.config)
+        adopted = SavedRun.freeze(
+            args.input, config_path=args.config, dataset_root=args.dataset_root
+        )
         adopted.require_current()
         published = args.output.parent / "results.json.gz"
         if args.input.resolve() != published.resolve():
             save_json(published, adopted.load())
-            adopted = SavedRun.freeze(published, config_path=args.config)
+            adopted = SavedRun.freeze(
+                published, config_path=args.config, dataset_root=args.dataset_root
+            )
         overwrite = False
     else:
         spec = Comparison.model_validate(read_settings(args.input))

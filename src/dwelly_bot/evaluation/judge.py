@@ -71,7 +71,9 @@ class LlmJudge:
         settings: ModelSettings | None = None,
         ledger: BudgetLedger | None = None,
         profile: ModelProfile | None = None,
+        reference_evidence: dict[str, dict[str, Any]] | None = None,
     ) -> None:
+        self.reference_evidence = reference_evidence
         self.rubric, self.timeout = rubric, timeout
         self.model, self.settings, self.ledger, self.profile = model, settings, ledger, profile
         self.instructions = instructions or text("prompts/judge.md")
@@ -86,6 +88,9 @@ class LlmJudge:
 
     async def review(self, case: dict[str, Any]) -> dict[str, Any]:
         payload = evidence_pack(case, self.rubric)
+        if self.reference_evidence is not None:
+            # Loaded by the evaluator from verified originals, never from agent output.
+            payload["evidence"]["PUBLIC-REFERENCE"] = self.reference_evidence[case["id"]]
         start = time.monotonic()
         bounded = (
             BudgetedModel(

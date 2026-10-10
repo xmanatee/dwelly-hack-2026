@@ -547,3 +547,27 @@ def test_continuation_retains_failed_attempts_and_rejects_changed_conditions(
     save_json(first, original, overwrite=True)
     with pytest.raises(ValueError, match="Only budget-blocked"):
         attempts.combine([first, second])
+
+
+def test_saved_reference_pins_nondefault_corpus(
+    experiment: Comparison, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from dwelly_bot.experiments import comparison
+
+    reviewed = tmp_path / "reviewed"
+    ref = SavedRun.freeze(
+        Path(experiment.baseline.path),
+        config_path=Path(str(experiment.baseline.config_path)),
+        dataset_root=reviewed,
+    )
+    seen = []
+
+    def check(root: Path) -> str:
+        seen.append(root)
+        return "same-corpus" if root == reviewed else "wrong-corpus"
+
+    monkeypatch.setattr(comparison, "dataset_hash", check)
+    ref.require_current()
+    assert seen == [reviewed]
+    with pytest.raises(ValueError, match="Dataset changed"):
+        experiment.baseline.require_current()

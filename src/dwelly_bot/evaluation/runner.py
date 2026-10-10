@@ -135,6 +135,9 @@ async def evaluate_bundle(
             "instructions": text("prompts/judge.md"),
             "judge_code": fingerprint((ROOT / "judge.py").read_text()),
             "judge_model": judge_name,
+            "public_reference_hash": fingerprint(judge.reference_evidence)
+            if judge and judge.reference_evidence is not None
+            else None,
             "judge_settings": judge_settings or {},
             "pydantic_evals": "2.54.0",
             "native_verifier_profile": run["manifest"].get("evaluation_profile_hash")
@@ -161,7 +164,14 @@ async def main(argv: Sequence[str] | None = None) -> int:
     p.add_argument("--judge-config", type=Path, help="Opt-in paid judge model/limits TOML or JSON")
     p.add_argument("--dataset", help="Recompute native adapter checks before judging")
     p.add_argument("--dataset-root", type=Path)
+    p.add_argument(
+        "--public-reference",
+        action="store_true",
+        help="Banking only: judge against complete public examples, respecting the decision cutoff",
+    )
     args = p.parse_args(argv)
+    if args.public_reference and (args.dataset != "dwelly-banking" or not args.judge_config):
+        p.error("--public-reference requires --dataset dwelly-banking and --judge-config")
     html = args.html or args.output.with_suffix(".html")
     if not args.output.name.endswith((".json", ".json.gz")) or html.suffix.lower() not in {
         ".html",
@@ -196,6 +206,10 @@ async def main(argv: Sequence[str] | None = None) -> int:
         from dwelly_bot.evaluation.paid import judge_context
 
         async with judge_context(args.judge_config, rubric) as (judge, config):
+            if args.public_reference:
+                from dwelly_bot.evaluation.banking_reference import load_reference
+
+                judge.reference_evidence = load_reference(dataset, bundle)
             output, _ = await grade(
                 judge=judge,
                 judge_name=config.model,
