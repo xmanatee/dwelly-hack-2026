@@ -24,3 +24,16 @@ This recipe reads the **public** original index, complete history and text attac
 Both recipes are offline by default. Shared helpers support profiling, sample review, text groups, semantic maps, quoted evidence extraction and optional model discovery. Use `configs/analysis.toml` only for explicitly requested paid work; it shares the cumulative Anthropic ledger. Source observations, model interpretations and verified operational effects remain distinct.
 
 Recipes expose `build(ctx) -> Report`. Keep dataset semantics in the recipe and reusable methods under `src/dwelly_bot/analysis/`. Reports contain source hashes, sample counts and limitations; generated HTML/JSON stay ignored under `analysis/artifacts/`. Pages builds only offline source analysis and saved execution reports. Analysis findings may change the agent only through the experiment workflow.
+
+## Synthetic banking world
+
+```sh
+uv run dwelly-bot analyze run dwelly_bot.analysis.synthetic_bank \
+  --data local_testing/banking/data/seed-2026
+```
+
+The [local testing guide](../local_testing/banking/README.md) builds this separate corpus.
+This recipe reads only `state/decision.sqlite`: counts are cases, visible messages,
+read-only responses and attachments. It reports empty response coverage and extraction
+gaps without opening labels or final entity state. It is a source inventory, not a
+Planner evaluation; there are no model calls.

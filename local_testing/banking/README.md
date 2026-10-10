@@ -4,10 +4,10 @@
 
 Three acceptance checks:
 
-- [ ] **Data:** reproducible state, separate incoming cases, isolated evaluator answers.
-- [ ] **Context:** resolve local contact hints, read case threads and relevant bank systems,
+- [x] **Data:** reproducible state, separate incoming cases, isolated evaluator answers.
+- [x] **Context:** resolve local contact hints, read case threads and relevant bank systems,
   preserve missing fields, exclude other cases and future state.
-- [ ] **Bot:** run email, call and ticket through the shared collector → Planner → executor,
+- [x] **Bot:** run email, call and ticket through the shared collector → Planner → executor,
   capture `context.md`, plan, receipts and tool journal; replay without duplicate mock effects.
 
 The supplied archive contains Nikita's generator, not a built dataset. Its original source
@@ -86,8 +86,8 @@ uv run dwelly-bot local run --case SYN-0250 --channel call \
 
 The investigator chooses `read_source(source, question)` calls from a catalogue of contact,
 thread, document and bank-system sources. The adapter fixes scope and snapshot time; the
-model cannot change them or execute SQL. It reports information needs and gaps, while the
-collector preserves retrieved records in a single `context.md` for Planner. Model settings,
+model cannot change them or execute SQL. The collector preserves retrieved records, actual read questions and source-reported gaps
+in a single `context.md` for Planner. Free-form model notes remain in the journal. Model settings,
 tool calls and costs use the existing shared runtime and journal.
 
 Use `--input PATH` instead of `--case` for your own email/call/ticket JSON (same contract as
@@ -96,7 +96,7 @@ snapshot. A phone/email/name identifies a candidate only within that scope. This
 entry point trusts your JSON; it is not a public webhook authentication layer.
 
 `--plan PATH` injects a fixture plan for executor tests. `--state PATH` chooses the durable
-mock receipt database; by default `.cache/local-bank/receipts.sqlite`. A repeated event and
+mock receipt database; by default `.cache/local-bank/<dataset-hash>/receipts.sqlite`, isolating different seeds. A repeated event and
 plan reuse receipts. Always use a fresh `--output` directory. Each run saves input, normalized
 trigger, context text/records, plan, action receipts, local journal and dataset hashes.
 
@@ -117,3 +117,8 @@ bank response and expose that gap. Of 130 visible attachments, 56 are plain text
 28 yield PDF text and 46 PNGs are retained but not read. The other 144 attachments are later.
 
 [Functional verification and live context receipts](../../experiments/synthetic-context-integration/README.md).
+
+Acceptance evidence: 27 affected offline tests, strict types and Ruff; the full 1,180-case
+seed-2026 build and a fresh 295-case seed-2028 build passed generator integrity checks.
+Three live context smokes were inspected, fixed and repeated; all six captures remain
+saved. This establishes integration mechanics, not corpus-wide retrieval or Planner quality.

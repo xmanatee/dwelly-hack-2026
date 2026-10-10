@@ -18,6 +18,7 @@ Copy `.env.example` to `.env` only when enabling a model provider. Set the provi
 
 | Command | Use |
 | --- | --- |
+| `dwelly-bot local run` | Full product pipeline over the [synthetic bank](../../local_testing/banking/README.md); optional model collector. |
 | `dwelly-bot demo` | Current trigger/context/Planner/mock-execution path. |
 | `dwelly-bot actions --profile production` | Effective action JSON schemas; also accepts `contest`. |
 | `dwelly-bot agent doctor` | Inspect historical agent/provider readiness. |
@@ -67,6 +68,7 @@ src/dwelly_bot/
 ├── adapters/                 # existing dataset mapping and guards
 ├── evaluation/               # saved-result grading
 └── reporting/                # reports and faithful export
+local_testing/banking/        # supplied generator, build recipe and ignored synthetic worlds
 examples/production/          # small runnable fixtures
 experiments/                  # saved protocols, configurations and results
 ```
@@ -80,7 +82,8 @@ uv run ruff check src tests dataset/fetch.py
 uv run ruff format --check src tests dataset/fetch.py
 uv run mypy
 uv run pytest -q tests/test_intake_context.py tests/test_context_sources.py \
-  tests/test_plan_execution.py tests/test_action_profiles.py tests/test_production_pipeline.py
+  tests/test_plan_execution.py tests/test_action_profiles.py tests/test_production_pipeline.py \
+  tests/test_synthetic_bank.py
 ```
 
 Use `uv run dwelly-bot check` for the full offline gate. These checks do not call paid models. Follow [repo sync](../../.agents/skills/dwelly-bot-repo-sync/SKILL.md) before edits/pushes and [the experiment workflow](../../.agents/skills/dwelly-bot-experiment/SKILL.md) for model, prompt, retrieval or tool behavior changes. Preserve other contributors' changes and original run outputs.

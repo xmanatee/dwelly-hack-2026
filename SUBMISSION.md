@@ -30,7 +30,7 @@
 | --- | --- | --- |
 | Product, architecture, quickstart, dependencies and limits | [README](README.md) | Prepared; reflects implemented vs planned components. |
 | Planner explanation and final design slots | [Planner](docs/planner/README.md) | Final implementation/model details pending Vera. |
-| Synthetic scenarios and optimization approach | [Evaluation](docs/evaluation/README.md) | Generator integration and new Planner results pending. |
+| Synthetic scenarios and optimization approach | [Evaluation](docs/evaluation/README.md) | Synthetic generator integrated; new Planner results pending. |
 | Voice integration slots | [Voice](docs/voice/README.md) | Provider/model/transport pending. |
 | Product story and 60-second storyboard | [Story](docs/story.md) · [Demo](demo/README.md) | Prepared; recording pending. |
 | Final result export rules | [ANSWERS](ANSWERS/README.md) | Metadata above remains pending; no final coverage audit performed here. |

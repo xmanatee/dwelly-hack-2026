@@ -42,7 +42,7 @@ flowchart LR
     X --> O[Compare observed result with scenario expectations]
 ```
 
-**Team direction, pending Nikita's data integration:** generate connected customers, companies, accounts and event histories; introduce specific corner cases; retain scenario expectations outside the acting context. The design can extend across tracks. Current data loading and historical evaluations cover banking; the local production demo uses small authored fixtures.
+**Implemented local banking world:** [Nikita's generator and runner](../../local_testing/banking/README.md) produce 1,180 cases with connected entity tables, separate incoming triggers and isolated evaluation material. The supplied entity tables describe completed cases, so the collector reads reviewed decision-time system responses and visible threads. Command-result templates are withheld. The design can extend across tracks; current adapters cover banking.
 
 | Scenario variation | Question it should answer |
 | --- | --- |
@@ -63,7 +63,8 @@ The current skeleton has offline checks for context boundaries, action routing, 
 
 ## TODO · final optimization story
 
-- [ ] Nikita: link the generator, schema, scenario seeds and covered corner cases.
+- [x] Integrate the supplied generator, schema, seed selection and case triggers.
+- [ ] Extend the generator with temporal entity snapshots and explicit read/action response types.
 - [ ] Vera: link the final Planner and versioned skills/configuration.
 - [ ] Solver owner: link context preparation and faithful ANSWER/REASONING generation.
 - [ ] Evaluation owner: add the new same-input baseline/candidate table and representative failures.

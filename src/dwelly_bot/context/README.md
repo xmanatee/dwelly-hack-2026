@@ -1,39 +1,51 @@
 # Context gathering
 
-`ContextCollector` produces the exact Markdown passed to Planner. There are two modes:
+`ContextCollector` writes the exact Markdown passed to Planner. Two modes share its contract:
 
 - Default: read configured sources once, without a model.
-- `investigator=AgentInvestigator(budgeted_model, config)`: a small Pydantic AI agent
-  identifies useful information, calls `read_source(source, question)` and follows up
-  with more focused questions. It uses the existing CaseRuntime, model pool/budget
-  wrapper and Journal. Model traces and accounting are local; instrumentation is off.
+- `AgentInvestigator(budgeted_model, config)`: Pydantic AI identifies information needs,
+  selects `read_source(source, question)` calls and follows references. The common
+  CaseRuntime, provider pool, budget and local journal remain in use.
 
-The agent outputs retrieval objectives and gaps. Evidence is assembled from the actual
-source results, not from its paraphrase. Scope/time filtering happens **before** a source
-response reaches the model. The model cannot choose another scope, database or file path.
-No bank actions or final case decisions are exposed to this component.
+The Planner receives **observed source records, actual read questions and source warnings**.
+Free-form model notes are recorded as `context_research_notes` in the journal; they are
+not inserted into Planner evidence. Live smoke testing showed why: an investigator can
+mistake a transport alias for a registered number, or missing simulator data for a negative
+bank finding. Keeping those interpretations separate makes the evidence boundary explicit.
 
-## Plugging in Nikita's data
+Scope/time filtering runs before records reach the model. No bank actions, arbitrary SQL,
+evaluator labels or final case decisions are exposed to this component.
 
-Implement `ContextSource.lookup(ContextQuery) -> SourceResult`. The query includes the
-original request or focused question, IdentityHints, trusted scope, time cutoff and limit.
-Return records with IDs, source, availability time, kind and text. Keep source facts intact.
-Source names must be unique; their class docstrings describe their contents to the agent.
+## Synthetic bank integration
 
-`JsonSource(path)` reads normalized JSON records. `SQLiteSource(path, table=...)` opens a
-real database read-only and searches a configured table/view with these columns:
-`id, scope_id, available_at, kind, source, text`. Times must be valid ISO 8601 with a zone.
-Use a projection/view or adapter to map the actual customer/account/payment schema once
-the files arrive. No arbitrary SQL is exposed to the model. Literal term matching is a
-starting point, not semantic retrieval or identity verification.
+[Build and run](../../../local_testing/banking/README.md) ·
+[Adapter](../adapters/synthetic_banking/sources.py) ·
+[Saved integration checks](../../../experiments/synthetic-context-integration/README.md)
 
-The main missing production integration is the **source-specific join and access map**:
-which customer, account, company and history records this authenticated request may read.
-Do not broaden scope based on an email/name in message text. Ambiguous names should produce
-separate candidate records and an explicit warning. Current fixtures already have case
-membership; they do not solve cross-table identity resolution.
+The adapter supplies a scoped contact directory, visible case threads, extracted attachments
+and 32 named bank-system interfaces. Twenty-eight have retained read-response types in the
+current corpus. A reviewed query allowlist removes command outputs and mixed/unreviewed
+responses. The original entity tables describe final state and stay outside runtime access.
 
-Still needed with the real files: schema mapping, document/media readers if present,
-pagination for large histories, and tests against actual entity links. A lookup failure
-is reported as a gap, never as “no matching customer.” Model-driven selection has offline
-tool-loop coverage but has not yet been evaluated with a live model on these data.
+Exact name, email and phone searches return candidates within the trusted scenario scope.
+Ambiguous names remain separate. `.invalid` emails and `+999` phone numbers are generated
+local routing aliases, not registered bank details or authentication. JSON triggers are
+trusted local inputs; a future public webhook must establish its own access boundary.
+
+PDF text and plain text/CSV are prepared offline. PNG contents are explicitly unavailable.
+No copied title, outcome, later event or evaluator answer enters the runtime database.
+
+## Other sources
+
+Implement `ContextSource.lookup(ContextQuery) -> SourceResult`. A query contains the original
+request or a focused question, identity hints, trusted scope, cutoff and result limit.
+Return source records with IDs, availability times and unmodified evidence text. Source
+names are unique; their descriptions explain what the investigator may retrieve.
+
+`JsonSource(path)` reads normalized records. `SQLiteSource(path, table=...)` searches a
+configured read-only table/view with `id, scope_id, available_at, kind, source, text`.
+Source-specific joins and access checks belong in adapters, never in Planner.
+
+Remaining integration work: temporal entity versions, genuine registered contact data,
+authorized cross-entity joins, pagination for larger histories and image reading. Three
+live model smokes establish tool wiring, not general retrieval accuracy.

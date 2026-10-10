@@ -19,7 +19,7 @@ We aim to sharpen that component using Dwelly cases and synthetic operating scen
 | Accurate today | Replace with measured evidence later |
 | --- | --- |
 | The pipeline runs through email, call and ticket fixtures. | Real channel integration and operational outcomes. |
-| Context can be gathered from JSON/SQLite; an optional agent chooses reads. | Quality on Nikita's integrated entity data. |
+| Context reads synthetic bank snapshots and threads; three live model smokes are captured. | Broad retrieval quality and temporal entity-state coverage. |
 | The Planner interface and action profiles are implemented. | Vera's final model, skill hierarchy and decision examples. |
 | Local arithmetic and persistent mock receipts work. | Provider-confirmed effects and recovery behavior. |
 | Historical banking experiments are saved. | A new evaluation of this Planner and Solver. |

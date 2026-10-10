@@ -30,7 +30,7 @@ Dwelly-bot separates that work into three components: **gather the evidence, dec
 | Stage | Responsibility | In this repository |
 | --- | --- | --- |
 | **Trigger** | Normalize email, call or ticket; preserve its reply route. | Typed inputs and local fixtures. |
-| **Context** | Identify useful information and read authorized sources. | JSON/SQLite readers; optional Pydantic AI investigator. |
+| **Context** | Identify useful information and read authorized sources. | JSON/SQLite readers and synthetic-bank sources; optional Pydantic AI investigator. |
 | **Planner** | Apply knowledge to the available facts; choose concrete actions. | Public `text → Plan` API and action profiles. Current implementation is a human-review stub. |
 | **Execution** | Run the selected steps and record their results. | Mock communication/handoff/ticket actions; local arithmetic; durable mock receipts. |
 
@@ -90,6 +90,20 @@ uv run dwelly-bot actions --profile production
 uv run dwelly-bot actions --profile contest
 ```
 
+## Run the synthetic banking world
+
+```sh
+uv run --extra evaluation --with reportlab==5.0.1 --with pillow==12.3.0 \
+  python local_testing/banking/build.py
+uv run dwelly-bot local run --case SYN-0001 --output .cache/local-bank/quickstart
+```
+
+[Local testing guide](local_testing/banking/README.md): state/case separation, email and call
+replays, model configuration and custom triggers. Add `--context-config
+experiments/synthetic-context-integration/config.json` to enable the LLM collector.
+The runtime uses reviewed decision-time responses; completed entity state and evaluator
+answers remain separate. [Integration checks and saved runs](experiments/synthetic-context-integration/README.md).
+
 ## Improving decisions with synthetic cases
 
 Our testing approach has two complementary paths:
@@ -97,7 +111,7 @@ Our testing approach has two complementary paths:
 | Path | What it tests | Status |
 | --- | --- | --- |
 | **Dwelly examples → prepared context → Planner → answer** | Decision quality on supplied operational cases. | Banking data adapter and historical evaluations exist; new Planner/Solver integration is pending. |
-| **Synthetic world → noisy events → context → plan → execution** | Missing facts, ambiguous identities, conflicting records and failed actions. | Local fixtures exist; Nikita's broader generator and entity mappings are pending integration. |
+| **Synthetic world → noisy events → context → plan → execution** | Missing facts, ambiguous identities, conflicting records and failed actions. | 1,180 generated banking cases; separate state/cases/evaluation data and a working local runner. |
 
 The generator direction is reusable across service tracks; the current implemented dataset adapter is banking-specific. We keep future outcomes outside the acting context and evaluate saved decisions afterward. [Evaluation loops, scenario design and optimization TODOs](docs/evaluation/README.md).
 
@@ -122,7 +136,7 @@ Voice will use the same context/planning/execution core. [Voice integration slot
 
 Source adapters establish access boundaries; names and email addresses remain search hints. A plan is intent, a mock receipt is a simulation, and neither proves an external bank operation occurred. Public examples are development data, not final Reality Test submissions.
 
-Next: integrate Nikita's entity data, implement Vera's Planner, connect the Solver, evaluate the new decision core, and add real channel/voice adapters. Live banking effects, final voice integration and a recorded demo are not implemented. [Detailed gaps and ownership](docs/architecture/integration-status.md).
+Next: implement Vera's Planner, connect the Solver, evaluate the new decision core, add temporal entity snapshots and real channel/voice adapters. Live banking effects, final voice integration and a recorded demo are not implemented. [Detailed gaps and ownership](docs/architecture/integration-status.md).
 
 ## Explore and contribute
 

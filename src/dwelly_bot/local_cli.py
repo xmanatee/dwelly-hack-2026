@@ -63,7 +63,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
     run.add_argument("--context-config", type=Path, help="Enable paid Pydantic AI context research")
     run.add_argument("--plan", type=Path, help="Explicit fixture plan; default is human review")
-    run.add_argument("--state", type=Path, default=Path(".cache/local-bank/receipts.sqlite"))
+    run.add_argument(
+        "--state", type=Path, help="Mock receipts; default is isolated by dataset hash"
+    )
     run.add_argument("--output", type=Path, required=True)
     args = parser.parse_args(argv)
     try:
@@ -83,6 +85,8 @@ def main(argv: Sequence[str] | None = None) -> int:
                 event = inbound_adapter.validate_json(path.read_text())
                 print(f"{event.scope_id}  {event.channel:6}  {event.hints.name}")
             return 0
+        if args.state is None:
+            args.state = Path(".cache/local-bank") / manifest["runtime_sha256"] / "receipts.sqlite"
         if args.input and args.channel:
             raise ValueError(
                 "--channel applies to --case; custom JSON already specifies its channel"

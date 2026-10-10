@@ -1,0 +1,83 @@
+{
+  "purpose": "functional integration only",
+  "receipts": {
+    "initial": {
+      "sha256": "1f94164580af6b4f6173edc39d5a411106b9312fe70a4a855a2a28d0c1eafd4e",
+      "source_commit": "1361cec6212bb86760807e68b8994f1373860621"
+    },
+    "revised": {
+      "sha256": "f664f2e2c649c5172188c23249a48d78dec6a0d73c6c7cd396d1cbad15960c23",
+      "source_commit": "a90f099861c2540f565379a0d071ae4f6bd4e9b8"
+    }
+  },
+  "runs": [
+    {
+      "revision": "initial",
+      "channel": "ticket",
+      "case": "SYN-0001",
+      "model_requests": 3,
+      "read_calls": 5,
+      "records": 5,
+      "cost_estimate_usd": 0.0197782,
+      "status": "simulated"
+    },
+    {
+      "revision": "initial",
+      "channel": "call",
+      "case": "SYN-0250",
+      "model_requests": 2,
+      "read_calls": 3,
+      "records": 4,
+      "cost_estimate_usd": 0.0173375,
+      "status": "simulated"
+    },
+    {
+      "revision": "initial",
+      "channel": "email",
+      "case": "SYN-0813",
+      "model_requests": 2,
+      "read_calls": 4,
+      "records": 3,
+      "cost_estimate_usd": 0.0167283,
+      "status": "simulated"
+    },
+    {
+      "revision": "revised",
+      "channel": "ticket",
+      "case": "SYN-0001",
+      "model_requests": 3,
+      "read_calls": 5,
+      "records": 5,
+      "cost_estimate_usd": 0.0193795,
+      "status": "simulated"
+    },
+    {
+      "revision": "revised",
+      "channel": "call",
+      "case": "SYN-0250",
+      "model_requests": 2,
+      "read_calls": 3,
+      "records": 4,
+      "cost_estimate_usd": 0.0164402,
+      "status": "simulated"
+    },
+    {
+      "revision": "revised",
+      "channel": "email",
+      "case": "SYN-0813",
+      "model_requests": 2,
+      "read_calls": 4,
+      "records": 3,
+      "cost_estimate_usd": 0.016671,
+      "status": "simulated"
+    }
+  ],
+  "checked": [
+    "scope and time",
+    "records equal observed source returns",
+    "mock outcomes",
+    "revised needs equal tool questions",
+    "revised warnings come only from sources"
+  ],
+  "total_cost_estimate_usd": 0.1063347
+}
