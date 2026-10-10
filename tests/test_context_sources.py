@@ -104,4 +104,4 @@ async def test_context_agent_sees_only_guarded_records(tmp_path: Path) -> None:
     finally:
         journal.close()
     assert len(result.records) == 1 and seen == 2
-    assert result.needs == ("Receipt for AB-123",)
+    assert result.needs == ("db: AB-123",)

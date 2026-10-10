@@ -249,7 +249,7 @@ async def test_context_agent_reads_bank_tools_and_returns_observed_records(
                     info.output_tools[0].name,
                     {
                         "needs": ["Transfer status"],
-                        "gaps": ["Recipient credit is not recorded"],
+                        "gaps": ["HALLUCINATED CLAIM FROM MODEL"],
                     },
                 )
             ]
@@ -263,7 +263,8 @@ async def test_context_agent_reads_bank_tools_and_returns_observed_records(
         ).collect(normalize(local_event(bank, "SYN-0001")), capabilities="handoff", journal=journal)
     finally:
         journal.close()
-    assert context.needs == ("Transfer status",)
+    assert "bank_transfer_journal: transfer status and recipient credit" in context.needs
     assert "Awaiting authorization" in context.text
-    assert "Recipient credit is not recorded" in context.text
+    assert "HALLUCINATED CLAIM FROM MODEL" not in context.text
+    assert "HALLUCINATED CLAIM FROM MODEL" in (tmp_path / "events.jsonl").read_text()
     assert calls == 2

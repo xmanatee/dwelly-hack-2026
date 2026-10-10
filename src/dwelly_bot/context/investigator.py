@@ -32,11 +32,13 @@ class AgentInvestigator:
         runtime = CaseRuntime(model, self.config, journal)
         available = {s.name: s for s in sources}
         observed: list[SourceResult] = []
+        questions: list[str] = []
 
         async def read_source(source: str, question: str) -> dict[str, object]:
             """Read a named source for a specific information need; scope and time cannot be changed."""
             if source not in available:
                 raise ValueError("Choose a source from the supplied catalogue")
+            questions.append(f"{source}: {question}")
             request = query.model_copy(update={"question": question})
             result = visible_result(request, await available[source].lookup(request))
             observed.append(result)
@@ -67,10 +69,15 @@ class AgentInvestigator:
                 role="context",
             )
             summary = ResearchSummary.model_validate(response.output)
+            # A model can put factual paraphrases in fields intended as needs/gaps.
+            # Keep its free-form notes inspectable, but never promote them to evidence.
+            journal.append(
+                {"kind": "context_research_notes", "notes": summary.model_dump(mode="json")}
+            )
             return Investigation(
                 records=tuple(r for batch in observed for r in batch.records),
-                needs=summary.needs,
-                warnings=(*summary.gaps, *(w for batch in observed for w in batch.warnings)),
+                needs=tuple(dict.fromkeys(questions)),
+                warnings=tuple(w for batch in observed for w in batch.warnings),
             )
         finally:
             journal.append(

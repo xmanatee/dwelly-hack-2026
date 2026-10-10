@@ -81,9 +81,16 @@ class BankSource:
                     add(
                         row["contact_id"],
                         {
-                            **dict(row),
+                            "contact_id": row["contact_id"],
+                            "name_from_message": row["name"],
+                            "actor_from_message": row["actor_kind"],
+                            "local_transport_aliases": {
+                                "email": row["email"],
+                                "phone": row["phone"],
+                            },
+                            "registered_bank_contact_details": "Not supplied by this directory",
                             "bank": snapshot["name"],
-                            "provenance": "Local routing fixture; name/actor from visible message; email/phone generated.",
+                            "provenance": "Local routing fixture; aliases are generated and must not be compared as on-file bank contact details.",
                             "identity_verified": False,
                         },
                     )
