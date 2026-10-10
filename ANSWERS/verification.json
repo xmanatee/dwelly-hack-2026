@@ -57,5 +57,26 @@
     "all prepared input hashes verified",
     "configured credentials absent from exported files"
   ],
-  "note": "Generation completion, not a correctness score. Incomplete/failed refresh attempts are archived; their original Opus answers are retained. Costs are configured-price estimates."
+  "note": "Generation completion, not a correctness score. Incomplete/failed refresh attempts are archived; their original Opus answers are retained. Costs are configured-price estimates.",
+  "post_run_verification": {
+    "result_commit": "6346e90fa7b507e03a14a7cc615a45518d45f7ca",
+    "command": "uv run --no-sync dwelly-bot check",
+    "ruff_lint": "passed",
+    "ruff_format": "passed",
+    "strict_mypy_source_files": 172,
+    "offline_tests_passed": 361,
+    "checks": [
+      "all 30 selected answers, reasoning and plans match generation receipts",
+      "per-case model and normalized configuration match model traces",
+      "selected request counts and costs match model traces",
+      "original challenge and prepared input hashes match manifests",
+      "all 9 retained Opus cases and journals match original result commit byte-for-byte",
+      "all 21 selected Fable cases and journals match compressed run archive byte-for-byte",
+      "all 30 archived refresh journals retained, including interrupted attempts",
+      "archive request statuses and costs match refresh summary; uncertain exposure uses reserved_usd",
+      "saved report is byte-identical to rendering selected outputs",
+      "configured secrets absent from tracked files and decompressed refresh archive"
+    ],
+    "new_model_calls": false
+  }
 }

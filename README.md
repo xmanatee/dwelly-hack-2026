@@ -174,7 +174,7 @@ uv run hackathon-winner /path/to/cases --output .cache/winner/evaluation-1
 
 Default output: repository-root `ANSWERS/<original-case-folder>/ANSWER.md` and `REASONING.md`.
 With no arguments, the command uses the two bundled synthetic smoke cases. Default model:
-Claude Fable 5.1 (`claude-fable-5-1`, high effort) via `ANTHROPIC_API_KEY`. The final challenge run used **Opus 5.5 high** with `--config experiments/final-challenges/config.json` and the environment variable `ANTHROPIC_WINNER_API_KEY`. [Exact challenge preparation and run](experiments/final-challenges/README.md). Install PDF support with `uv sync --locked --extra evaluation`; the challenge preparation script also requires local Tesseract for image transcription.
+Claude Fable 5.1 (`claude-fable-5-1`, high effort) via `ANTHROPIC_API_KEY`. The initial 30-case challenge run used **Opus 5.5 high** with `--config experiments/final-challenges/config.json`; the [deadline-bounded Fable refresh](experiments/final-challenges-fable/README.md) replaced 21 completed cases and retained 9 Opus answers. Both challenge runs used `ANTHROPIC_WINNER_API_KEY`. [Exact challenge preparation and original run](experiments/final-challenges/README.md). Install PDF support with `uv sync --locked --extra evaluation`; the challenge preparation script also requires local Tesseract for image transcription.
 The runner imports `dwelly_bot.planner`, includes supplied attachments, preserves model
 failures, and saves context, plans and journals.
 
