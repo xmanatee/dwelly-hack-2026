@@ -1,0 +1,19 @@
+{
+  "title": "MiniMax M3 vs Sonnet 5.5 — 50 banking cases",
+  "description": "Sonnet 5.5 through Anthropic versus saved MiniMax M3 on all 50 reviewed banking cases",
+  "baseline": {
+    "path": "experiments/minimax-baseline/evaluated.json.gz",
+    "content_hash": "d1464c2cc5f3bb9efb5eb615aed5770f0bb064f61aa8683ff6aff63a4bafae95",
+    "code_revision": "64c8d9c7c7b8bebd51e1fc83a686ea2dce5daad10d124644bba42435c1544154",
+    "config_path": "experiments/minimax-baseline/config.json",
+    "dataset_root": ".cache/datasets/banking-reviewed"
+  },
+  "candidate": {
+    "path": "experiments/sonnet-vs-minimax-anthropic/evaluated.json.gz",
+    "content_hash": "9799a5d5a8a88c2b1fe358f4b2f0b68a25daf8126bf4a237b446e65127ab0752",
+    "code_revision": "15df4d352857d3d70911182f60c7765f93171037c99927092ff84c1be0d234d2",
+    "config_path": "experiments/sonnet-vs-minimax-anthropic/config.json",
+    "dataset_root": ".cache/datasets/banking-reviewed"
+  },
+  "conclusion": "All 50 cases executed and reviewed for each model. Under the common Opus 5.5 rubric, MiniMax passed all five criteria on 11/50 cases and Sonnet on 35/50: 25 paired improvements, one regression, ten both-pass and fourteen both-fail. Sonnet still has 14 action-truthfulness failures. Model judgments are not verified operational outcomes; all such outcomes remain unknown. MiniMax remains the requested baseline. This is a model-and-provider comparison, with one judge from the Sonnet family; no statistical significance or automatic adoption is claimed."
+}

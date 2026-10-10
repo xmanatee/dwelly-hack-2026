@@ -30,7 +30,7 @@ uv run dwelly-bot run dwelly-banking \
   --config experiments/banking-data-contract/config.json --experiment banking-data-contract
 ```
 
-The second command is paid execution; it has **not** been run as part of the data-contract audit. Omitting `--dataset-root` uses the historical `dataset/` corpus. Snapshot changes require a new control round; they cannot be presented as a same-input improvement over the v1 baseline.
+The second command is paid execution. The initial data-contract audit did not run it; the later authorized [MiniMax/Sonnet round](../experiments/sonnet-vs-minimax-anthropic/README.md) now benchmarks this reviewed snapshot. Omitting `--dataset-root` uses the historical `dataset/` corpus. Snapshot changes require a new control round; they cannot be presented as a same-input improvement over the v1 baseline.
 
 [The reviewed profile](../configs/banking-development.json) selects a default cutoff and optional per-case `after_event` overrides. Every attachment has a reviewed availability event and an explanation. The installer checks that the original exists and that the cited event identifies it; this is a structural check, not an automated proof that a mention grants access. Update the review when changing the source or agent role. Attachment dates, reporting periods, filenames and filesystem times do not establish availability.
 

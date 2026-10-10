@@ -1,0 +1,7 @@
+{
+  "path": "experiments/minimax-baseline/results.json.gz",
+  "content_hash": "ec0b91605ec25fbead37ee46a44e543418c35c6ff5236755c944571e28a984f4",
+  "code_revision": "64c8d9c7c7b8bebd51e1fc83a686ea2dce5daad10d124644bba42435c1544154",
+  "config_path": "experiments/minimax-baseline/config.json",
+  "dataset_root": ".cache/datasets/banking-reviewed"
+}

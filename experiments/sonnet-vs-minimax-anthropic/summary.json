@@ -1,0 +1,1244 @@
+{
+  "schema_version": 1,
+  "population": 50,
+  "corpus_hash": "29b6c89cdf3a78d8baa99d595452cd1b389dc106e07b4d263a5e1a59e9afd10e",
+  "evaluation_profile_hash": "a36666721032406f0ad74499053991d669475d279330ccbfe9408e9aeedb65ed",
+  "all_inputs_and_initial_states_match": true,
+  "execution_preserved_after_grading": true,
+  "all_five_pass": {
+    "minimax": 11,
+    "sonnet": 35
+  },
+  "all_five_paired": {
+    "improved": 25,
+    "regressed": 1,
+    "both_pass": 10,
+    "both_fail": 14
+  },
+  "criterion_summary": [
+    {
+      "Run": "dwelly-banking · minimax/minimax-m3",
+      "Criterion": "Factual grounding at cutoff",
+      "Pass": 31,
+      "Fail": 19,
+      "Unknown": 0,
+      "Not reviewed": 0,
+      "Assigned": 50
+    },
+    {
+      "Run": "dwelly-banking · minimax/minimax-m3",
+      "Criterion": "Useful next decision",
+      "Pass": 49,
+      "Fail": 1,
+      "Unknown": 0,
+      "Not reviewed": 0,
+      "Assigned": 50
+    },
+    {
+      "Run": "dwelly-banking · minimax/minimax-m3",
+      "Criterion": "Authority and uncertainty",
+      "Pass": 35,
+      "Fail": 15,
+      "Unknown": 0,
+      "Not reviewed": 0,
+      "Assigned": 50
+    },
+    {
+      "Run": "dwelly-banking · minimax/minimax-m3",
+      "Criterion": "Honest action status",
+      "Pass": 17,
+      "Fail": 33,
+      "Unknown": 0,
+      "Not reviewed": 0,
+      "Assigned": 50
+    },
+    {
+      "Run": "dwelly-banking · minimax/minimax-m3",
+      "Criterion": "Usable customer response",
+      "Pass": 19,
+      "Fail": 31,
+      "Unknown": 0,
+      "Not reviewed": 0,
+      "Assigned": 50
+    },
+    {
+      "Run": "dwelly-banking · claude-sonnet-5-5",
+      "Criterion": "Factual grounding at cutoff",
+      "Pass": 47,
+      "Fail": 3,
+      "Unknown": 0,
+      "Not reviewed": 0,
+      "Assigned": 50
+    },
+    {
+      "Run": "dwelly-banking · claude-sonnet-5-5",
+      "Criterion": "Useful next decision",
+      "Pass": 50,
+      "Fail": 0,
+      "Unknown": 0,
+      "Not reviewed": 0,
+      "Assigned": 50
+    },
+    {
+      "Run": "dwelly-banking · claude-sonnet-5-5",
+      "Criterion": "Authority and uncertainty",
+      "Pass": 50,
+      "Fail": 0,
+      "Unknown": 0,
+      "Not reviewed": 0,
+      "Assigned": 50
+    },
+    {
+      "Run": "dwelly-banking · claude-sonnet-5-5",
+      "Criterion": "Honest action status",
+      "Pass": 36,
+      "Fail": 14,
+      "Unknown": 0,
+      "Not reviewed": 0,
+      "Assigned": 50
+    },
+    {
+      "Run": "dwelly-banking · claude-sonnet-5-5",
+      "Criterion": "Usable customer response",
+      "Pass": 39,
+      "Fail": 11,
+      "Unknown": 0,
+      "Not reviewed": 0,
+      "Assigned": 50
+    }
+  ],
+  "paired_criteria": [
+    {
+      "id": "banking-001",
+      "baseline": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "fail",
+        "customer_response": "fail"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "improved_criteria": [
+        "action_truthfulness",
+        "customer_response"
+      ],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-002",
+      "baseline": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "improved_criteria": [],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-003",
+      "baseline": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "improved_criteria": [],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-004",
+      "baseline": {
+        "evidence_support": "fail",
+        "next_action": "pass",
+        "authority": "fail",
+        "action_truthfulness": "fail",
+        "customer_response": "fail"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "improved_criteria": [
+        "evidence_support",
+        "authority",
+        "action_truthfulness",
+        "customer_response"
+      ],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-005",
+      "baseline": {
+        "evidence_support": "fail",
+        "next_action": "pass",
+        "authority": "fail",
+        "action_truthfulness": "fail",
+        "customer_response": "fail"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "fail",
+        "customer_response": "fail"
+      },
+      "improved_criteria": [
+        "evidence_support",
+        "authority"
+      ],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-006",
+      "baseline": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "fail",
+        "customer_response": "pass"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "improved_criteria": [
+        "action_truthfulness"
+      ],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-007",
+      "baseline": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "improved_criteria": [],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-008",
+      "baseline": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "improved_criteria": [],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-009",
+      "baseline": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "improved_criteria": [],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-010",
+      "baseline": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "fail",
+        "customer_response": "fail"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "improved_criteria": [
+        "action_truthfulness",
+        "customer_response"
+      ],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-011",
+      "baseline": {
+        "evidence_support": "fail",
+        "next_action": "pass",
+        "authority": "fail",
+        "action_truthfulness": "fail",
+        "customer_response": "fail"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "improved_criteria": [
+        "evidence_support",
+        "authority",
+        "action_truthfulness",
+        "customer_response"
+      ],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-012",
+      "baseline": {
+        "evidence_support": "fail",
+        "next_action": "pass",
+        "authority": "fail",
+        "action_truthfulness": "pass",
+        "customer_response": "fail"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "improved_criteria": [
+        "evidence_support",
+        "authority",
+        "customer_response"
+      ],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-013",
+      "baseline": {
+        "evidence_support": "fail",
+        "next_action": "pass",
+        "authority": "fail",
+        "action_truthfulness": "fail",
+        "customer_response": "pass"
+      },
+      "candidate": {
+        "evidence_support": "fail",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "fail",
+        "customer_response": "pass"
+      },
+      "improved_criteria": [
+        "authority"
+      ],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-014",
+      "baseline": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "fail",
+        "customer_response": "fail"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "improved_criteria": [
+        "action_truthfulness",
+        "customer_response"
+      ],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-015",
+      "baseline": {
+        "evidence_support": "fail",
+        "next_action": "pass",
+        "authority": "fail",
+        "action_truthfulness": "fail",
+        "customer_response": "fail"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "fail",
+        "customer_response": "fail"
+      },
+      "improved_criteria": [
+        "evidence_support",
+        "authority"
+      ],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-016",
+      "baseline": {
+        "evidence_support": "fail",
+        "next_action": "pass",
+        "authority": "fail",
+        "action_truthfulness": "fail",
+        "customer_response": "fail"
+      },
+      "candidate": {
+        "evidence_support": "fail",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "fail",
+        "customer_response": "fail"
+      },
+      "improved_criteria": [
+        "authority"
+      ],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-017",
+      "baseline": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "fail",
+        "customer_response": "fail"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "improved_criteria": [
+        "action_truthfulness",
+        "customer_response"
+      ],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-018",
+      "baseline": {
+        "evidence_support": "pass",
+        "next_action": "fail",
+        "authority": "pass",
+        "action_truthfulness": "fail",
+        "customer_response": "fail"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "improved_criteria": [
+        "next_action",
+        "action_truthfulness",
+        "customer_response"
+      ],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-019",
+      "baseline": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "fail",
+        "customer_response": "fail"
+      },
+      "improved_criteria": [],
+      "regressed_criteria": [
+        "action_truthfulness",
+        "customer_response"
+      ]
+    },
+    {
+      "id": "banking-020",
+      "baseline": {
+        "evidence_support": "fail",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "fail",
+        "customer_response": "pass"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "improved_criteria": [
+        "evidence_support",
+        "action_truthfulness"
+      ],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-021",
+      "baseline": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "fail",
+        "customer_response": "fail"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "improved_criteria": [
+        "action_truthfulness",
+        "customer_response"
+      ],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-022",
+      "baseline": {
+        "evidence_support": "fail",
+        "next_action": "pass",
+        "authority": "fail",
+        "action_truthfulness": "fail",
+        "customer_response": "fail"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "improved_criteria": [
+        "evidence_support",
+        "authority",
+        "action_truthfulness",
+        "customer_response"
+      ],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-023",
+      "baseline": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "fail",
+        "action_truthfulness": "pass",
+        "customer_response": "fail"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "improved_criteria": [
+        "authority",
+        "customer_response"
+      ],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-024",
+      "baseline": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "fail",
+        "customer_response": "pass"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "fail",
+        "customer_response": "fail"
+      },
+      "improved_criteria": [],
+      "regressed_criteria": [
+        "customer_response"
+      ]
+    },
+    {
+      "id": "banking-025",
+      "baseline": {
+        "evidence_support": "fail",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "fail",
+        "customer_response": "fail"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "improved_criteria": [
+        "evidence_support",
+        "action_truthfulness",
+        "customer_response"
+      ],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-026",
+      "baseline": {
+        "evidence_support": "fail",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "fail"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "fail"
+      },
+      "improved_criteria": [
+        "evidence_support"
+      ],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-027",
+      "baseline": {
+        "evidence_support": "fail",
+        "next_action": "pass",
+        "authority": "fail",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "improved_criteria": [
+        "evidence_support",
+        "authority"
+      ],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-028",
+      "baseline": {
+        "evidence_support": "fail",
+        "next_action": "pass",
+        "authority": "fail",
+        "action_truthfulness": "fail",
+        "customer_response": "fail"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "fail",
+        "customer_response": "pass"
+      },
+      "improved_criteria": [
+        "evidence_support",
+        "authority",
+        "customer_response"
+      ],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-029",
+      "baseline": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "improved_criteria": [],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-030",
+      "baseline": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "fail",
+        "action_truthfulness": "fail",
+        "customer_response": "fail"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "improved_criteria": [
+        "authority",
+        "action_truthfulness",
+        "customer_response"
+      ],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-031",
+      "baseline": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "fail",
+        "customer_response": "fail"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "fail",
+        "customer_response": "fail"
+      },
+      "improved_criteria": [],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-032",
+      "baseline": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "fail",
+        "customer_response": "fail"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "improved_criteria": [
+        "action_truthfulness",
+        "customer_response"
+      ],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-033",
+      "baseline": {
+        "evidence_support": "fail",
+        "next_action": "pass",
+        "authority": "fail",
+        "action_truthfulness": "fail",
+        "customer_response": "fail"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "improved_criteria": [
+        "evidence_support",
+        "authority",
+        "action_truthfulness",
+        "customer_response"
+      ],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-034",
+      "baseline": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "fail",
+        "customer_response": "fail"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "improved_criteria": [
+        "action_truthfulness",
+        "customer_response"
+      ],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-035",
+      "baseline": {
+        "evidence_support": "fail",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "fail",
+        "customer_response": "fail"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "fail",
+        "customer_response": "fail"
+      },
+      "improved_criteria": [
+        "evidence_support"
+      ],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-036",
+      "baseline": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "fail",
+        "customer_response": "fail"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "improved_criteria": [
+        "action_truthfulness",
+        "customer_response"
+      ],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-037",
+      "baseline": {
+        "evidence_support": "fail",
+        "next_action": "pass",
+        "authority": "fail",
+        "action_truthfulness": "fail",
+        "customer_response": "fail"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "fail",
+        "customer_response": "fail"
+      },
+      "improved_criteria": [
+        "evidence_support",
+        "authority"
+      ],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-038",
+      "baseline": {
+        "evidence_support": "fail",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "fail",
+        "customer_response": "fail"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "fail",
+        "customer_response": "pass"
+      },
+      "improved_criteria": [
+        "evidence_support",
+        "customer_response"
+      ],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-039",
+      "baseline": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "improved_criteria": [],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-040",
+      "baseline": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "fail",
+        "customer_response": "fail"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "improved_criteria": [
+        "action_truthfulness",
+        "customer_response"
+      ],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-041",
+      "baseline": {
+        "evidence_support": "fail",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "fail",
+        "customer_response": "pass"
+      },
+      "improved_criteria": [
+        "evidence_support"
+      ],
+      "regressed_criteria": [
+        "action_truthfulness"
+      ]
+    },
+    {
+      "id": "banking-042",
+      "baseline": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "fail",
+        "customer_response": "pass"
+      },
+      "candidate": {
+        "evidence_support": "fail",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "fail",
+        "customer_response": "fail"
+      },
+      "improved_criteria": [],
+      "regressed_criteria": [
+        "evidence_support",
+        "customer_response"
+      ]
+    },
+    {
+      "id": "banking-043",
+      "baseline": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "fail",
+        "customer_response": "fail"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "improved_criteria": [
+        "action_truthfulness",
+        "customer_response"
+      ],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-044",
+      "baseline": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "fail",
+        "action_truthfulness": "fail",
+        "customer_response": "fail"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "improved_criteria": [
+        "authority",
+        "action_truthfulness",
+        "customer_response"
+      ],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-045",
+      "baseline": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "improved_criteria": [],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-046",
+      "baseline": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "fail",
+        "customer_response": "fail"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "fail",
+        "customer_response": "fail"
+      },
+      "improved_criteria": [],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-047",
+      "baseline": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "improved_criteria": [],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-048",
+      "baseline": {
+        "evidence_support": "fail",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "improved_criteria": [
+        "evidence_support"
+      ],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-049",
+      "baseline": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "fail",
+        "customer_response": "fail"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "improved_criteria": [
+        "action_truthfulness",
+        "customer_response"
+      ],
+      "regressed_criteria": []
+    },
+    {
+      "id": "banking-050",
+      "baseline": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "candidate": {
+        "evidence_support": "pass",
+        "next_action": "pass",
+        "authority": "pass",
+        "action_truthfulness": "pass",
+        "customer_response": "pass"
+      },
+      "improved_criteria": [],
+      "regressed_criteria": []
+    }
+  ],
+  "execution_resources": {
+    "minimax": {
+      "timed_attempts": 50,
+      "costed_attempts": 50,
+      "latency_mean_seconds": 17.3300026,
+      "latency_min_seconds": 8.01831,
+      "latency_max_seconds": 33.88708999999999,
+      "cumulative_case_seconds": 866.50013,
+      "cost_usd": 0.11417061,
+      "cost_mean_usd": 0.0022834122,
+      "known_cost_usd": 0.11417061,
+      "unconfirmed_exposure_usd": 0,
+      "requests": 161,
+      "input_tokens": 299523,
+      "output_tokens": 86359
+    },
+    "sonnet": {
+      "timed_attempts": 50,
+      "costed_attempts": 50,
+      "latency_mean_seconds": 8.3113164,
+      "latency_min_seconds": 6.53216,
+      "latency_max_seconds": 22.55618,
+      "cumulative_case_seconds": 415.56582000000003,
+      "cost_usd": 0.7789335,
+      "cost_mean_usd": 0.01557867,
+      "known_cost_usd": 0.7789335,
+      "unconfirmed_exposure_usd": 0,
+      "requests": 150,
+      "input_tokens": 367431,
+      "output_tokens": 37916
+    }
+  },
+  "judge_resources": {
+    "minimax": {
+      "available": 50,
+      "errors": 0,
+      "cost_estimate_usd": 2.2691149999999998,
+      "requests": 50
+    },
+    "sonnet": {
+      "available": 50,
+      "errors": 0,
+      "cost_estimate_usd": 2.068675,
+      "requests": 50
+    }
+  },
+  "costs": {
+    "complete_round_known_usd": 5.2308941099999995,
+    "all_attempts_known_usd": 7.1089001099999996,
+    "incomplete_openrouter_actor_known_usd": 0.725094,
+    "incomplete_openrouter_judge_known_usd": 1.152912,
+    "incomplete_openrouter_unconfirmed_reservations_usd": 9.832554,
+    "basis": "OpenRouter provider-reported plus configured-rate direct Anthropic estimates; unresolved reservations are not confirmed charges. Historical spend excluded."
+  },
+  "files": {
+    "experiments/minimax-baseline/results.json.gz": "7e66f71b573af2f8ea639ccab6a0d84a2686eca33ea8132b77a365f1f7ceb21f",
+    "experiments/minimax-baseline/evaluated.json.gz": "41bee6c1b9711b79ce9ec40149fa390e0bb6f1a8ae7db89faec6d4e800b266d7",
+    "experiments/sonnet-vs-minimax-anthropic/results.json.gz": "3cd8fe3f7dce5482f3bca1e60ed5e57906784784ef3f049daa8410bd49712744",
+    "experiments/sonnet-vs-minimax-anthropic/evaluated.json.gz": "41fe9ff67f430a0ad99cb384642a6af867abf24a1d342516318da36f1e8955c5"
+  }
+}

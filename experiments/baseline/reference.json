@@ -1,6 +1,7 @@
 {
-  "path": "experiments/baseline/results.json.gz",
-  "content_hash": "1a18866ab6838562e85513bcf25ad68d9661a49b4cdebee0d2d5255d81763a3c",
-  "code_revision": "0a1779f5eba491678704c5e8ad7aeb4f7403880dc15120e059a959fc63995a3a",
-  "config_path": "experiments/baseline/config.json"
+  "path": "experiments/minimax-baseline/evaluated.json.gz",
+  "content_hash": "d1464c2cc5f3bb9efb5eb615aed5770f0bb064f61aa8683ff6aff63a4bafae95",
+  "code_revision": "64c8d9c7c7b8bebd51e1fc83a686ea2dce5daad10d124644bba42435c1544154",
+  "config_path": "experiments/minimax-baseline/config.json",
+  "dataset_root": ".cache/datasets/banking-reviewed"
 }
