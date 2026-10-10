@@ -26,6 +26,7 @@ dist/
 # Generated execution, analysis and preview output
 /experiments/**/artifacts/
 /analysis/artifacts/
+/local_testing/banking/data/
 /ANSWERS/*
 !/ANSWERS/README.md
 /demo/*.mp4

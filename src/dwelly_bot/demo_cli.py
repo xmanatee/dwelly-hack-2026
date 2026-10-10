@@ -6,11 +6,10 @@ from collections.abc import Sequence
 from pathlib import Path
 
 from dwelly_bot.channels.intake import inbound_adapter
-from dwelly_bot.context.collector import ContextCollector, ContextSource, Investigator
+from dwelly_bot.context.collector import ContextSource
 from dwelly_bot.context.sources import JsonSource, SQLiteSource
-from dwelly_bot.execution import MockExecutor
 from dwelly_bot.execution.contracts import ExecutionResult
-from dwelly_bot.harness.production import ProductionPipeline
+from dwelly_bot.harness.local import run_local_pipeline
 from dwelly_bot.planning import HumanReviewPlanner, Plan, Planner
 
 
@@ -45,32 +44,14 @@ async def run_demo(args: argparse.Namespace) -> ExecutionResult:
         else HumanReviewPlanner()
     )
 
-    async def run(investigator: Investigator | None = None) -> ExecutionResult:
-        return await ProductionPipeline(
-            ContextCollector(tuple(sources), investigator=investigator),
-            planner,
-            MockExecutor(state_path=args.state),
-        ).run(event, args.output)
-
-    if not args.context_config:
-        return await run()
-    from dwelly_bot.budget import BudgetLedger
-    from dwelly_bot.configuration import read_config
-    from dwelly_bot.context.investigator import AgentInvestigator
-    from dwelly_bot.models import BudgetedModel
-    from dwelly_bot.providers import ledger_path, model_context, profile_for
-
-    config = read_config(args.context_config)
-    profile = profile_for(config)
-    async with model_context(profile) as pool:
-        model = BudgetedModel(
-            pool,
-            BudgetLedger(ledger_path(config), config.total_budget_usd),
-            f"context/{event.event_id}",
-            config.request_timeout_seconds,
-            profile=profile,
-        )
-        return await run(AgentInvestigator(model, config))
+    return await run_local_pipeline(
+        event,
+        tuple(sources),
+        planner,
+        args.output,
+        state=args.state,
+        context_config=args.context_config,
+    )
 
 
 def main(argv: Sequence[str] | None = None) -> int:

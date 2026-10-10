@@ -1,0 +1,198 @@
+{
+  "bereavement_team": [
+    "status of the death notification",
+    "status of the estate case"
+  ],
+  "case_record": [
+    "branch visit notes",
+    "previous contacts about the card"
+  ],
+  "collections_team": [
+    "breathing space and letters"
+  ],
+  "data_protection_team": [
+    "police disclosure requests"
+  ],
+  "dd_service": [
+    "active mandates",
+    "mandate and upcoming collection",
+    "mandate status",
+    "mandate status and upcoming collections",
+    "mandates on the deceased's account",
+    "status of the indemnity claim"
+  ],
+  "document_service": [
+    "accessible / language statement formats",
+    "outstanding information request",
+    "statement availability by period"
+  ],
+  "fee_review_process": [
+    "existing review for the fee"
+  ],
+  "limit_service": [
+    "current limit",
+    "current limit and change requests"
+  ],
+  "profile_change_process": [
+    "change requested by email",
+    "name correction check",
+    "status of the change request"
+  ],
+  "security_team": [
+    "is there a staff override"
+  ],
+  "specialist_support": [
+    "joint account options when economic abuse is disclosed",
+    "language support options",
+    "support note on the customer"
+  ],
+  "access_log": [
+    "access status and sign-in events",
+    "online access status",
+    "recent sign-in events"
+  ],
+  "acquiring_reports": [
+    "report for the selected period"
+  ],
+  "authentication_service": [
+    "email sender authentication",
+    "verification on the phone call",
+    "verification on this call"
+  ],
+  "batch_approval_queue": [
+    "approval steps",
+    "approval steps for the batch",
+    "approvals for the batch",
+    "batch status"
+  ],
+  "business_role_register": [
+    "administrator and requester roles",
+    "director and finance manager roles",
+    "requester's roles",
+    "signatories and administrator",
+    "signatory check",
+    "users and roles for the business"
+  ],
+  "card_system": [
+    "authorisation behind the statement entry",
+    "available PIN routes",
+    "card activation status",
+    "card status",
+    "card status and open orders",
+    "card status and who set it",
+    "delivery address options",
+    "dispatch status of the replacement card",
+    "earlier payments to the merchant",
+    "existing replacement orders",
+    "gambling block status and removal request",
+    "pending card payments",
+    "recent authorisations",
+    "recurring card payments to the merchant",
+    "renewal dispatch and notification",
+    "replacement card dispatch",
+    "restriction category and disclosure limit",
+    "security checks on the card",
+    "status of the blocked card and replacement",
+    "the cash machine authorisation",
+    "the specific declined authorisation"
+  ],
+  "cop_service": [
+    "name check on the new payee details",
+    "name-check result",
+    "name-check result at payment time",
+    "name-check result for the batch line",
+    "name-check result for the new payee"
+  ],
+  "device_register": [
+    "devices and sign-ins",
+    "devices on the profile",
+    "recent device registrations",
+    "registered devices",
+    "status of the new device",
+    "the new device's status"
+  ],
+  "fee_tariff": [
+    "charge for archived statement copies",
+    "express replacement card fee",
+    "fee basis",
+    "fee basis for the specific fee",
+    "fees charged in the last three months",
+    "fees charged on the account",
+    "fees on the account",
+    "international payment fee",
+    "returned item fee",
+    "the fee charged"
+  ],
+  "import_service": [
+    "receipt and validation",
+    "receipt and validation of the payroll file",
+    "receipt of the payroll file",
+    "validation result for the batch"
+  ],
+  "incoming_payment_system": [
+    "credits matching the expected payment",
+    "regular incoming credits",
+    "the unexpected credit"
+  ],
+  "payment_instruction_journal": [
+    "stage of the one-off payment",
+    "stage of the specific supplier payment",
+    "status of the future-dated payment",
+    "the payment to the new supplier"
+  ],
+  "savings_products": [
+    "account rate and status",
+    "current savings products",
+    "fixed bond terms"
+  ],
+  "standing_order_journal": [
+    "active standing orders",
+    "current amount and pending amendment",
+    "instructions behind the two payments",
+    "next run date of the standing order",
+    "next runs for a run day of 31",
+    "outcome of the scheduled run",
+    "processing stage of today's run",
+    "stage of the next run",
+    "stage of today's run",
+    "standing order details",
+    "standing order to the payee",
+    "standing orders to the payee"
+  ],
+  "third_party_register": [
+    "authority between joint holders",
+    "authority for the caller",
+    "executor status",
+    "registered authority for the caller",
+    "third parties with authority on the customer's accounts"
+  ],
+  "transaction_journal": [
+    "activity in the requested range",
+    "current month activity",
+    "debits around the run date",
+    "interest credits in the tax year",
+    "payments to the merchant",
+    "pension credit this week",
+    "posted activity in the statement period",
+    "recent card activity",
+    "salary credit to the customer's sole account",
+    "source of today's credit",
+    "the disputed purchase",
+    "the payment in account activity",
+    "the queried debit",
+    "the withdrawal"
+  ],
+  "transfer_journal": [
+    "SWIFT payment details",
+    "outgoing transfer matching amount, payee and date",
+    "payments to the scam payee",
+    "stage of the specific supplier payment",
+    "status of the payment",
+    "status of the specific batch line",
+    "status of the specific payment",
+    "status of the specific transfer",
+    "the held payment",
+    "the payment to the new supplier",
+    "transfers today"
+  ]
+}

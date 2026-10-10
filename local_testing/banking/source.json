@@ -1,0 +1,25 @@
+{
+  "archive": "dwelly-banking-synth-code.zip",
+  "sha256": "f5a4c996a8787a549a6143cf4736e7d5d54427dd0c0c984a2d1d54b1baf82ef0",
+  "files": {
+    "README.md": "11f598062b23da29466a2b9f04008524185e569dabfc940a833e33be10c402a3",
+    "synth/render.py": "b1176b1d06af707b2c25d389348916fbe9e96a244920d7915770ea6dd92680fd",
+    "synth/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "synth/export.py": "8fae2843c6fb08e79b2039df4511f8df4dca05a7f80e7e2c05d6c6245f1805b4",
+    "synth/core.py": "e02f14b598c4a7779c673b9592d0c1a11051a6bd3bdd86e186a363c6c67b6d35",
+    "synth/simulate.py": "b22a495234a7488ac21be78da391bf7a5bf10420a985489b6f7982c185c7ac21",
+    "synth/validate.py": "df36e104058e2df6a148521539351d3f538772c29f28fcb45adbed356df9a821",
+    "synth/scenarios/cards_access.py": "94dbbf4c120f3b6f71ea1302a29b94e8eeb0d1fbdd15f7755143be0500297bd5",
+    "synth/scenarios/__init__.py": "23d3fd8b0810e967b167f72d7b049bf6b7293f1afa917f22b77fa78116b0c2dc",
+    "synth/scenarios/documents_profile.py": "ab7a03d26c146bdd397626c1aa3bf38a583e9980ac290a612c5829cf8b267b80",
+    "synth/scenarios/payments.py": "323d12b67ea431d515b45efa43047933d93e4ed2662eb8aca9ae343731dc0b70",
+    "synth/scenarios/scheduled.py": "ac73d2408abc960177196baca31e3e96f94642e2484a4e8f68ba970dc3424416",
+    "synth/scenarios/safeguarding.py": "ef0824ab0a3e2c22cd2a9aec72ca106a0dec9686c373c4f1e125e23a8db2fd53",
+    "synth/scenarios/business.py": "88983f6743c277c4a8cebc6fe85cda3e5a49d16de04dd16ade8b5dbf768a4706",
+    "synth/schema.sql": "56763ecb6b5501bddd3b84109a04132b4e7abde7e196f9443f9156e74e739efd",
+    "synth/build.py": "ee8752433ea95ef0624be0e661f8e6f739227d604682649712e1f227463c33da",
+    "synth/catalog.py": "698a5d9e2586fedabdeae468b5d47c7e52ea8b502fb802cadde34400608e9119",
+    "synth/pools.py": "c4f2e5b5e7b2705481cb00c949bc9dfdb8c202dc469a76e75927cedd1e24d090",
+    "docs/CATALOG.md": "78a737c82809a47a896ed094f33b1115f5d3b37044dcba25802e08666501f261"
+  }
+}
