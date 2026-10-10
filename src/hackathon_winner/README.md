@@ -110,3 +110,16 @@ triggered by ordinary code pushes. Artifact handling follows the official
 Local output remains immutable. The `.winner-run` marker reserves a directory before model
 calls, preventing concurrent writers from mixing journals and results. Keep that marker
 with captures; use a new directory for a new attempt.
+
+## Locally prepared hard-case batch
+
+```sh
+uv run hackathon-winner /path/to/cases --config src/hackathon_winner/config-hard.json
+```
+
+This optional profile uses Opus 5.5 high, 32k output headroom, three concurrent cases and
+longer request/case timeouts. Set `ANTHROPIC_WINNER_API_KEY` in the ignored local `.env` or
+environment; it is intentionally independent of the default `ANTHROPIC_API_KEY`.
+The dedicated cumulative ledger has a $100 guard, not an estimated charge. The ordinary
+CLI default and the manual workflow still use `config.json`.
+[Readiness checks and scope](../../experiments/winner-hard-readiness/README.md).

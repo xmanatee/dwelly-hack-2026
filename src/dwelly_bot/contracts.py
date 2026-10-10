@@ -74,7 +74,7 @@ class ModelProfile(BaseModel):
     tool_choice_required: bool = True
     anthropic_cache: bool = False
     reasoning_enabled: bool = False
-    max_tokens: int = Field(default=2048, ge=256, le=8192)
+    max_tokens: int = Field(default=2048, ge=256, le=128000)
     reasoning_effort: Literal["none", "minimal", "low", "medium", "high", "xhigh", "max"] | None = (
         None
     )
@@ -118,8 +118,8 @@ class RunConfig(ModelProfile):
     tool_timeout_seconds: float = Field(default=10, ge=0.001, le=120)
     max_total_tokens: int = Field(default=350000, ge=1, le=2000000)
     max_input_tokens: int = Field(default=90000, ge=1, le=200000)
-    case_timeout_seconds: float = Field(default=240, ge=10, le=600)
-    request_timeout_seconds: float = Field(default=60, ge=5, le=120)
+    case_timeout_seconds: float = Field(default=240, ge=10, le=3600)
+    request_timeout_seconds: float = Field(default=60, ge=5, le=900)
     total_budget_usd: float = Field(default=15, gt=0, le=10000)
     budget_file: str | None = None
     skills: list[str] = Field(default_factory=list)
