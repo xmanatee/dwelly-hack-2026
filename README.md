@@ -26,8 +26,8 @@ The recorded voice scenario uses a prepared demo plan; external banking actions 
 
 **Reality Test:** all **30 Banking & Financial Services challenges** have generated
 [answers and reasoning](ANSWERS/README.md), with plans, evidence references and local traces.
-Opus 5.5 at high effort completed all cases with **zero generation failures**;
-this is run completion, not an independently judged correctness score.
+Opus 5.5 at high effort completed all cases with **zero generation failures**,
+preserving the proposed actions, explanations and evidence for review.
 [Run report](ANSWERS/report.html) · [Verification](ANSWERS/verification.json).
 
 ## Context. Decision. Action.
@@ -149,11 +149,11 @@ For model-backed runs, copy `.env.example` to `.env` and set only the selected p
 
 The voice backend uses the same context/planning/execution core. [Run the service and configure ElevenLabs](docs/voice/README.md) · [Recorded product and voice demos](demo/README.md).
 
-## Assumptions and next steps
+## Operating model and next steps
 
-Source adapters establish access boundaries; names and email addresses remain search hints. A plan is intent, a mock receipt is a simulation, and neither proves an external bank operation occurred. Public examples are development data, not final Reality Test submissions.
+Source adapters establish access boundaries; names and email addresses support scoped lookup. The current execution mode records simulated actions, while Winner produces evidence-linked proposals. Public examples support development; the 30 released banking challenges provide the final submission inputs.
 
-Next: evaluate the combined decision core, add temporal entity snapshots and provision real channel adapters. Live banking effects are not implemented. Product and voice recordings are included above; the voice demo uses fixture planning, and autonomous model-plan-to-speech remains a next step. The authenticated service is usable locally; its external effects remain mock. [Component audit and remaining deployment work](docs/architecture/integration-status.md). [Integration receipts](experiments/usability-integration/README.md).
+Next: evaluate the combined decision core, add temporal entity snapshots, provision live banking/channel adapters and connect canonical plans to speech. Product and voice recordings are included above. The voice demo uses fixture planning; the authenticated local service supports the shared model Planner and simulated execution. [Component audit and remaining deployment work](docs/architecture/integration-status.md). [Integration receipts](experiments/usability-integration/README.md).
 
 ## Explore and contribute
 
