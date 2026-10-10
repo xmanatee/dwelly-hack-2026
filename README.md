@@ -2,7 +2,7 @@
 
 [Live banking overview](https://xmanatee.github.io/dwelly-hack-2026/) · [Baseline report](https://xmanatee.github.io/dwelly-hack-2026/baseline.html)
 
-**Target architecture:** [Context → Planner → Execution](docs/architecture/README.md) · [Visual diagram](docs/architecture/index.html). The shared planner is the new development direction; the existing runtime and benchmarks below predate this migration.
+**Target architecture:** [Context → Planner → Execution](docs/architecture/README.md) · [Visual diagram](docs/architecture/index.html). The product exposes a shared Planner (`text → Plan`); a separate Hackathon Solver imports it and generates `ANSWER.md` / `REASONING.md`. Plans contain the selected decision and concrete actions. This is the target design; the existing runtime and benchmarks below predate the migration.
 
 **Historical benchmark:** [MiniMax M3 vs Sonnet 5.5](experiments/sonnet-vs-minimax-anthropic/README.md), 50/50 executed and reviewed per model. [Open the comparison](experiments/sonnet-vs-minimax-anthropic/comparison.html).
 
