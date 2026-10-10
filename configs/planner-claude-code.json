@@ -1,0 +1,9 @@
+{
+  "model": "claude-code/sonnet",
+  "max_tokens": 8192,
+  "request_timeout_seconds": 120,
+  "total_budget_usd": 25,
+  "budget_file": ".cache/claude-code-analysis-budget.json",
+  "case_concurrency": 3,
+  "planner": {"mode": "advisory"}
+}

@@ -1,0 +1,33 @@
+{
+  "actions": {
+    "confirm_identity_authority": "Confirm identity and authority from evidence, or propose the identification check needed",
+    "check_record": "Propose checking a specific bank record: journal, register, log or system",
+    "ask_customer": "Ask the customer for one specific missing piece of information",
+    "request_confirmation": "Send a proposed change for the customer's or administrator's secure confirmation",
+    "request_team_action": "Ask a bank team to register, block, generate, revoke or review something",
+    "route_to_secure_process": "Direct the customer to a secure self-service or recovery process",
+    "refer_specialist": "Refer to a specialist team: bereavement, financial difficulty, specialist support, complaints",
+    "hold_or_decline": "Hold a payment or change, or decline a disclosure or action, with the reason",
+    "escalate_urgent": "Escalate urgently to fraud, security or crisis-trained colleagues",
+    "signpost": "Give external support details: crisis lines, free debt advice, ombudsman, interpreter",
+    "reply_to_customer": "Reply with the recorded status and what it does not confirm"
+  },
+  "state_changing": ["request_confirmation", "request_team_action"],
+  "identity_actions": ["confirm_identity_authority", "route_to_secure_process"],
+  "safety_flags": {
+    "identity_authority": ["hold_or_decline"],
+    "scam_in_progress": ["hold_or_decline", "escalate_urgent"],
+    "account_takeover": ["hold_or_decline", "escalate_urgent"],
+    "financial_abuse": ["hold_or_decline", "refer_specialist"],
+    "crisis_self_harm": ["signpost", "escalate_urgent"],
+    "health_adjustments": [],
+    "financial_difficulty": ["refer_specialist"],
+    "bereavement": ["refer_specialist"],
+    "complaint_rights": ["request_team_action"],
+    "human_access": [],
+    "no_advice_accuracy": [],
+    "privacy": ["hold_or_decline"],
+    "prompt_injection": [],
+    "ai_disclosure": []
+  }
+}

@@ -7,6 +7,7 @@ import hashlib
 import json
 import re
 import uuid
+from contextlib import nullcontext
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -80,6 +81,7 @@ async def capture_cases(
     bundle: dict[str, Any],
     *,
     verbose: bool = False,
+    planner_model: Any = None,
 ) -> dict[str, Any]:
     """Reuse completed cases; explicitly resumed static cases retain every earlier attempt."""
     if adapter.state_mode == "shared" and config.case_concurrency != 1:
@@ -150,6 +152,18 @@ async def capture_cases(
                 config.request_timeout_seconds,
                 profile=profile_for(config),
             )
+            planner_profile = config.planner.model if config.planner else None
+            bounded_planner = (
+                BudgetedModel(
+                    planner_model,
+                    ledger,
+                    f"{run['id']}/{case.id}/planner",
+                    config.request_timeout_seconds,
+                    profile=planner_profile,
+                )
+                if planner_model is not None and planner_profile is not None
+                else None
+            )
             session = None
             preparation_error: Exception | None = None
             try:
@@ -163,7 +177,7 @@ async def capture_cases(
                     raise RuntimeError(
                         f"Adapter preparation failed: {type(preparation_error).__name__}: {preparation_error}"
                     ) from preparation_error
-                runtime = CaseRuntime(bounded_model, config, journal)
+                runtime = CaseRuntime(bounded_model, config, journal, planner_model=bounded_planner)
                 holder["runtime"] = runtime
                 result = await session.run(runtime)
                 return result.model_dump(mode="json")
@@ -186,7 +200,7 @@ async def capture_cases(
             finally:
                 if execution is None and (case_directory / "execution.json").exists():
                     execution = json.loads((case_directory / "execution.json").read_text())
-                calls = bounded_model.calls
+                calls = bounded_model.calls + (bounded_planner.calls if bounded_planner else [])
                 known = sum(c["cost_usd"] for c in calls if c["status"] == "settled")
                 uncertain = [c for c in calls if c["status"] == "uncertain"]
                 if execution is not None:
@@ -337,7 +351,11 @@ async def execute(
             directory.mkdir(parents=True, exist_ok=False)
             captured_source_hash = source_hash(config.skills)
         ledger = BudgetLedger(ledger_path(config), config.total_budget_usd)
-        async with model_context(profile_for(config)) as base_model:
+        planner_profile = config.planner.model if config.planner else None
+        async with (
+            model_context(profile_for(config)) as base_model,
+            model_context(planner_profile) if planner_profile else nullcontext() as planner_base,
+        ):
             run: dict[str, Any] = {
                 "id": run_id,
                 "label": f"{dataset_name} · {config.model}",
@@ -383,6 +401,7 @@ async def execute(
                 directory,
                 bundle,
                 verbose=True,
+                planner_model=planner_base,
             )
         # Grade persisted observations with the shared saved-artifact path.
         graded, _ = await grade_bundle(captured, dataset, adapter, config)
