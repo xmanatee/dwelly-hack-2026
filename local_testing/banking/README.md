@@ -122,8 +122,8 @@ bank response and expose that gap. Of 130 visible attachments, 56 are plain text
 
 Acceptance evidence: 27 affected offline tests, strict types and Ruff; the full 1,180-case
 seed-2026 build and a fresh 295-case seed-2028 build passed generator integrity checks.
-Three live context smokes were inspected, fixed and repeated; all six captures remain
-saved. This establishes integration mechanics, not corpus-wide retrieval or Planner quality.
+Three live context smokes were inspected, fixed, repeated and repeated again after
+team synchronization; all nine captures remain saved. A further 36-test combined check passed. This establishes integration mechanics, not corpus-wide retrieval or Planner quality.
 
 Team synchronization consolidated the duplicate generator into `synthetic/`. The build now
 uses the existing locked `synthetic` dependency extra. Earlier captures retain their original

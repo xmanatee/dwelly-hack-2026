@@ -59,3 +59,20 @@ receipt-path adjustment is verified offline; it does not change model inputs or 
 
 Conclusion: the requested local integration is implemented. No historical baseline was
 replaced or accepted; broad retrieval and Planner-quality evaluation remain separate work.
+
+## Team synchronization check
+
+Integrated 13 concurrent commits (advisory Planner, Solver, analysis, shared runtime and
+workspace dependencies), preserving all team changes. The supplied generator's 18 code/catalog
+files are byte-identical to `synthetic/`; the original README is preserved separately.
+A fresh seed-2029 build using the shared locked `synthetic` extra produced 295 cases with
+zero generator integrity errors and ran through the local pipeline.
+
+Post-merge source `e1db1dc` was committed before repeating the same three model runs.
+All completed and passed the source-boundary checks in `review.py`. Actual captures are
+retained in `merged-captures.json.gz`; the report and verification JSON include all three
+stages. The local executable Planner remains a stub; the team's advisory Planner is intact
+and is not implicitly converted into executable actions.
+
+Final combined checks: **36 offline tests passed**, strict typing and Ruff passed.
+Across all 9 live runs, estimated model cost was **$0.160020**.

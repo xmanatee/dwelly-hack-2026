@@ -11,7 +11,7 @@ from dwelly_bot.storage import file_hash
 root = Path(__file__).resolve().parent
 report = Report(
     title="Synthetic bank integration",
-    subtitle="Three cases, two inspected revisions; functional checks, not Planner quality",
+    subtitle="Three cases, two revisions and a post-merge check; functional integration",
 )
 report.text(
     "Finding",
@@ -21,7 +21,7 @@ report.text(
 rows = []
 records = []
 receipts = {}
-for revision in ("initial", "revised"):
+for revision in ("initial", "revised", "merged"):
     path = root / f"{revision}-captures.json.gz"
     saved = json.loads(gzip.decompress(path.read_bytes()))
     receipts[revision] = {"sha256": file_hash(path), "source_commit": saved["source_commit"]}
@@ -43,7 +43,7 @@ for revision in ("initial", "revised"):
         observed = {json.dumps(r, sort_keys=True) for e in reads for r in e["result"]["records"]}
         assert {json.dumps(r, sort_keys=True) for r in context["records"]} == observed
         assert result["status"] == "simulated" and len(result["receipts"]) == 2
-        if revision == "revised":
+        if revision != "initial":
             assert set(context["needs"]) == {
                 f"{e['arguments']['source']}: {e['arguments']['question']}" for e in reads
             }

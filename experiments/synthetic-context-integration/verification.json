@@ -8,6 +8,10 @@
     "revised": {
       "sha256": "f664f2e2c649c5172188c23249a48d78dec6a0d73c6c7cd396d1cbad15960c23",
       "source_commit": "a90f099861c2540f565379a0d071ae4f6bd4e9b8"
+    },
+    "merged": {
+      "sha256": "286a6516f370ffcbdcd232551313bf08a7d38965558b40989438b3d59960e681",
+      "source_commit": "e1db1dc36d89b559829e6055d6c05f9033bc7b82"
     }
   },
   "runs": [
@@ -70,6 +74,36 @@
       "records": 3,
       "cost_estimate_usd": 0.016671,
       "status": "simulated"
+    },
+    {
+      "revision": "merged",
+      "channel": "ticket",
+      "case": "SYN-0001",
+      "model_requests": 3,
+      "read_calls": 5,
+      "records": 5,
+      "cost_estimate_usd": 0.0201213,
+      "status": "simulated"
+    },
+    {
+      "revision": "merged",
+      "channel": "call",
+      "case": "SYN-0250",
+      "model_requests": 2,
+      "read_calls": 3,
+      "records": 4,
+      "cost_estimate_usd": 0.0167402,
+      "status": "simulated"
+    },
+    {
+      "revision": "merged",
+      "channel": "email",
+      "case": "SYN-0813",
+      "model_requests": 2,
+      "read_calls": 4,
+      "records": 3,
+      "cost_estimate_usd": 0.0168235,
+      "status": "simulated"
     }
   ],
   "checked": [
@@ -79,5 +113,5 @@
     "revised needs equal tool questions",
     "revised warnings come only from sources"
   ],
-  "total_cost_estimate_usd": 0.1063347
+  "total_cost_estimate_usd": 0.1600197
 }
