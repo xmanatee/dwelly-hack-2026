@@ -1,5 +1,7 @@
 # dwelly-bot
 
+[Live banking overview](https://xmanatee.github.io/dwelly-hack-2026/) · [Baseline report](https://xmanatee.github.io/dwelly-hack-2026/baseline.html)
+
 A banking service case reviewer for the Dwelly AI Hackathon 2026, **Banking & Financial Services** track. It reads the evidence available at a decision point, produces a cited customer response and an operator action plan, and records missing information and the need for human review.
 
 The operational problem is a gap between a customer's request and what bank records actually establish: authorisation, debit, sending and recipient credit are different states. The agent keeps that distinction explicit. It currently has read-only evidence tools; bank actions and customer messages are proposals, not executed effects.
@@ -68,11 +70,11 @@ Validate response and action quality with reviewed examples; integrate only orga
 
 ## Development
 
-Follow [AGENTS.md](AGENTS.md), the [repository sync workflow](.agents/skills/dwelly-bot-repo-sync/SKILL.md) and the [experiment workflow](.agents/skills/dwelly-bot-experiment/SKILL.md). Work on `main`; commit requested changes and push only when requested. The local history has a new event root; upstream history and hosted Pages require a separately authorized replacement. Do not merge the superseded upstream history into this root.
+Follow [AGENTS.md](AGENTS.md), the [repository sync workflow](.agents/skills/dwelly-bot-repo-sync/SKILL.md) and the [experiment workflow](.agents/skills/dwelly-bot-experiment/SKILL.md). Work on `main`; commit requested changes and push only when requested. GitHub `main` and Pages use the banking project history. Teammates with an older checkout should make a fresh clone and preserve any uncommitted work separately; do not merge unrelated histories.
 
 - `src/dwelly_bot/adapters/`: data mappings and guards; `harness/`, `context/`, `tools/`, `prompts/`, `skills/`: agent and tool boundaries.
 - `experiments/`, `evaluation/`, `reporting/`: capture, saved checks and display. [Report components](src/dwelly_bot/reporting/README.md).
 - `analysis/`: recipe usage; generated corpus-derived reports remain ignored. Coding skills live in `.agents/skills/`; `.claude/skills/` links to them.
-- Quick edits: `uv run ruff check src tests experiments/controls dataset/fetch.py`, `uv run ruff format src tests experiments/controls dataset/fetch.py`, `uv run mypy`, and affected `uv run pytest -q tests/test_AREA.py`. `dwelly-bot check` runs the complete offline gate.
+- Quick edits: `uv run ruff check src tests dataset/fetch.py`, `uv run ruff format src tests dataset/fetch.py`, `uv run mypy`, and affected `uv run pytest -q tests/test_AREA.py`. `dwelly-bot check` runs the complete offline gate.
 
 [Apache 2.0](LICENSE). The organizer source remains linked and versioned; its public availability does not imply a separate dataset licence. Original source archives are not committed.

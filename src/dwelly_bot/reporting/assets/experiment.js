@@ -12,11 +12,12 @@ function showExperiment(report) {
   for(const [i,run] of runs.entries()) {
     const rows=captures.filter(r=>r.run_id===run.id),counts={pass:0,fail:0,unknown:0};rows.forEach(r=>counts[r.goal_status]++);
     const card=node('section',undefined,'run-summary'),head=node('div',undefined,'summary-heading');
-    head.append(node('span',role(i),'eyebrow'),node('strong',model(run)),node('span',`${counts.pass} / ${rows.length} passed`,'score'));card.append(head);
+    head.append(node('span',role(i),'eyebrow'),node('strong',model(run)),node('span',counts.unknown===rows.length?'Correctness unknown':`${counts.pass} / ${rows.length} passed`,'score'));card.append(head);
     const bar=node('div',undefined,'outcome-bar');bar.setAttribute('role','img');bar.setAttribute('aria-label',`${counts.pass} passed, ${counts.fail} failed, ${counts.unknown} unscored`);
     for(const [state,n] of Object.entries(counts)){const part=node('span',undefined,state);part.style.width=`${rows.length?100*n/rows.length:0}%`;bar.append(part);}
     const legend=node('div',undefined,'outcome-legend');for(const [state,text] of [['pass','Passed'],['fail','Failed'],['unknown','Unscored']])legend.append(node('span',state==='pass'?text:`${text} ${counts[state]}`,state));card.append(bar,legend);
     const stats=resourceRows.find(r=>r.Role===(i===0?'baseline':'candidate'))||resourceRows[i]||{};
+    const execution=node('p',`${rows.filter(r=>r.raw_capture.execution_status==='completed').length} / ${rows.length} cases executed · ${counts.unknown} outcomes unscored`,'small');card.append(execution);
     const resources=node('div',undefined,'run-stats'),attempts=rows.flatMap(r=>[r.raw_capture,...(r.raw_capture.previous_attempts||[])]);
     function tokens(key,total){const known=attempts.map(a=>a.usage?.[key]).filter(Number.isFinite);return total!=null?UI.number(total):known.length?'≥ '+UI.number(known.reduce((a,b)=>a+b,0)):'—';}
     const cost=stats['Execution cost (USD)'],knownCost=stats['Known cost (USD)'];

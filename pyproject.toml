@@ -45,7 +45,7 @@ ignore = ["E501"] # Line wrapping is owned by the formatter.
 
 [tool.mypy]
 python_version = "3.12"
-files = ["src", "tests", "experiments/controls", "dataset/fetch.py"]
+files = ["src", "tests", "dataset/fetch.py"]
 exclude = ["^build/", "^dist/"]
 exclude_gitignore = true
 strict = true
