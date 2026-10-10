@@ -19,6 +19,7 @@ async def run_local_pipeline(
     *,
     state: Path | None = None,
     context_config: Path | None = None,
+    planner_config: Path | None = None,
     dataset: dict[str, Any] | None = None,
 ) -> ExecutionResult:
     if output.exists():
@@ -27,6 +28,20 @@ async def run_local_pipeline(
         raise ValueError("Receipt state must be outside the capture directory")
 
     async def run(investigator: Investigator | None = None) -> ExecutionResult:
+        if planner_config is not None:
+            import asyncio
+
+            from dwelly_bot.configuration import read_config
+            from dwelly_bot.execution.decision import DecisionExecutor
+            from dwelly_bot.planner.service import DecisionPlanner
+
+            config = read_config(planner_config)
+            async with asyncio.timeout(config.case_timeout_seconds):
+                return await ProductionPipeline(
+                    ContextCollector(sources, investigator=investigator),
+                    DecisionPlanner(event, config, output / "planner.jsonl"),
+                    DecisionExecutor(state),
+                ).run(event, output, dataset=dataset)
         return await ProductionPipeline(
             ContextCollector(sources, investigator=investigator),
             planner,

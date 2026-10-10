@@ -1,18 +1,28 @@
 """One orchestration path for all channels, with replaceable context/planner/executor."""
 
 from pathlib import Path
-from typing import Any
+from typing import Any, Protocol
+
+from pydantic import BaseModel
 
 from dwelly_bot.channels.intake import Inbound, normalize
 from dwelly_bot.context.collector import ContextCollector
 from dwelly_bot.execution.contracts import ExecutionResult, Executor
 from dwelly_bot.experiments.journal import Journal
-from dwelly_bot.planning import Planner
 from dwelly_bot.storage import file_hash, save_json
 
 
-class ProductionPipeline:
-    def __init__(self, collector: ContextCollector, planner: Planner, executor: Executor) -> None:
+class PlanningComponent[PlanT: BaseModel](Protocol):
+    async def plan(self, context: str) -> PlanT: ...
+
+
+class ProductionPipeline[PlanT: BaseModel]:
+    def __init__(
+        self,
+        collector: ContextCollector,
+        planner: PlanningComponent[PlanT],
+        executor: Executor[PlanT],
+    ) -> None:
         self.collector = collector
         self.planner = planner
         self.executor = executor

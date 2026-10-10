@@ -32,7 +32,14 @@ async def run_demo(args: argparse.Namespace) -> ExecutionResult:
         sources.append(SQLiteSource(args.sqlite, table=args.table))
     if args.state and any(
         args.state.resolve() == p.resolve()
-        for p in (args.input, args.records, args.sqlite, args.plan, args.context_config)
+        for p in (
+            args.input,
+            args.records,
+            args.sqlite,
+            args.plan,
+            args.context_config,
+            args.planner_config,
+        )
         if p
     ):
         raise ValueError("Receipt state must be separate from input/source files")
@@ -51,6 +58,7 @@ async def run_demo(args: argparse.Namespace) -> ExecutionResult:
         args.output,
         state=args.state,
         context_config=args.context_config,
+        planner_config=args.planner_config,
     )
 
 
@@ -67,7 +75,13 @@ def main(argv: Sequence[str] | None = None) -> int:
         type=Path,
         help="Explicit paid context-agent RunConfig; omitted means offline",
     )
-    parser.add_argument(
+    planning = parser.add_mutually_exclusive_group()
+    planning.add_argument(
+        "--planner-config",
+        type=Path,
+        help="Use the shared model-backed case Planner; external actions remain mock",
+    )
+    planning.add_argument(
         "--plan", type=Path, help="Saved Plan JSON; omitted means human-review stub"
     )
     parser.add_argument("--state", type=Path, help="Separate SQLite file for durable mock receipts")

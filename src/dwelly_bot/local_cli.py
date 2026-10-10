@@ -65,7 +65,13 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="Replay case in another local transport",
     )
     run.add_argument("--context-config", type=Path, help="Enable paid Pydantic AI context research")
-    run.add_argument("--plan", type=Path, help="Explicit fixture plan; default is human review")
+    planning = run.add_mutually_exclusive_group()
+    planning.add_argument(
+        "--plan", type=Path, help="Explicit fixture plan; default is human review"
+    )
+    planning.add_argument(
+        "--planner-config", type=Path, help="Use the same model-backed Planner as Winner"
+    )
     run.add_argument(
         "--state", type=Path, help="Mock receipts; default is isolated by dataset hash"
     )
@@ -116,7 +122,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             raise ValueError("Capture directory must be outside the dataset")
         if any(
             args.state.resolve() == p.resolve()
-            for p in (args.input, args.plan, args.context_config)
+            for p in (args.input, args.plan, args.context_config, args.planner_config)
             if p
         ):
             raise ValueError("Receipt state must be separate from input/config files")
@@ -143,6 +149,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 args.output,
                 state=args.state,
                 context_config=args.context_config,
+                planner_config=args.planner_config,
                 dataset=manifest,
             )
         )

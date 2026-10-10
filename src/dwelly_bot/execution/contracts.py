@@ -2,11 +2,10 @@
 
 from typing import Literal, Protocol
 
-from pydantic import Field
+from pydantic import BaseModel, Field
 
 from dwelly_bot.channels.intake import Contract, Trigger
 from dwelly_bot.experiments.journal import Journal
-from dwelly_bot.planning.contracts import Plan
 
 
 class ActionReceipt(Contract):
@@ -28,8 +27,8 @@ class ExecutionResult(Contract):
     receipts: tuple[ActionReceipt, ...]
 
 
-class Executor(Protocol):
+class Executor[PlanT: BaseModel](Protocol):
     @property
     def capabilities(self) -> str: ...
 
-    async def execute(self, trigger: Trigger, plan: Plan, journal: Journal) -> ExecutionResult: ...
+    async def execute(self, trigger: Trigger, plan: PlanT, journal: Journal) -> ExecutionResult: ...
