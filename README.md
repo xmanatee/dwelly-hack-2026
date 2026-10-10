@@ -1,99 +1,133 @@
+<div align="center">
+
 # dwelly-bot
 
-[Live banking overview](https://xmanatee.github.io/dwelly-hack-2026/) · [Baseline report](https://xmanatee.github.io/dwelly-hack-2026/baseline.html)
+**Turn service context into a concrete next action.**
 
-**Architecture:** [Context → Planner → Execution](docs/architecture/README.md) · [Visual diagram](docs/architecture/index.html). An [offline production skeleton](examples/production/README.md) now connects email/call/ticket triggers, Markdown context, the public Planner (`text → Plan`) and mock execution. Planner currently always requests human review. Separate Hackathon Solver packaging and answer generation remain planned. The historical agent and benchmarks below predate this migration.
+An open-source operational agent for requests that arrive as emails, calls and tickets.
+Built for the **Dwelly AI Hackathon 2026 · Banking & Financial Services**.
 
-[Integration status and remaining work](docs/architecture/integration-status.md) · [Planner handoff for Vera](src/dwelly_bot/planning/implementation/README.md). Optional context-agent mode can investigate JSON/SQLite sources; action profiles and local calculation are implemented.
+[Quickstart](#quickstart) · [Architecture](docs/architecture/README.md) · [Planner](docs/planner/README.md) · [Evaluation](docs/evaluation/README.md) · [Demo](demo/README.md)
 
-Run the new vertical slice without a model or external actions:
+Python 3.12 · Pydantic AI · uv · [Apache 2.0](LICENSE)
 
-```sh
-uv run dwelly-bot demo --input examples/production/ticket.json --records examples/production/records.json --output .cache/production-demo/ticket
-```
+</div>
 
-Use a new output directory each time. Inspect `context.md`, `plan.json`, `result.json` and `events.jsonl` there. [Three-channel examples and extension interfaces](examples/production/README.md) describe the mock limits and how to connect real sources. Replying to the original channel is a plan action; there is no additional delivery stage.
+## Context. Decision. Action.
 
-**Historical benchmark:** [MiniMax M3 vs Sonnet 5.5](experiments/sonnet-vs-minimax-anthropic/README.md), 50/50 executed and reviewed per model. [Open the comparison](experiments/sonnet-vs-minimax-anthropic/comparison.html).
+A customer says a payment was sent. A record shows only a debit. A support agent needs to know what is established, what is missing and what can actually happen next.
 
-A banking service case reviewer for the Dwelly AI Hackathon 2026, **Banking & Financial Services** track. It reads the evidence available at a decision point, produces a cited customer response and an operator action plan, and records missing information and the need for human review.
+Dwelly-bot separates that work into three components: **gather the evidence, decide the next move, execute the chosen actions**. The Planner is the decision-making core. It turns a prepared context into a strategy for the case: respond, act, ask for missing information or involve a person.
 
-The operational problem is a gap between a customer's request and what bank records actually establish: authorisation, debit, sending and recipient credit are different states. The agent keeps that distinction explicit. It currently has read-only evidence tools; bank actions and customer messages are proposals, not executed effects.
+[![Product workflow, shared Planner and a separate evaluation loop](docs/architecture/diagram.png)](docs/architecture/index.html)
 
-## Install and run
+*Blue: the operational workflow. Purple: the shared Planner and contest path. Gold: evaluation and improvement. The contest path is the target design; its separate Solver package is pending.*
 
-Use Python 3.12 and [uv](https://docs.astral.sh/uv/getting-started/installation/) on macOS/Linux or WSL (local budget locking uses `fcntl`).
+[Interactive diagram source](docs/architecture/index.html) · [Component contracts](docs/architecture/README.md) · [Implementation status](docs/architecture/integration-status.md)
 
-```sh
-uv sync --locked --extra analysis --extra evaluation
-uv run python dataset/fetch.py
-uv run python dataset/fetch.py --archive dataset/release.zip --profile configs/banking-development.json --root .cache/datasets/banking-reviewed
-uv run dwelly-bot check
-uv run dwelly-bot agent doctor
-```
+## One decision core, several ways in
 
-Copy `.env.example` to `.env` and supply `OPENROUTER_API_KEY` for the MiniMax control and `ANTHROPIC_API_KEY` for the Sonnet candidate and Opus judge. Never commit credentials. The offline checks, source analysis and saved-report rendering make no model calls.
+| Stage | Responsibility | In this repository |
+| --- | --- | --- |
+| **Trigger** | Normalize email, call or ticket; preserve its reply route. | Typed inputs and local fixtures. |
+| **Context** | Identify useful information and read authorized sources. | JSON/SQLite readers; optional Pydantic AI investigator. |
+| **Planner** | Apply knowledge to the available facts; choose concrete actions. | Public `text → Plan` API and action profiles. Current implementation is a human-review stub. |
+| **Execution** | Run the selected steps and record their results. | Mock communication/handoff/ticket actions; local arithmetic; durable mock receipts. |
 
-```sh
-# Paid execution; uses the cumulative account cap in the tracked configuration.
-uv run dwelly-bot run dwelly-banking --dataset-root .cache/datasets/banking-reviewed --config experiments/minimax-baseline/config.json --experiment NEW_CONTROL_NAME
-# Offline analysis of the corrected decision-time view.
-uv run --extra analysis dwelly-bot analyze run dwelly_bot.analysis.banking --data .cache/datasets/banking-reviewed
-# Compare historical baseline answers with later public evidence, without rerunning them.
-uv run --extra analysis dwelly-bot analyze run dwelly_bot.analysis.banking_review --data dataset --run experiments/baseline/results.json.gz
-# Local overview of saved results and the active baseline corpus.
-uv run --extra analysis python -m dwelly_bot.reporting.site
-```
+Replying in the original channel is a plan action. The executor does not make a second business decision or silently send an extra response.
 
-[Dataset installation and provenance](dataset/README.md) · [Saved baseline and experiments](experiments/README.md) · [Analysis](analysis/README.md) · [Submission](SUBMISSION.md).
+## Why the Planner matters
 
-## Current implementation (before migration)
+Gathering more data and choosing what to do are different problems. Once the context is ready, the Planner can concentrate on the hardest question: **what is the right next action, given these facts, rules and uncertainties?**
+
+That boundary also makes the component independently testable. Production gathers the context; the hackathon adapter prepares supplied case evidence as text. Both are intended to call the same Planner.
 
 ```mermaid
 flowchart LR
-    D[Pinned public examples] --> V[Explicit cutoff and available attachments]
-    V --> A[Banking case agent]
-    A --> T[Read · search · calculate]
-    T --> A
-    A --> S[Response · proposed action · public rationale]
-    S --> E[Saved observable checks]
-    E --> R[HTML report and faithful export]
-    D --> H[Retrospective public-case review]
-    S --> H
+    A[Production context] --> P[Shared Planner]
+    B[Prepared Dwelly case] --> P
+    K[Versioned skills and knowledge] --> P
+    P --> D[Structured plan]
+    D --> E[Operational execution]
+    D -. Planned Solver .-> F[ANSWER + REASONING]
 ```
 
-The adapter owns the case identity, evidence boundary and saved checks. The shared Pydantic AI harness owns tool permissions, limits and local journals. The model pool and process-safe budget ledger are shared by execution and optional analysis/judging. Reporting and analysis do not run the agent. No vendor telemetry, usage reports or session exporters are enabled.
+**Design direction:** a multi-step reasoning component that selects relevant skills, checks candidate actions against evidence and emits a small executable plan. Hierarchical skill access and specialist sub-agents are options under consideration, not implemented capabilities. [Planner design and Vera's TODOs](docs/planner/README.md).
 
-## Models and external services
+## Quickstart
 
-The current control uses `minimax/minimax-m3` through OpenRouter; the complete candidate uses `claude-sonnet-5-5` through Anthropic. Both use low reasoning effort and the same acting prompt, tools, limits and 50 corrected case inputs. The common retrospective judge uses `claude-opus-5-5` through Anthropic. OpenRouter costs are provider-reported; direct Anthropic costs use configured-rate estimates. The provider/caching difference is part of this comparison and limits model-only cost/latency conclusions. The incomplete OpenRouter Sonnet attempt is retained separately. GitHub hosts the version-pinned source archive; no operational bank API or customer simulator is supplied or invented. Dependencies are locked in `uv.lock`.
+Requires **Python 3.12** and [uv](https://docs.astral.sh/uv/) on macOS, Linux or WSL. The default demo needs no API key or dataset download.
 
-Account ledgers live under ignored `.cache/accounts/`. Settled amounts and unresolved reservations carry forward across dataset changes. A configured cap is cumulative, not a fresh per-run allowance, and is local to this laptop. Existing caps never increase automatically. For the explicitly authorized full comparison, both provider ledgers were raised to $100 while preserving earlier charges and unresolved reservations. Copy the relevant ledger when moving paid work between environments; an empty ledger cannot prove remaining account credit.
+```sh
+git clone https://github.com/xmanatee/dwelly-hack-2026.git
+cd dwelly-hack-2026
+uv sync --locked
 
-## Data and assumptions
+uv run dwelly-bot demo \
+  --input examples/production/ticket.json \
+  --records examples/production/records.json \
+  --output .cache/quickstart/ticket
+```
 
-- The [organizer public examples](https://github.com/DwellyOrg/HackatonPublicCases) are development material. This project assigns all 50 banking cases, preserving IDs `001`–`050` as `banking-001`–`banking-050` so track-local numbers remain unambiguous.
-- The organizer asks developers to study complete cases, choose a decision point, expose only evidence available then, and compare decisions with later evidence. The recorded outcome is not the only acceptable decision. [Our data contract](dataset/README.md) separates those views.
-- The historical baseline chose event 002 and excluded every attachment. The reviewed profile keeps that default with configurable per-case cutoffs and includes case 041's CSV, uploaded in event 001. Eight later attachments stay withheld. The new MiniMax control and Sonnet experiment use this corrected input. Historical v1 results and their reference remain preserved separately.
-- Original bytes and the pinned ZIP remain in the ignored dataset. Acting models and the default analysis recipe read only visible views. An explicitly invoked retrospective recipe reads complete public cases and can display saved answers beside the reference evidence. Saved evaluation with `--public-reference` supplies verified full histories and attachments only to the judge; the evaluation profile hashes that exact reference payload. Reinstall verifies hashes and refuses changed data or profiles.
-- Public histories are examples, not trusted labels. Saved checks test answer presence, actual retrieval and whether cited lines were observed. They do **not** establish semantic correctness, safety or successful operations; outcome correctness remains unknown.
-- Synthetic timestamps are case-local. Matching fictional names do not join separate cases.
+The placeholder Planner requests human review and replies to the original ticket. Both external actions are explicitly **simulated**.
 
-## Known limitations
+```text
+.cache/quickstart/ticket/
+├── input.json       # original event
+├── trigger.json     # normalized route
+├── context.md       # exact text sent to Planner
+├── context.json     # source records and gaps
+├── plan.json        # selected actions
+├── result.json      # action receipts
+└── events.jsonl     # local execution journal
+```
 
-There is no live bank integration, outgoing messaging, confirmed handover or independently observed operational outcome. Retrospective model reviews assess answer quality, with per-criterion reasons; they are not outcome ground truth. Available text attachments are supported; available PDF/image attachments cause an explicit unsupported-media error. The adapter accepts the public development format only. Reality Test ingestion needs the released challenge format and must preserve its organizer IDs and supplied evidence without reading hidden evaluation material. Public development exports are labelled as practice and blocked from the conventional `ANSWERS/` destination. A complete development run is not proof of readiness for unseen cases.
+Use a new output directory for each run; captures are preserved. [Try email, calls, calculation → reply and replay protection](examples/production/README.md).
 
-## Next steps
+```sh
+# Inspect the exact JSON action schemas; no model calls.
+uv run dwelly-bot actions --profile production
+uv run dwelly-bot actions --profile contest
+```
 
-Review the recorded comparison before adopting a candidate; use its failures to propose the next agent experiment; implement decision-time PDF/image reading; integrate only supplied operational tools and authority rules; implement and validate the released challenge input contract before the code freeze. Keep all unseen Reality Test cases isolated from development and tuning.
+## Improving decisions with synthetic cases
 
-## Development
+Our testing approach has two complementary paths:
 
-Follow [AGENTS.md](AGENTS.md), the [repository sync workflow](.agents/skills/dwelly-bot-repo-sync/SKILL.md) and the [experiment workflow](.agents/skills/dwelly-bot-experiment/SKILL.md). Work on `main`; commit requested changes and push only when requested. GitHub `main` and Pages use the banking project history. Teammates with an older checkout should make a fresh clone and preserve any uncommitted work separately; do not merge unrelated histories.
+| Path | What it tests | Status |
+| --- | --- | --- |
+| **Dwelly examples → prepared context → Planner → answer** | Decision quality on supplied operational cases. | Banking data adapter and historical evaluations exist; new Planner/Solver integration is pending. |
+| **Synthetic world → noisy events → context → plan → execution** | Missing facts, ambiguous identities, conflicting records and failed actions. | Local fixtures exist; Nikita's broader generator and entity mappings are pending integration. |
 
-- `src/dwelly_bot/adapters/`: data mappings and guards; `harness/`, `context/`, `tools/`, `prompts/`, `skills/`: agent and tool boundaries.
-- `experiments/`, `evaluation/`, `reporting/`: capture, saved checks and display. [Report components](src/dwelly_bot/reporting/README.md).
-- `analysis/`: recipe usage; generated corpus-derived reports remain ignored. Coding skills live in `.agents/skills/`; `.claude/skills/` links to them.
-- Quick edits: `uv run ruff check src tests dataset/fetch.py`, `uv run ruff format src tests dataset/fetch.py`, `uv run mypy`, and affected `uv run pytest -q tests/test_AREA.py`. `dwelly-bot check` runs the complete offline gate.
+The generator direction is reusable across service tracks; the current implemented dataset adapter is banking-specific. We keep future outcomes outside the acting context and evaluate saved decisions afterward. [Evaluation loops, scenario design and optimization TODOs](docs/evaluation/README.md).
 
-[Apache 2.0](LICENSE). The organizer source remains linked and versioned; its public availability does not imply a separate dataset licence. Original source archives are not committed.
+**Existing evidence:** [MiniMax M3 vs Sonnet 5.5](experiments/sonnet-vs-minimax-anthropic/README.md) contains 50 executed and reviewed cases per model for the **earlier agent**. Those results are not a score for the new Planner. [Saved report site](https://xmanatee.github.io/dwelly-hack-2026/).
+
+## Models, services and voice
+
+| Component | Dependency or configuration |
+| --- | --- |
+| Agent runtime | Pydantic AI; locked dependencies in `uv.lock`. |
+| Context investigator | Optional model via `--context-config`; shared provider pool, budget and journal. |
+| Planner | Final model and skill hierarchy **TBD — Vera**; default stub makes no model calls. |
+| Historical experiments | MiniMax M3 / OpenRouter; Sonnet 5.5 and Opus 5.5 judge / Anthropic. |
+| Sources and execution | Local JSON/SQLite; communication adapters are mock. |
+| Voice | Call-event contract exists. Speech provider, model and live transport **TBD**. |
+
+For model-backed runs, copy `.env.example` to `.env` and set only the selected provider's key (`ANTHROPIC_API_KEY`, `OPENROUTER_API_KEY` or `OPENAI_API_KEY`). `--context-config` explicitly enables paid calls; offline demos, checks and saved-report rendering do not. No vendor telemetry or session capture is enabled. [Configuration and development](docs/development/README.md).
+
+Voice will use the same context/planning/execution core. [Voice integration slots and diagram](docs/voice/README.md) · [Demo storyboard — video pending](demo/README.md).
+
+## Assumptions and next steps
+
+Source adapters establish access boundaries; names and email addresses remain search hints. A plan is intent, a mock receipt is a simulation, and neither proves an external bank operation occurred. Public examples are development data, not final Reality Test submissions.
+
+Next: integrate Nikita's entity data, implement Vera's Planner, connect the Solver, evaluate the new decision core, and add real channel/voice adapters. Live banking effects, final voice integration and a recorded demo are not implemented. [Detailed gaps and ownership](docs/architecture/integration-status.md).
+
+## Explore and contribute
+
+[Development & checks](docs/development/README.md) · [Data contract](dataset/README.md) · [Experiment workflow](experiments/README.md) · [Submission metadata](SUBMISSION.md) · [Project story](docs/story.md)
+
+See [AGENTS.md](AGENTS.md) for repository conventions. [References and related work](docs/references.md) explain the design reading and implementation dependencies.
+
+Licensed under [Apache 2.0](LICENSE). Third-party libraries and data retain their own terms; source archives and credentials are not committed.
