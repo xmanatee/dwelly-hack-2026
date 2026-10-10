@@ -1,7 +1,7 @@
 """The common pipeline preserves failures and applies identical tool constraints."""
 
 import asyncio
-import time
+import threading
 from collections.abc import Awaitable, Callable
 from pathlib import Path
 from typing import Any, cast
@@ -72,19 +72,29 @@ async def test_preparation_error_is_captured_and_next_case_runs(tmp_path: Path) 
 async def test_readonly_timeout_returns_without_blocking_event_loop(tmp_path: Path) -> None:
     journal = Journal(tmp_path / "tools.jsonl")
     runtime = CaseRuntime(TestModel(), RunConfig(tool_timeout_seconds=0.005), journal)
+    started = threading.Event()
+    release = threading.Event()
+    finished = threading.Event()
 
     def slow_read() -> str:
-        time.sleep(0.04)
-        return "late read"
+        started.set()
+        try:
+            assert release.wait(timeout=5), "Test did not release the worker"
+            return "late read"
+        finally:
+            finished.set()
 
     tool = runtime.tool("slow_read", "Read only", slow_read, read_only=True)
-    started = time.monotonic()
-    with pytest.raises(ModelRetry, match="TimeoutError"):
-        await cast(Callable[[], Awaitable[Any]], tool.function)()
-    assert time.monotonic() - started < 0.035
-    assert journal.events[0]["status"] == "error"
-    await asyncio.sleep(0.05)
-    journal.close()
+    try:
+        with pytest.raises(ModelRetry, match="TimeoutError"):
+            await cast(Callable[[], Awaitable[Any]], tool.function)()
+        assert await asyncio.to_thread(started.wait, 5)
+        assert not finished.is_set(), "The timeout must return while the worker is blocked"
+        assert journal.events[0]["status"] == "error"
+    finally:
+        release.set()
+        await asyncio.to_thread(finished.wait, 5)
+        journal.close()
 
 
 async def test_tool_result_cap_records_failure_before_model_context(tmp_path: Path) -> None:
