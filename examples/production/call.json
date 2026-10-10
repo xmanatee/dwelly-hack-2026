@@ -1,0 +1,11 @@
+{
+  "channel": "call",
+  "event_id": "call-001",
+  "scope_id": "demo-file-receipt",
+  "received_at": "2026-10-10T10:00:00Z",
+  "text": "I'm Alex Example. Is there a receipt for my uploaded file DEMO-100?",
+  "caller": "+440000000000",
+  "session_id": "live-call-demo-001",
+  "active": true,
+  "hints": {"name": "Alex Example"}
+}

@@ -2,7 +2,15 @@
 
 [Live banking overview](https://xmanatee.github.io/dwelly-hack-2026/) · [Baseline report](https://xmanatee.github.io/dwelly-hack-2026/baseline.html)
 
-**Target architecture:** [Context → Planner → Execution](docs/architecture/README.md) · [Visual diagram](docs/architecture/index.html). The product exposes a shared Planner (`text → Plan`); a separate Hackathon Solver imports it and generates `ANSWER.md` / `REASONING.md`. Plans contain the selected decision and concrete actions. This is the target design; the existing runtime and benchmarks below predate the migration.
+**Architecture:** [Context → Planner → Execution](docs/architecture/README.md) · [Visual diagram](docs/architecture/index.html). An [offline production skeleton](examples/production/README.md) now connects email/call/ticket triggers, Markdown context, the public Planner (`text → Plan`) and mock execution. Planner currently always requests human review. Separate Hackathon Solver packaging and answer generation remain planned. The historical agent and benchmarks below predate this migration.
+
+Run the new vertical slice without a model or external actions:
+
+```sh
+uv run dwelly-bot demo --input examples/production/ticket.json --records examples/production/records.json --output .cache/production-demo/ticket
+```
+
+Use a new output directory each time. Inspect `context.md`, `plan.json`, `result.json` and `events.jsonl` there. [Three-channel examples and extension interfaces](examples/production/README.md) describe the mock limits and how to connect real sources. Replying to the original channel is a plan action; there is no additional delivery stage.
 
 **Historical benchmark:** [MiniMax M3 vs Sonnet 5.5](experiments/sonnet-vs-minimax-anthropic/README.md), 50/50 executed and reviewed per model. [Open the comparison](experiments/sonnet-vs-minimax-anthropic/comparison.html).
 

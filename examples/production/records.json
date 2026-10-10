@@ -1,0 +1,34 @@
+[
+  {
+    "id": "customer-note",
+    "scope_id": "demo-file-receipt",
+    "available_at": "2026-10-10T09:00:00Z",
+    "kind": "customer",
+    "source": "fixture/customers",
+    "text": "Alex Example is the name supplied for this case. Identity and authority are not verified."
+  },
+  {
+    "id": "upload-report",
+    "scope_id": "demo-file-receipt",
+    "available_at": "2026-10-10T09:30:00Z",
+    "kind": "event",
+    "source": "fixture/history",
+    "text": "The requester reports uploading a file with reference DEMO-100. No bank receipt confirmation is available."
+  },
+  {
+    "id": "later-update",
+    "scope_id": "demo-file-receipt",
+    "available_at": "2026-10-10T11:00:00Z",
+    "kind": "note",
+    "source": "fixture/history",
+    "text": "FUTURE RECORD: this must not enter the 10:00 context."
+  },
+  {
+    "id": "same-name-other-case",
+    "scope_id": "another-case",
+    "available_at": "2026-10-10T09:00:00Z",
+    "kind": "customer",
+    "source": "fixture/customers",
+    "text": "UNRELATED RECORD: another Alex Example; a matching name does not join these cases."
+  }
+]

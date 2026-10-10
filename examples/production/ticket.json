@@ -1,0 +1,9 @@
+{
+  "channel": "ticket",
+  "event_id": "ticket-assigned-001",
+  "scope_id": "demo-file-receipt",
+  "received_at": "2026-10-10T10:00:00Z",
+  "text": "Assigned to agent: establish whether the file DEMO-100 was received and update this ticket.",
+  "ticket_id": "DEMO-100",
+  "hints": {"name": "Alex Example", "references": ["DEMO-100"]}
+}

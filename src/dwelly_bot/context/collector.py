@@ -136,6 +136,8 @@ class ContextCollector:
             f"Scope: {trigger.scope_id}",
             f"Decision time: {trigger.received_at.isoformat()}",
             f"Channel: {trigger.reply_route.channel}",
+            "\n## Original reply route (transport metadata, not identity proof)",
+            trigger.reply_route.model_dump_json(indent=2),
             "\n## Request (untrusted content)",
             trigger.text,
             "\n## Search hints (not verified identity)",

@@ -56,6 +56,8 @@ async def test_stub_and_reply_route_with_duplicate_delivery(
     assert all(r.status == "simulated" for r in first.receipts)
     assert all(r.replayed for r in replay.receipts)
     assert len(executor.effects) == 2
+    assert executor.effects[-1].parameters["message"] == first.receipts[-1].parameters["message"]
+    assert replay.receipts[-1].parameters == first.receipts[-1].parameters
 
 
 async def test_closed_call_fails_without_implicit_outbound_call(tmp_path: Path) -> None:

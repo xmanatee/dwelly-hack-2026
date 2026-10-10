@@ -36,3 +36,14 @@ remain unchanged. Demo inputs are newly authored fixtures, separate from the cor
 The fixed demo configuration uses no model, no paid budget and no network. Real model
 implementations must reuse the existing model pool/budget/trace infrastructure; a real
 Planner will need a new control round on this contract before quality claims.
+
+## Offline validation
+
+All three fixture channels were executed through the CLI and preserved under
+`.cache/production-demo/iteration-1/`. Context excludes the intentionally future and
+other-case records. The demo never reads the public retrospective report.
+
+Ruff, strict mypy and 31 affected/resource tests pass. Tests cover route preservation,
+exact Planner input, future/scope boundaries, visible source failure, duplicate action
+IDs, unknown operations, in-process replay/conflicts, inactive calls, failure stopping,
+immutable captures and interrupted planning. All result receipts remain simulated.

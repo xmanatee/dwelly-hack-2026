@@ -1,8 +1,7 @@
 """Categorized offline operations with local replay protection and explicit simulation."""
 
-from typing import Literal, Protocol
-
-from dwelly_bot.channels.intake import CallRoute, Contract, EmailRoute, Trigger
+from dwelly_bot.channels.intake import CallRoute, EmailRoute, Trigger
+from dwelly_bot.execution.contracts import ActionReceipt, ExecutionResult
 from dwelly_bot.experiments.journal import Journal
 from dwelly_bot.planning.contracts import (
     ACTION_CATALOG,
@@ -14,30 +13,6 @@ from dwelly_bot.planning.contracts import (
     SendEmail,
 )
 from dwelly_bot.storage import fingerprint
-
-
-class ActionReceipt(Contract):
-    action_id: str
-    status: Literal["simulated", "failed", "skipped"]
-    operation: str
-    target: str
-    detail: str
-    replayed: bool = False
-
-
-class ExecutionResult(Contract):
-    event_id: str
-    mode: Literal["mock"] = "mock"
-    status: Literal["simulated", "failed", "empty"]
-    disposition: str
-    receipts: tuple[ActionReceipt, ...]
-
-
-class Executor(Protocol):
-    @property
-    def capabilities(self) -> str: ...
-
-    async def execute(self, trigger: Trigger, plan: Plan, journal: Journal) -> ExecutionResult: ...
 
 
 class MockExecutor:
@@ -137,10 +112,15 @@ class MockExecutor:
                     else:
                         receipt = previous.model_copy(update={"replayed": True})
                 else:
-                    receipt = self._simulate(trigger, action)
+                    receipt = self._simulate(trigger, action).model_copy(
+                        update={"parameters": action.model_dump(exclude={"id", "kind"})}
+                    )
                     self._receipts[key] = (digest, receipt)
                     if receipt.status == "simulated":
                         self.effects.append(receipt)
+                receipt = receipt.model_copy(
+                    update={"parameters": action.model_dump(exclude={"id", "kind"})}
+                )
                 journal.returned(event, receipt.model_dump(mode="json"))
             blocked = blocked or receipt.status == "failed"
             receipts.append(receipt)

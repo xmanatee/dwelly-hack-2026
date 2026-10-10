@@ -1,0 +1,10 @@
+{
+  "channel": "email",
+  "event_id": "email-001",
+  "scope_id": "demo-file-receipt",
+  "received_at": "2026-10-10T10:00:00Z",
+  "text": "Hello, I uploaded a file under reference DEMO-100. Can you confirm receipt?",
+  "sender": "alex@example.test",
+  "thread_id": "thread-demo-001",
+  "hints": {"name": "Alex Example"}
+}
