@@ -6,7 +6,9 @@ from dwelly_bot.context.collector import (
     ContextSource,
     Investigation,
     SourceResult,
-    visible_result,
+)
+from dwelly_bot.context.collector import (
+    read_source as lookup_source,
 )
 from dwelly_bot.contracts import RunConfig
 from dwelly_bot.experiments.journal import Journal
@@ -26,7 +28,12 @@ class AgentInvestigator:
         self.config = config or RunConfig(max_requests=8, max_tool_calls=12)
 
     async def gather(
-        self, query: ContextQuery, sources: tuple[ContextSource, ...], journal: Journal
+        self,
+        query: ContextQuery,
+        sources: tuple[ContextSource, ...],
+        journal: Journal,
+        *,
+        source_timeout: float = 10,
     ) -> Investigation:
         model = self.model.scoped(f"context/{query.scope_id}")
         runtime = CaseRuntime(model, self.config, journal)
@@ -40,7 +47,7 @@ class AgentInvestigator:
                 raise ValueError("Choose a source from the supplied catalogue")
             questions.append(f"{source}: {question}")
             request = query.model_copy(update={"question": question})
-            result = visible_result(request, await available[source].lookup(request))
+            result = await lookup_source(available[source], request, source_timeout)
             observed.append(result)
             return result.model_dump(mode="json")
 

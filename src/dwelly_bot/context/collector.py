@@ -43,7 +43,12 @@ class Investigation(Contract):
 
 class Investigator(Protocol):
     async def gather(
-        self, query: ContextQuery, sources: tuple[ContextSource, ...], journal: Journal
+        self,
+        query: ContextQuery,
+        sources: tuple[ContextSource, ...],
+        journal: Journal,
+        *,
+        source_timeout: float = 10,
     ) -> Investigation: ...
 
 
@@ -71,6 +76,14 @@ class ContextSource(Protocol):
 
 class HintExtractor(Protocol):
     async def extract(self, text: str, supplied: IdentityHints) -> IdentityHints: ...
+
+
+async def read_source(source: ContextSource, query: ContextQuery, timeout: float) -> SourceResult:
+    """Keep a failed read visible as a gap, without discarding other source evidence."""
+    try:
+        return visible_result(query, await asyncio.wait_for(source.lookup(query), timeout))
+    except Exception as exc:
+        return SourceResult(warnings=(f"Source {source.name} unavailable ({type(exc).__name__}).",))
 
 
 class BasicHintExtractor:
@@ -153,7 +166,9 @@ class ContextCollector:
         if self.investigator is not None:
             if journal is None:
                 raise ValueError("Agent context collection requires the shared journal")
-            investigation = await self.investigator.gather(query, self.sources, journal)
+            investigation = await self.investigator.gather(
+                query, self.sources, journal, source_timeout=self.source_timeout
+            )
             needs = investigation.needs
             results.append(
                 (
@@ -163,11 +178,7 @@ class ContextCollector:
             )
         else:
             for source in self.sources:
-                try:
-                    result = await asyncio.wait_for(source.lookup(query), self.source_timeout)
-                    results.append((source.name, visible_result(query, result)))
-                except Exception as exc:
-                    warnings.append(f"Source {source.name} unavailable ({type(exc).__name__}).")
+                results.append((source.name, await read_source(source, query, self.source_timeout)))
         records: list[ContextRecord] = []
         seen: dict[tuple[str, str], ContextRecord] = {}
         for source_name, result in results:

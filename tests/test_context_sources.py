@@ -1,7 +1,10 @@
+import asyncio
 import json
 import sqlite3
 from datetime import UTC, datetime
 from pathlib import Path
+
+import pytest
 
 from dwelly_bot.channels.intake import IdentityHints
 from dwelly_bot.context.collector import ContextQuery, ContextRecord, SourceResult
@@ -105,3 +108,87 @@ async def test_context_agent_sees_only_guarded_records(tmp_path: Path) -> None:
         journal.close()
     assert len(result.records) == 1 and seen == 2
     assert result.needs == ("db: AB-123",)
+
+
+@pytest.mark.parametrize("failure", ["timeout", "error"])
+async def test_agent_keeps_partial_evidence_when_source_unavailable(
+    tmp_path: Path, failure: str
+) -> None:
+    from pydantic_ai.messages import ModelMessage, ModelResponse, ToolCallPart
+    from pydantic_ai.models.function import AgentInfo, FunctionModel
+
+    from dwelly_bot.budget import BudgetLedger
+    from dwelly_bot.context.investigator import AgentInvestigator
+    from dwelly_bot.experiments.journal import Journal
+    from dwelly_bot.models import BudgetedModel
+
+    class Source:
+        name = "db"
+
+        async def lookup(self, query: ContextQuery) -> SourceResult:
+            if query.question == "unavailable":
+                if failure == "timeout":
+                    await asyncio.sleep(60)
+                raise RuntimeError("private connection details")
+            return SourceResult(
+                records=(
+                    ContextRecord(
+                        id="known",
+                        scope_id=query.scope_id,
+                        available_at=query.as_of,
+                        kind="note",
+                        source=self.name,
+                        text="Known evidence",
+                    ),
+                )
+            )
+
+    calls = 0
+
+    def respond(messages: list[ModelMessage], info: AgentInfo) -> ModelResponse:
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            return ModelResponse(
+                parts=[
+                    ToolCallPart("read_source", {"source": "db", "question": question})
+                    for question in ("known", "unavailable")
+                ]
+            )
+        assert "Known evidence" in str(messages) and "unavailable" in str(messages)
+        assert "private connection details" not in str(messages)
+        return ModelResponse(parts=[ToolCallPart(info.output_tools[0].name, {"needs": []})])
+
+    journal = Journal(tmp_path / "events.jsonl")
+    model = BudgetedModel(FunctionModel(respond), BudgetLedger(tmp_path / "budget.json"), "test")
+    try:
+        result = await AgentInvestigator(model).gather(
+            ContextQuery(scope_id="a", as_of=datetime.now(UTC), hints=IdentityHints()),
+            (Source(),),
+            journal,
+            source_timeout=0.01,
+        )
+    finally:
+        journal.close()
+    assert [r.id for r in result.records] == ["known"]
+    assert result.warnings == (
+        f"Source db unavailable ({'TimeoutError' if failure == 'timeout' else 'RuntimeError'}).",
+    )
+    assert result.warnings[0] in (tmp_path / "events.jsonl").read_text()
+
+
+async def test_source_cancellation_is_not_converted_to_missing_data() -> None:
+    from dwelly_bot.context.collector import read_source
+
+    class Cancelled:
+        name = "cancelled"
+
+        async def lookup(self, query: ContextQuery) -> SourceResult:
+            raise asyncio.CancelledError()
+
+    with pytest.raises(asyncio.CancelledError):
+        await read_source(
+            Cancelled(),
+            ContextQuery(scope_id="a", as_of=datetime.now(UTC), hints=IdentityHints()),
+            1,
+        )
