@@ -64,3 +64,5 @@ The saved baseline freshness check fails against current source. Preserve its ex
 reference and captures; no baseline adoption or quality improvement is claimed. The extra
 selection call has a latency/cost tradeoff. Full paired quality evaluation remains pending
 an appropriate current control and review under the experiment workflow.
+
+The first standalone smoke command stopped before any model call because the preparation script used `.json` while directory discovery expects `.input.json`. The script and filenames were corrected; no generated plan was overwritten.

@@ -35,7 +35,7 @@ def main() -> None:
             events=parse_events(visible),
             task="Plan the next supported response; no bank actions execute.",
         )
-        (OUTPUT / f"{source.case_id}.json").write_text(source.model_dump_json(indent=2))
+        (OUTPUT / f"{source.case_id}.input.json").write_text(source.model_dump_json(indent=2))
         receipt.append(
             {
                 "case_id": source.case_id,
@@ -69,7 +69,7 @@ def main() -> None:
                 events=events,
                 task="Plan from these supplied messages; bank records and attachments were not supplied.",
             )
-            (OUTPUT / f"{case}.json").write_text(source.model_dump_json(indent=2))
+            (OUTPUT / f"{case}.input.json").write_text(source.model_dump_json(indent=2))
             receipt.append(
                 {
                     "case_id": case,
