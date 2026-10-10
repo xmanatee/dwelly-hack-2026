@@ -31,6 +31,8 @@ dist/
 !/ANSWERS/README.md
 /demo/*.mp4
 !/demo/demo.mp4
+!/demo/voice-call.mp4
+!/demo/dashboard.mp4
 /demo/*.mov
 *.log
 
