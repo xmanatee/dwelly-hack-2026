@@ -17,7 +17,7 @@ sequenceDiagram
     E->>B: ask_dwelly {request, caller_name, reference} (over our WebSocket)
     B->>P: CallInput (trusted scope, live session)
     P-->>B: reply_to_trigger → speak_in_call: sent
-    B-->>E: {status, say, handoff, reference}
+    B-->>E: {status, say, handoff, handoff_status, reference}
     E->>C: speaks "say"
 ```
 
@@ -111,7 +111,7 @@ local session to the ElevenLabs conversation ID. Transcripts are printed, not sa
 Caller: "Hi, I'm Jamie Rowe. I sent 350 pounds to Kestrel Joinery on Wednesday and they say they
 haven't got it. Has it gone?" The agent confirms the details, says it is checking with the Dwelly
 investigations team, and the capture folder appears. It then answers: sent, not yet confirmed as
-received, an investigator will trace it, please don't pay again. Show `result.json`: the handoff
+received, an investigation is still needed, please don't pay again. Show `result.json`: the handoff
 is `simulated` and the spoken reply is `sent` to the live session.
 
 ## Behaviour and limits
