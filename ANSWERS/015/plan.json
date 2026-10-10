@@ -1,0 +1,173 @@
+{
+  "intent": "Mr Okoye passed ID&V and is disputing a £4,980.00 Direct Debit collection from Lime Property via H&V Collect, taken on 14 Sep. He says he already paid the move-in money by Faster Payment on 28 Aug and never agreed to this amount. He wants a refund today under the Direct Debit Guarantee and wants the mandate cancelled.",
+  "summary": "ID&V passed. Three requests now: a Guarantee/indemnity claim for the £4,980.00 collected 14 Sep under LP-14GROVE-0208, sent to the DD claims team with the chronology; cancellation of that mandate, as he asked; and an overdraft team review of the fees it caused. The reply says all three are pending and promises no same-day refund or fee reversal. It asks him for Lime Property's statement showing how the 28 Aug £4,980 was allocated and warns that the £795 rent needs another payment method.",
+  "facts": [
+    {
+      "claim": "ID&V passed on the phone call; the customer is the holder of this personal current account.",
+      "evidence": [
+        "event-002",
+        "event-001"
+      ]
+    },
+    {
+      "claim": "On 28 Aug 2026 at 11:32 a Faster Payment of £4,980.00 (HV26082811320471, ref 'MOVE IN 14 GROVE') went to HARROW & VALE RE LIME PROPERTY CA. Its status is Completed and it was received by the beneficiary bank. The confirmation is not a receipt from the beneficiary.",
+      "evidence": [
+        "attachments/payment_confirmation_2026-08-28.pdf",
+        "attachments/statement_extract.csv"
+      ]
+    },
+    {
+      "claim": "The bank record does not show how the agency allocated the 28 Aug payment.",
+      "evidence": [
+        "event-001"
+      ]
+    },
+    {
+      "claim": "DD instruction LP-14GROVE-0208 for Lime Property was set up on 2 Sep through an originator invite.",
+      "evidence": [
+        "event-001",
+        "attachments/statement_extract.csv"
+      ]
+    },
+    {
+      "claim": "The originator's copy of the advance notice is dated 9 Sep 2026. It states a first collection of £4,980.00 on 14 September 2026, described as 'balance of your account as at 8 September', and then £795.00 monthly on the 14th.",
+      "evidence": [
+        "attachments/dd_advance_notice_2026-09-09.eml"
+      ]
+    },
+    {
+      "claim": "The customer says he did not read the advance notice and never agreed to a £4,980 collection by Direct Debit. He says his rent is £795.",
+      "evidence": [
+        "event-001",
+        "event-004",
+        "event-002"
+      ]
+    },
+    {
+      "claim": "On 14 Sep a DD collection of £4,980.00 was paid and the balance went to -£3,077.70. An unarranged overdraft daily fee of £6.50 then took it to -£3,084.20. The arranged limit is £1,000, and the unarranged part incurs a daily fee.",
+      "evidence": [
+        "attachments/statement_extract.csv",
+        "event-001"
+      ]
+    },
+    {
+      "claim": "The customer asked for the full amount back today under the Guarantee and for the Direct Debit to be cancelled.",
+      "evidence": [
+        "event-002",
+        "request.md"
+      ]
+    }
+  ],
+  "missing": [
+    "Whether Lime Property allocated the 28 Aug £4,980.00 Faster Payment to the move-in balance. The bank record does not show this, and the notice's 'balance as at 8 September' wording leaves it unresolved.",
+    "Originator-side evidence of what amount the customer agreed to when he accepted the mandate invite on 2 Sep. This is not supplied.",
+    "The outcome of the Guarantee/indemnity claim. No claim decision is recorded."
+  ],
+  "identity_authority": "established",
+  "safety_flags": [],
+  "steps": [
+    {
+      "id": "s1",
+      "kind": "proposed_action",
+      "action": "request_team_action",
+      "instruction": "Raise a Direct Debit Guarantee/indemnity claim for Tunde Okoye (personal current account SYN-ACCT-15-1, ID&V passed on today's call). Scope: the DD collection of £4,980.00 taken on 14 Sep 2026 by H&V COLLECT / LIME PROPERTY under mandate LP-14GROVE-0208, originator Lime Property (Hull) Ltd. Pass this chronology. The customer accepted an originator invite and the mandate was set up on 2 Sep. The originator's advance notice is dated 9 Sep and states a first collection of £4,980.00 on 14 Sep, described as 'balance of your account as at 8 September', then £795.00 monthly. The customer says he did not read it and never agreed to a £4,980 collection. On 28 Aug he paid £4,980.00 by Faster Payment HV26082811320471, ref 'MOVE IN 14 GROVE', to HARROW & VALE RE LIME PROPERTY CA. It is Completed and received by the beneficiary bank, but how the agency allocated it is unknown. The account is now £3,084.20 overdrawn against a £1,000 arranged limit. The customer asked for an immediate refund. Ask the team to decide the claim and record a reference.",
+      "rationale": {
+        "explanation": "The customer disputes the amount of a DD collection and explicitly invokes the Guarantee. Whether the amount was an error, given the earlier matching transfer and the notice wording, needs a claims decision rather than a guess by the servicing agent.",
+        "evidence": [
+          "event-002",
+          "event-004",
+          "event-001",
+          "attachments/dd_advance_notice_2026-09-09.eml",
+          "attachments/payment_confirmation_2026-08-28.pdf",
+          "attachments/statement_extract.csv"
+        ],
+        "criterion": "A Guarantee claim addresses errors in DD collection. Identify the error and the applicable route without promising a refund for every dispute with a supplier.",
+        "source": "skill:scheduled-payments"
+      },
+      "target": "Direct Debit claims team",
+      "arguments": {},
+      "requires": [],
+      "condition": null
+    },
+    {
+      "id": "s2",
+      "kind": "proposed_action",
+      "action": "request_team_action",
+      "instruction": "Cancel DD mandate LP-14GROVE-0208 (H&V COLLECT / LIME PROPERTY) on Tunde Okoye's personal current account, on his explicit instruction during the ID&V-passed call on 14 Sep 2026. Note that the £4,980.00 collection on 14 Sep has already been paid. Cancellation covers future collections only and must not be recorded as reversing that collection. That is handled separately by the s1 claim.",
+      "rationale": {
+        "explanation": "The verified account holder explicitly asked for the Direct Debit to be cancelled. Cancellation is kept separate from the refund claim.",
+        "evidence": [
+          "event-002",
+          "attachments/statement_extract.csv"
+        ],
+        "criterion": "Reuse the supplied mandate state and the established authorisation. Cancelling an instruction does not show that a collected payment was reversed. Keep a Guarantee claim separate from changing future instructions.",
+        "source": "skill:scheduled-payments"
+      },
+      "target": "Direct Debit servicing team",
+      "arguments": {},
+      "requires": [],
+      "condition": null
+    },
+    {
+      "id": "s3",
+      "kind": "proposed_action",
+      "action": "request_team_action",
+      "instruction": "Review the unarranged overdraft fees on Tunde Okoye's personal current account that arise from the disputed £4,980.00 DD collection on 14 Sep 2026. So far there is one £6.50 daily fee on 14 Sep, and daily fees continue while the balance (-£3,084.20) is beyond the £1,000 arranged limit. Pass the s1 claim context and decide how fees are treated while the claim is pending. No refund or waiver has been agreed with the customer.",
+      "rationale": {
+        "explanation": "The disputed collection pushed the account about £2,084 beyond its arranged limit, and a daily fee is already being charged. That fee impact needs a decision now, without assuming the claim outcome.",
+        "evidence": [
+          "attachments/statement_extract.csv",
+          "event-001",
+          "event-002"
+        ],
+        "criterion": "Separate the confirmed stage from the outcome. A review request does not establish a fee reversal.",
+        "source": "skill:complaints-rights"
+      },
+      "target": "Overdraft / account servicing team",
+      "arguments": {},
+      "requires": [],
+      "condition": null
+    },
+    {
+      "id": "s4",
+      "kind": "proposed_action",
+      "action": "reply_to_customer",
+      "instruction": "Tell the customer: 'I understand you didn't agree to £4,980 coming out by Direct Debit, and I'm taking it up for you. I'm raising a Direct Debit Guarantee claim for the £4,980 collected today under reference LP-14GROVE-0208 with our Direct Debit claims team. I can't promise the money back today or confirm the outcome yet, because the team needs to decide the claim. As you asked, I'm also requesting cancellation of that Direct Debit. This stops future collections but doesn't reverse today's payment, which the claim covers. It also means your £795 monthly rent won't be collected this way any more, so please agree another way to pay it with Lime Property. I'm asking our overdraft team to review the overdraft fees caused by this collection. I can't confirm they'll be refunded. Our records show your £4,980 payment on 28 August, reference MOVE IN 14 GROVE, was sent and received by the receiving bank, but we can't see how Lime Property applied it. Their notice described the £4,980 as your balance as at 8 September. Please ask Lime Property for a statement of your account showing how the 28 August payment was allocated, and send it to us, because it will help the claim. These requests are being submitted now and I'll give you the references once they're recorded.'",
+      "rationale": {
+        "explanation": "The reply covers both requests, reports only what the records prove, keeps all proposed operations pending, and asks for the one missing fact (how the agency allocated the 28 Aug payment).",
+        "evidence": [
+          "event-002",
+          "event-004",
+          "attachments/payment_confirmation_2026-08-28.pdf",
+          "attachments/dd_advance_notice_2026-09-09.eml",
+          "event-001"
+        ],
+        "criterion": "State only the stage the supplied record proves. An incoming payer claim is not evidence of a booked credit. Do not promise arrival times or outcomes without an applicable commitment.",
+        "source": "skill:payments"
+      },
+      "target": "Customer (Tunde Okoye), current phone call",
+      "arguments": {},
+      "requires": [],
+      "condition": null
+    }
+  ],
+  "escalate_if": [],
+  "must_state": [
+    "A Direct Debit Guarantee/indemnity claim for the £4,980.00 collected on 14 Sep is being raised with the DD claims team. Its outcome is not yet decided.",
+    "Cancellation of mandate LP-14GROVE-0208 is being requested as he asked. Cancelling stops future collections but does not reverse the 14 Sep collection.",
+    "Once cancelled, the £795 monthly rent will not be collected by this Direct Debit. He needs to arrange another way to pay it with Lime Property.",
+    "A review of the unarranged overdraft fees linked to this collection is being requested. No outcome is confirmed.",
+    "Our records show the 28 Aug payment of £4,980.00 was sent and received by the beneficiary bank. We cannot see whether Lime Property applied it to his move-in balance.",
+    "Ask him to get a statement of account from Lime Property showing how the 28 Aug payment was allocated."
+  ],
+  "must_not": [
+    "Do not promise the £4,980.00 will be refunded today or at all, or give a timescale that has no evidence behind it.",
+    "Do not tell him the Guarantee definitely applies or definitely does not apply.",
+    "Do not say the advance notice proves he agreed to the amount, or that he did not agree.",
+    "Do not say the agency received, allocated or misapplied the 28 Aug payment beyond what the confirmation shows (received by the beneficiary bank).",
+    "Do not say the mandate has been cancelled, the claim registered or fees refunded until execution is acknowledged.",
+    "Do not say cancelling the Direct Debit ends his tenancy obligations or clears any amount owed to Lime Property.",
+    "Do not ask for PINs, passwords or one-time codes."
+  ],
+  "expected_disposition": "escalated"
+}

@@ -1,0 +1,104 @@
+{
+  "intent": "The business bookkeeper reports a £1,750.00 gap in the 29 Sep reconciliation and wants a possibly missing credit investigated. The director wants a formal missing-funds complaint logged if the money isn't found today.",
+  "summary": "No credit is missing. The £1,750.00 from K WHITTLE (ref INV 4471) is booked on the account at 14:02:47 on 29 Sep. The CSV export was taken earlier, at 13:15:02. The closing figure was read from the screen between 14:02 and 16:41. Reply now with the reconciliation, the later £120.00 credit and the full-day closing balance of £55,647.48. Also point out the matching timing on 28 Sep. The complaint condition hasn't been met, so no complaint has been logged. Offer to register one if the director still wants it.",
+  "facts": [
+    {
+      "claim": "The bookkeeper's CSV export was requested by user violetta.k at 13:15:02 on 29 Sep 2026.",
+      "evidence": [
+        "event-001",
+        "attachments/export_2026-09-29_1315.csv"
+      ]
+    },
+    {
+      "claim": "The export's four credits (£875.00, £1,200.00, £27,343.94 and £660.00) total £30,078.94. After the supplier batch debit of £8,415.30 at 11:05:12, the running balance was £53,777.48, which is the bookkeeper's expected closing.",
+      "evidence": [
+        "attachments/export_2026-09-29_1315.csv",
+        "attachments/bookkeeper_reconciliation_2026-09-29.csv"
+      ]
+    },
+    {
+      "claim": "The full-day record shows a £1,750.00 credit from K WHITTLE (ref INV 4471) at 14:02:47 on 29 Sep. The running balance afterwards was £55,527.48, the figure the bookkeeper noted from the screen.",
+      "evidence": [
+        "attachments/full_day_2026-09-29.csv",
+        "event-001",
+        "attachments/bookkeeper_reconciliation_2026-09-29.csv"
+      ]
+    },
+    {
+      "claim": "A further £120.00 credit from A ROSS (ref INV 4480 PART) was booked at 16:41:09, giving a full-day 29 Sep running balance of £55,647.48. Total 29 Sep credits on the full-day record are £31,948.94.",
+      "evidence": [
+        "attachments/full_day_2026-09-29.csv",
+        "event-001"
+      ]
+    },
+    {
+      "claim": "The bookkeeper's note says the balance was read from the Business Online dashboard 'later that afternoon'. This fits the window between 14:02 and 16:41.",
+      "evidence": [
+        "attachments/bookkeeper_reconciliation_2026-09-29.csv",
+        "event-001"
+      ]
+    },
+    {
+      "claim": "On 28 Sep a £1,900.00 credit from P LEWIS (ref INV 4461) landed at 18:10:22, after that day's 13:20 export. The bookkeeper's opening figure of £32,113.84 matches the running balance after this credit.",
+      "evidence": [
+        "event-001",
+        "attachments/full_day_2026-09-29.csv",
+        "attachments/bookkeeper_reconciliation_2026-09-29.csv"
+      ]
+    },
+    {
+      "claim": "The director's complaint request depends on the funds not being found today. No complaint has been recorded as registered.",
+      "evidence": [
+        "event-004",
+        "request"
+      ]
+    }
+  ],
+  "missing": [
+    "Whether the director still wants a formal complaint logged now that the £1,750.00 credit has been located (their request depended on the funds not being found)"
+  ],
+  "identity_authority": "established",
+  "safety_flags": [],
+  "steps": [
+    {
+      "id": "s1",
+      "kind": "proposed_action",
+      "action": "reply_to_customer",
+      "instruction": "Send: \"Thanks Violetta, I've compared your 13:15 export with the account's full-day activity for 29 Sep, and nothing is missing. The £1,750.00 is a credit from K WHITTLE, reference INV 4471, booked to the account at 14:02:47 on 29 Sep. Your export was taken at 13:15:02, so that credit couldn't appear in it. The four credits in your export are £875.00 J MORGAN INV 4462, £1,200.00 CARDNET SETTLEMENT 2809, £27,343.94 HALDANE HOMES LTD INV 4455 STAGE 2 and £660.00 S AHMED INV 4470. They total £30,078.94 and match our records. After the supplier batch of £8,415.30 at 11:05, the balance was £53,777.48, which is your expected closing figure. The £55,527.48 you saw on the dashboard later in the afternoon is the balance after the 14:02 credit. One more credit arrived after that: £120.00 from A ROSS, reference INV 4480 PART, at 16:41:09. So on our records, total credits for 29 Sep were £31,948.94 and the closing balance was £55,647.48. The same thing happened on 28 Sep: a £1,900.00 credit from P LEWIS, reference INV 4461, landed at 18:10:22, after your 13:20 export. Your 28 Sep closing figure of £32,113.84 includes it, so please check it's recorded in your ledger. To avoid this in future, take the transaction export and the closing balance at the same point, for example by exporting the full day after the day has ended. Your director asked for a complaint if the money wasn't found today. As the credit has been located, I haven't logged a formal complaint. If your director would still like to make one, just let me know and I'll register it.\"",
+      "rationale": {
+        "explanation": "The full-day record shows the £1,750.00 credit booked at 14:02:47, after the 13:15:02 export. The screen balance matches the running balance after that credit, so the gap is a timing mismatch, not a missing payment. The complaint depended on the funds not being found, so the reply explains this and still leaves the complaint open to the customer without conditions.",
+        "evidence": [
+          "event-001",
+          "event-002",
+          "event-004",
+          "attachments/export_2026-09-29_1315.csv",
+          "attachments/full_day_2026-09-29.csv",
+          "attachments/bookkeeper_reconciliation_2026-09-29.csv"
+        ],
+        "criterion": "Use the authoritative supplied status directly, identify the exact transaction by amount, time, counterparty and reference, and state only what the record proves. Complaint registration must not depend on giving up the query.",
+        "source": "skill:payments"
+      },
+      "target": "Violetta (bookkeeper), Bright Sparks Electrical Ltd, Business banking chat",
+      "arguments": {},
+      "requires": [],
+      "condition": null
+    }
+  ],
+  "escalate_if": [],
+  "must_state": [
+    "The £1,750.00 is a credit from K WHITTLE, ref INV 4471, booked at 14:02:47 on 29 Sep, after the 13:15:02 export, so it could not appear in that file",
+    "The export's four credits total £30,078.94 and match the bank's records up to 13:15; the £55,527.48 figure is the balance after the 14:02 credit",
+    "A further £120.00 credit from A ROSS (ref INV 4480 PART) was booked at 16:41:09; the full-day 29 Sep closing balance on our records is £55,647.48 and full-day credits total £31,948.94",
+    "On 28 Sep a £1,900.00 credit from P LEWIS (ref INV 4461) landed at 18:10:22, after that day's 13:20 export; the bookkeeper should check it is in their ledger",
+    "No formal complaint has been logged, because the funds were found; we will register one if the director still wants it"
+  ],
+  "must_not": [
+    "Do not say a payment is missing, lost or under investigation",
+    "Do not suggest a bank error or a statement fault",
+    "Do not claim a complaint has been registered or give a complaint reference",
+    "Do not make registering a complaint depend on the customer accepting this explanation",
+    "Do not claim facts about the payer's side beyond the booked credits shown in the full-day record",
+    "Do not promise any outcome, timescale or compensation"
+  ],
+  "expected_disposition": "completed"
+}

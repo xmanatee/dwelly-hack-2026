@@ -1,0 +1,115 @@
+{
+  "intent": "The customer wants the bank to raise a chargeback now on the second of two identical £634 card payments to PAYGATE*NORTHGATE LET, rather than wait up to 10 working days for the refund the agency has promised.",
+  "summary": "The records support a duplicate payment: two £634.00 payments to the same merchant two minutes apart, both settled on 13 Sep, and the agency's email admits the duplicate. No refund appears in the supplied records. There is no bank chargeback policy in the evidence, so the agent must not promise eligibility, an outcome or timing. The decision is to pass the customer's duplicate-payment dispute request to the card disputes team with the facts and the pending merchant refund. The customer is told it has been passed on, what the records show and what is not yet confirmed.",
+  "facts": [
+    {
+      "claim": "Two debit card payments of £634.00 each to PAYGATE*NORTHGATE LET (MCC 6513, real estate agents) were made on 11 Sep 2026 at 18:02:37 and 18:04:12. They have different auth codes (A71C02 and A71C09) and both show as settled on 13 Sep 2026.",
+      "evidence": [
+        "attachments/card_transactions.csv",
+        "event-001"
+      ]
+    },
+    {
+      "claim": "The customer says he clicked the agency's payment link twice after a 'page not responding' message.",
+      "evidence": [
+        "event-001"
+      ]
+    },
+    {
+      "claim": "An email from Northgate Lettings dated 14 Sep 2026 says they can see the duplicate holding deposit of £634.00 and will refund one payment to the card within 5–10 working days. The refund is to show as a refund from PAYGATE.",
+      "evidence": [
+        "attachments/agency_refund_email.eml"
+      ]
+    },
+    {
+      "claim": "The supplied transaction records show no refund from PAYGATE.",
+      "evidence": [
+        "attachments/card_transactions.csv"
+      ]
+    },
+    {
+      "claim": "The customer asked for a chargeback on the second payment now, saying he needs the money for the actual deposit and believes he is entitled to it.",
+      "evidence": [
+        "event-002",
+        "event-004"
+      ]
+    },
+    {
+      "claim": "The customer is contacting the bank through in-app personal banking chat about his own account, and the agent can see both payments.",
+      "evidence": [
+        "event-001",
+        "event-003",
+        "request.md"
+      ]
+    }
+  ],
+  "missing": [
+    "The bank's chargeback or card dispute eligibility rules and expected timescales for a duplicate payment where the merchant has promised a refund. None were supplied, so neither eligibility nor speed can be confirmed now.",
+    "Whether a merchant refund has been started or is pending after the supplied transaction records. No refund appears in them."
+  ],
+  "identity_authority": "established",
+  "safety_flags": [],
+  "steps": [
+    {
+      "id": "s1",
+      "kind": "proposed_action",
+      "action": "request_team_action",
+      "instruction": "Pass the card disputes team the customer's request to review a duplicate-payment dispute and possible chargeback for Tomás Ribeiro's personal current account debit card. The disputed payment is the 2026-09-11 18:04:12 PAYGATE*NORTHGATE LET £634.00 payment (auth A71C09, settled 2026-09-13). The matching payment is 18:02:37, £634.00 (auth A71C02, settled 2026-09-13). Include these facts: the customer says the payment page showed 'not responding' and he clicked twice; Northgate Lettings emailed on 14 Sep 2026 acknowledging the duplicate and promising a refund of one payment to the card within 5–10 working days, as a PAYGATE refund; no refund shows in the supplied records; the customer says he needs the funds urgently for the actual tenancy deposit and does not want to wait. Attach agency_refund_email.eml and card_transactions.csv. Ask the team to decide whether a dispute can be raised now, and to account for the pending merchant refund so the customer is not credited twice.",
+      "rationale": {
+        "explanation": "The customer asked for a chargeback and the records support a duplicate. However, no bank chargeback policy was supplied and the merchant has already promised a refund. Eligibility and timing must be decided by the team that handles card disputes, not promised in chat.",
+        "evidence": [
+          "event-002",
+          "event-004",
+          "attachments/card_transactions.csv",
+          "attachments/agency_refund_email.eml"
+        ],
+        "criterion": "Identify the exact transaction by reference, amount, date and parties. A promised refund or recall is not a completed return. Do not promise outcomes or arrival times without an applicable commitment.",
+        "source": "skill:payments"
+      },
+      "target": "Card disputes team (Harrow & Vale Bank plc)",
+      "arguments": {},
+      "requires": [],
+      "condition": null
+    },
+    {
+      "id": "s2",
+      "kind": "proposed_action",
+      "action": "reply_to_customer",
+      "instruction": "Reply in chat. Use 'I've passed' only if s1 is confirmed as executed. Otherwise say the request is being passed on and is still pending. Message: 'I understand you need this money for the actual deposit, so I don't want you left waiting without a clear picture. I can see two payments of £634.00 to PAYGATE*NORTHGATE LET on 11 Sep, about two minutes apart, and both have now gone through. Northgate's email of 14 Sep agrees one is a duplicate and says they'll refund it to your card within 5–10 working days. That timescale is theirs, not ours, and I can't see a refund yet. I've passed your request for a chargeback on the second payment to our card disputes team, along with the agency's email and the payment details. A chargeback isn't an instant reversal. I can't confirm yet whether one can be raised here or how long it would take, and it may not be quicker than the agency's refund. In the meantime, you could ask Northgate to speed up their refund. Please let us know if a refund from PAYGATE arrives, so the same payment isn't reclaimed twice.'",
+      "rationale": {
+        "explanation": "The reply gives the customer the status the records actually show, says what has not been confirmed, and sets out the next step without promising an outcome or a date.",
+        "evidence": [
+          "event-002",
+          "event-004",
+          "attachments/card_transactions.csv",
+          "attachments/agency_refund_email.eml"
+        ],
+        "criterion": "State only what the supplied record proves. A promised merchant refund is not a booked credit. Do not promise arrival times without an applicable commitment.",
+        "source": "skill:payments"
+      },
+      "target": "Customer (in-app chat)",
+      "arguments": {},
+      "requires": [
+        "s1"
+      ],
+      "condition": null
+    }
+  ],
+  "escalate_if": [],
+  "must_state": [
+    "The bank can see two settled £634.00 payments to PAYGATE*NORTHGATE LET on 11 Sep, about two minutes apart.",
+    "The agency's 14 Sep email acknowledges the duplicate and promises a refund to the card within 5–10 working days. That timescale is the agency's commitment, not the bank's.",
+    "No refund shows in the records available now.",
+    "His chargeback request has been passed to the card disputes team for review. Whether a chargeback can be raised, and how long it would take, is not yet confirmed.",
+    "He should tell the bank if the PAYGATE refund arrives, so the duplicate is not reclaimed twice."
+  ],
+  "must_not": [
+    "Do not tell him he is entitled to a chargeback, or that one will succeed.",
+    "Do not promise an immediate reversal, a credit date or that a chargeback will be faster than the agency refund.",
+    "Do not say a chargeback has been raised or that the money has been or will be returned.",
+    "Do not say the agency refund has been processed or received.",
+    "Do not call the first payment unauthorised or fraudulent. The customer says he made both clicks himself.",
+    "Do not invent a chargeback policy, scheme rule or timeframe."
+  ],
+  "expected_disposition": "escalated"
+}

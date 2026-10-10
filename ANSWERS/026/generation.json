@@ -1,0 +1,184 @@
+{
+  "case_id": "026",
+  "plan": {
+    "intent": "Verified joint holder Yara Bellune wants to cancel standing order SO-026 (£200 a month to Sedgepan Club) through secure chat, without anyone phoning the other holder, Orin Bellune. She also wants to know what Orin can still see and what help she can get safely, because she fears Orin will retaliate.",
+    "summary": "Yara passed the identity check in secure chat. The either-to-sign mandate lets her cancel the standing order alone, and no restriction is recorded. Decision: (1) record that we must not phone Orin, tell Orin about this conversation or phone Yara back, and contact Yara only through this chat; (2) ask joint-account support to cancel SO-026; (3) refer her to safeguarding support through secure chat; (4) reply now. The reply explains that Orin can still see account activity and standing-order status, and that the cancellation is pending, not confirmed.",
+    "facts": [
+      {
+        "claim": "Yara Bellune passed the identity check through the bank's established secure-chat process. She asked to cancel the £200 monthly standing order to Sedgepan Club, and said she is not asking to close the account or move the balance.",
+        "evidence": [
+          "history.md"
+        ]
+      },
+      {
+        "claim": "Under the mandate for account SYN-ACCT-B026 (holders Yara Bellune and Orin Bellune), either holder may cancel an existing standing order alone. Closing the account is a separate process. No legal or operational restriction is recorded.",
+        "evidence": [
+          "attachments/joint-mandate.pdf",
+          "history.md"
+        ]
+      },
+      {
+        "claim": "Standing order SO-026 pays £200.00 to Sedgepan Club (SYN-ACCT-CLUB026). It was active with a next due date of 2026-11-20 when retrieved at 2026-11-16 09:05.",
+        "evidence": [
+          "attachments/standing-order.csv"
+        ]
+      },
+      {
+        "claim": "Yara asked us not to call Orin Bellune. She said she is frightened Orin will retaliate if told about this conversation, and asked us to use this secure chat rather than a phone callback.",
+        "evidence": [
+          "history.md"
+        ]
+      },
+      {
+        "claim": "The bank's terms do not require phoning the other holder when a standing order is cancelled. Both holders can see account activity and standing-order status through shared statements and portal views.",
+        "evidence": [
+          "history.md"
+        ]
+      },
+      {
+        "claim": "Joint-account support and safeguarding support are both available through secure chat. Account restrictions need specialist authorisation.",
+        "evidence": [
+          "history.md"
+        ]
+      },
+      {
+        "claim": "The case desk has not yet replied to Yara's final message.",
+        "evidence": [
+          "request.md"
+        ]
+      }
+    ],
+    "missing": [
+      "Confirmation from joint-account support that SO-026 has actually been cancelled, and whether this happens before the payment due on 2026-11-20",
+      "Any safe contact method for Yara other than this secure chat (she has only asked for this chat and no phone callback)"
+    ],
+    "identity_authority": "established",
+    "safety_flags": [
+      "financial_abuse"
+    ],
+    "steps": [
+      {
+        "id": "s1",
+        "kind": "proposed_action",
+        "action": "hold_or_decline",
+        "instruction": "Record on case 026 for account SYN-ACCT-B026: do not phone Orin Bellune, do not tell Orin about this conversation, and do not phone Yara Bellune back. Contact Yara only through the authenticated secure chat she is using. This hold covers outbound contact and disclosure only. It does not stop the cancellation or any other banking.",
+        "rationale": {
+          "explanation": "Yara said she fears Orin will retaliate if told about this conversation and asked for secure chat only. The bank's terms do not require phoning the other holder, so holding that contact keeps her safe without blocking her request.",
+          "evidence": [
+            "history.md"
+          ],
+          "criterion": "Hold the unsafe disclosure or contact to a suspected controller. Use only the contact method the customer has said is safe.",
+          "source": "skill:financial-abuse"
+        },
+        "target": "Brackenfold Bank case desk / case SYN-ACCT-B026 contact notes",
+        "arguments": {},
+        "requires": [],
+        "condition": null
+      },
+      {
+        "id": "s2",
+        "kind": "proposed_action",
+        "action": "request_team_action",
+        "instruction": "Cancel standing order SO-026 on account SYN-ACCT-B026: payee Sedgepan Club (SYN-ACCT-CLUB026), £200.00 a month, active, next due 2026-11-20. Instructing holder: Yara Bellune, who passed the identity check in authenticated secure chat on 2026-11-16 at 09:00. Authority: the either-to-sign mandate (effective 2025-06-02) lets either holder cancel an existing standing order alone, and no restriction is recorded. Do not close the account, move the balance or make any other change. Do not phone Orin Bellune. Send confirmation of the cancellation, including whether it takes effect before the 2026-11-20 payment, back to the case desk so it can be reported to Yara in secure chat only.",
+        "rationale": {
+          "explanation": "The customer is verified, her instruction is clear and covers one standing order, and the mandate gives her sole authority to cancel it. Nothing recorded blocks the cancellation, and the next payment is due on 2026-11-20.",
+          "evidence": [
+            "history.md",
+            "attachments/joint-mandate.pdf",
+            "attachments/standing-order.csv"
+          ],
+          "criterion": "Use the mandate and schedule already on record and match the specific instruction. Asking for the cancellation does not confirm it, and a payment already in progress is not guaranteed to stop.",
+          "source": "skill:scheduled-payments"
+        },
+        "target": "Brackenfold Bank joint-account support",
+        "arguments": {},
+        "requires": [],
+        "condition": null
+      },
+      {
+        "id": "s3",
+        "kind": "proposed_action",
+        "action": "refer_specialist",
+        "instruction": "Refer case 026 (account SYN-ACCT-B026) to safeguarding support. Pass on: Yara Bellune, a verified joint holder, has asked to cancel standing order SO-026. She said she is frightened that the other joint holder, Orin Bellune, will retaliate if told about this conversation, and she asked what help she can get safely. Contact restrictions: contact her only through the authenticated secure chat, with no phone calls, and do not contact Orin. She has not asked for any account restriction, and restrictions need specialist authorisation. Do not record any finding of abuse; pass on her own words only.",
+        "rationale": {
+          "explanation": "Yara asked what help she can get safely and said she fears retaliation. The bank's support directory lists safeguarding support through secure chat, which matches the only contact method she has approved.",
+          "evidence": [
+            "history.md"
+          ],
+          "criterion": "Where coercion or a risk of retaliation is disclosed, refer to a trained specialist using a contact method the customer has said is safe.",
+          "source": "skill:financial-abuse"
+        },
+        "target": "Brackenfold Bank safeguarding support (secure chat)",
+        "arguments": {},
+        "requires": [],
+        "condition": null
+      },
+      {
+        "id": "s4",
+        "kind": "proposed_action",
+        "action": "reply_to_customer",
+        "instruction": "Reply in secure chat: \"Yes, we can handle this here, and we will not phone Orin. Our terms do not require phoning the other holder when a standing order is cancelled, and we've noted that we should contact you only through this secure chat, with no phone calls. Under your joint-account mandate, either of you can cancel an existing standing order alone. We have passed your request to cancel the £200 monthly standing order to Sedgepan Club (next due 20 November 2026) to our joint-account support team. It is not confirmed yet, and we can't promise yet that the 20 November payment will be stopped. We'll confirm here once it has been processed. To be open with you about what Orin can see: both holders can see account activity and standing-order status in shared statements and the online portal, so Orin may be able to see that this standing order has been changed or cancelled. Cancelling it also doesn't end any membership or agreement with Sedgepan Club, or settle anything owed to them. For support, we have referred you to our safeguarding team, who work through secure chat. They will contact you only here and can talk through what help is available. If you are ever in immediate danger, please call 999.\"",
+        "rationale": {
+          "explanation": "Yara asked three things: whether this can be done here without phoning Orin, what Orin can still see, and what help she can get safely. The records answer all three. The cancellation must be reported as pending because no execution record exists.",
+          "evidence": [
+            "history.md",
+            "attachments/joint-mandate.pdf",
+            "attachments/standing-order.csv",
+            "request.md"
+          ],
+          "criterion": "Reply with the status on record and say clearly what it does not confirm. Be truthful about what the other holder can see, and give general safety help.",
+          "source": "general:planner"
+        },
+        "target": "Yara Bellune via authenticated secure chat",
+        "arguments": {},
+        "requires": [
+          "s1",
+          "s2",
+          "s3"
+        ],
+        "condition": null
+      }
+    ],
+    "escalate_if": [],
+    "must_state": [
+      "The cancellation can be handled in this secure chat, and Orin will not be phoned. The bank's terms do not require phoning the other holder.",
+      "Either holder can cancel an existing standing order alone under the mandate.",
+      "The cancellation request for SO-026 (£200 a month to Sedgepan Club, next due 20 November 2026) has been passed on for processing but is not yet confirmed.",
+      "Both holders can see account activity and standing-order status through shared statements and portal views, so Orin may be able to see that the standing order has changed or been cancelled.",
+      "Safeguarding support is available through secure chat, a referral has been made, and contact will only be through this secure chat.",
+      "Cancelling the standing order does not end any membership or contract with Sedgepan Club, or settle anything owed to them.",
+      "If she is in immediate danger she should call 999."
+    ],
+    "must_not": [
+      "Phone Orin Bellune, tell Orin about this conversation, or ask Orin to confirm the request",
+      "Phone Yara back or use any channel other than this secure chat",
+      "Say the standing order has been cancelled before an execution record confirms it",
+      "Promise that the payment due on 20 November 2026 will be stopped",
+      "Say or suggest that Orin cannot see the standing-order status or account activity",
+      "Promise an account restriction, hidden activity or any particular safeguarding outcome",
+      "Describe the situation as confirmed abuse or as a legal status",
+      "Close the account, move the balance or restrict unrelated banking",
+      "Ask for PINs, passwords or one-time codes"
+    ],
+    "expected_disposition": "escalated"
+  },
+  "context": "# Supplied case 026\n\n## history.md\n\n# Case 026 history — Access to funds in a joint account\n\nTotal events: 5\n\n## 2026-11-16 09:00+00:00 — event 001 (E01)\n\n- **Channel:** Authenticated secure chat\n- **From:** Yara Bellune\n- **To:** Brackenfold Bank case desk\n\nBank contact record: identity check passed via established secure-chat process. Customer: Please cancel the £200 monthly standing order to Sedgepan Club. I am not asking to close the account or move the balance.\n\n## 2026-11-16 09:05+00:00 — event 002 (E02)\n\n- **Channel:** Internal mandate view\n- **From:** Brackenfold Bank joint-account register\n- **To:** Brackenfold Bank case desk\n\nCurrent mandate and standing-order details retrieved. No legal or operational account restriction is recorded.\n\nAttachments: [joint-mandate.pdf](attachments/joint-mandate.pdf), [standing-order.csv](attachments/standing-order.csv)\n\n## 2026-11-16 09:10+00:00 — event 003 (E03)\n\n- **Channel:** Customer secure chat\n- **From:** Yara Bellune\n- **To:** Brackenfold Bank case desk\n\nPlease do not call the other holder, Orin Bellune. I am frightened they will retaliate if told about this conversation. Use this secure chat, not a phone callback.\n\n## 2026-11-16 09:15+00:00 — event 004 (E04)\n\n- **Channel:** Internal procedure view\n- **From:** Brackenfold Bank joint-account support\n- **To:** Brackenfold Bank case desk\n\nStanding-order servicing terms: cancellation permissions are recorded in the current mandate. Telephone notification to the other holder is not required for standing-order cancellation. Both holders have access to account activity and standing-order status through shared statements and portal views. Support directory: joint-account support and safeguarding support are available through secure chat. Account restrictions require specialist authorisation.\n\n## 2026-11-16 09:20+00:00 — event 005 (E05)\n\n- **Channel:** Customer secure chat\n- **From:** Yara Bellune\n- **To:** Brackenfold Bank case desk\n\nCan you handle my cancellation instruction here without phoning Orin? Please tell me what they could still see, and what help I can get safely.\n\n\n## request.md\n\n# Case 026: Access to funds in a joint account\n\n## Case details\n\n- **Source role:** Yara Bellune\n- **Status:** Requires decision\n- **Created:** 2026-11-16 09:00+00:00\n- **Updated:** 2026-11-16 09:20+00:00\n- **Operator:** Brackenfold Bank case desk\n\n## Context\n\nJoint holder Yara Bellune contacts the bank about one standing order from SYN-ACCT-B026. The account is governed by an available either-to-sign mandate.\n\n## Initial request\n\nCan you handle my cancellation instruction here without phoning Orin? Please tell me what they could still see, and what help I can get safely.\n\n## Decision point\n\nNo desk response to the final request is recorded. Using the complete history and supplied evidence, recommend the next action, recipient and communication, explaining uncertainty and confidence.\n\n## History\n\n[Read the complete event history](history.md)\n\n## Attachments\n\n- [joint-mandate.pdf](attachments/joint-mandate.pdf)\n- [standing-order.csv](attachments/standing-order.csv)\n\n\n## attachments/joint-mandate.pdf\n\nFICTIONAL FACSIMILE · SYNTHETIC EXERCISE\nJoint account mandate\nIssuer: Brackenfold Bank\nAccount: SYN-ACCT-B026\nHolders: Yara Bellune / Orin Bellune\nEffective: 2025-06-02\nMandate: Either holder may individually instruct cancellation of an existing standing order\nAccount-wide closure: Separate process\nCurrent legal/operational restriction: None recorded\nRetrieved: 2026-11-16 09:05+00:00\nSynthetic exercise material | Page 1 of 1\n\n## attachments/standing-order.csv\n\naccount,order_id,payee,destination,amount_gbp,next_due,status,retrieved_at\nSYN-ACCT-B026,SO-026,Sedgepan Club,SYN-ACCT-CLUB026,200.00,2026-11-20,active,2026-11-16T09:05:00+00:00\n",
+  "generator": {
+    "planner": "available",
+    "kind": "model"
+  },
+  "output": {
+    "answer": "# Case 026: Yara Bellune, cancelling standing order SO-026\n\n## Decision\n**Disposition: escalated.** Yara Bellune passed the identity check in secure chat and is a joint holder of SYN-ACCT-B026. Under the either-to-sign mandate she can cancel standing order SO-026 on her own. SO-026 pays Sedgepan Club £200.00 a month and the next payment is due 2026-11-20. No restriction is recorded on the account.\n\nThe plan sends her request to joint-account support and refers her to safeguarding support. It also records that we must not phone Orin Bellune or tell Orin about this conversation, and that we contact Yara only through this secure chat.\n\n**Nothing below has been done yet. All steps are proposed and pending.**\n\n## Proposed actions (in order)\n1. **s1: Contact and disclosure hold (pending)**\n   - Record on case 026 / SYN-ACCT-B026:\n     - Do not phone Orin Bellune.\n     - Do not tell Orin about this conversation.\n     - Do not phone Yara back.\n     - Contact Yara only through the secure chat she is using.\n   - This hold covers outbound contact and disclosure only. It does not stop the cancellation or any other banking.\n2. **s2: Ask joint-account support to cancel SO-026 (pending)**\n   - Details: SO-026 on SYN-ACCT-B026, payee Sedgepan Club (SYN-ACCT-CLUB026), £200.00 a month, active, next due 2026-11-20.\n   - Instructing holder: Yara Bellune, who passed the identity check in secure chat on 2026-11-16 at 09:00.\n   - Authority: the either-to-sign mandate, effective 2025-06-02.\n   - Do not close the account, move the balance or make any other change. Do not phone Orin.\n   - Support should send confirmation back to the case desk, including whether the cancellation takes effect before the 2026-11-20 payment. The desk will report it to Yara in secure chat only.\n3. **s3: Refer to safeguarding support through secure chat (pending)**\n   - Pass on Yara's own words about her fear of retaliation and her question about what help she can get safely.\n   - Pass on the contact limits: secure chat only, no phone calls, no contact with Orin.\n   - Note that she has not asked for any account restriction, and that restrictions need specialist authorisation.\n   - Do not record any finding of abuse.\n4. **s4: Reply to Yara in secure chat (pending)**\n   - Send only after s1, s2 and s3 have been confirmed as done.\n\n## Message to the customer (pending, not sent)\nThe full reply is drafted separately and marked NOT SENT. It says that the hold has been recorded, the request has been passed on and the referral has been made, so it can only be sent once s1–s3 are confirmed as done. The draft will tell Yara:\n- We can handle this here and will not phone Orin. Our terms do not require phoning the other holder.\n- Under the mandate, either holder can cancel an existing standing order alone.\n- Her request to cancel the £200 monthly standing order to Sedgepan Club (next due 20 November 2026) has been passed on for processing. It is **not yet confirmed**, and we cannot yet promise that the 20 November payment will be stopped.\n- Both holders can see account activity and standing-order status in shared statements and the online portal. Orin may therefore see that the standing order has changed or been cancelled.\n- Cancelling it does not end any membership or agreement with Sedgepan Club, or settle anything owed to them.\n- She has been referred to safeguarding support, who will contact her only through this secure chat.\n- If she is ever in immediate danger, she should call 999.\n\nThe message must not:\n- say the standing order is cancelled\n- promise the 20 November payment will be stopped\n- suggest Orin cannot see the activity\n- promise a restriction, hidden activity or any particular safeguarding outcome\n- call the situation confirmed abuse\n- ask for PINs, passwords or one-time codes\n",
+    "reasoning": "# Decision memo: case 026, Yara Bellune (SYN-ACCT-B026)\n\nThe full input is saved in `context.md`. Citations below use event IDs E01–E05 from `history.md`, plus `request.md` and the two attachments.\n\n## 1. Situation and history\n- **E01 (2026-11-16 09:00, secure chat):** The bank's contact record says Yara Bellune passed the identity check through the established secure-chat process. That is an authenticated record. She then asked to cancel \"the £200 monthly standing order to Sedgepan Club\". She said she is not asking to close the account or move the balance.\n- **E02 (09:05, internal mandate view):** The register says no legal or operational restriction is recorded. Two attachments were retrieved:\n  - `attachments/joint-mandate.pdf`: holders Yara and Orin Bellune, effective 2025-06-02. Either holder may cancel an existing standing order alone. Closing the account is a separate process. No restriction recorded.\n  - `attachments/standing-order.csv`: SO-026, payee Sedgepan Club, destination SYN-ACCT-CLUB026, £200.00, next due 2026-11-20, status active.\n- **E03 (09:10, customer chat):** Yara asked us not to call Orin Bellune. She said she is frightened Orin will retaliate if told about this conversation, and asked for secure chat rather than a phone callback. This is her own report. Nothing on file confirms or disproves it.\n- **E04 (09:15, internal procedure view):** This is the bank's own servicing terms and support directory. It says:\n  - cancellation permissions follow the mandate\n  - the other holder does not have to be phoned when a standing order is cancelled\n  - both holders can see account activity and standing-order status\n  - joint-account support and safeguarding support are available through secure chat\n  - account restrictions need specialist authorisation\n- **E05 (09:20, customer chat):** Yara asked three things: can this be handled here without phoning Orin, what can Orin still see, and what help can she get safely. `request.md` confirms the desk has not yet replied.\n\n## 2. Evidence and gaps\n- **Authority:** The mandate PDF and E02 support Yara cancelling SO-026 alone. Her instruction (E01) matches exactly one active standing order in the CSV.\n- **Contact:** E04 shows the bank's terms do not require phoning Orin. Holding that contact therefore does not conflict with any supplied procedure.\n- **What Orin can see:** E04 says both holders can see standing-order status. Hiding the change from Orin is not supported, and the plan forbids suggesting it.\n- **Gaps (from the plan's `missing` list):**\n  - We have no confirmation that SO-026 has actually been cancelled, or whether that happens before the 2026-11-20 payment. The request was made on 2026-11-16, four days earlier.\n  - We have no safe contact method for Yara other than this secure chat.\n- **What we cannot establish:**\n  - Whether Yara's fear of retaliation is founded. The `financial_abuse` safety flag is a handling category, not a finding.\n  - Her relationship with Sedgepan Club, and whether anything is owed to them.\n- **Minor inconsistency:** The case title is \"Access to funds in a joint account\", but Yara's actual request is narrower: one standing order, explicitly not the account or the balance (E01).\n\n## 3. Why this plan\n- **s1: Contact and disclosure hold**\n  - *Explanation:* Yara fears retaliation and asked for secure chat only. Our terms do not require phoning the other holder, so the hold keeps her safe without blocking her request.\n  - *Evidence:* E03, E04.\n  - *Criterion:* Hold any unsafe disclosure or contact to a suspected controller. Use only the contact method the customer says is safe.\n  - *Source:* `skill:financial-abuse`. This is a skill handling rule, not a supplied bank policy or a legal obligation. It does not conflict with E04.\n  - *Limit:* It is deliberately limited to contact and disclosure. It does not stop or restrict any banking.\n- **s2: Cancellation request to joint-account support**\n  - *Explanation:* Yara is verified, her instruction is clear and covers a single standing order, and the mandate gives her sole authority. Nothing recorded blocks it, and the next payment is due 2026-11-20.\n  - *Evidence:* E01, E02, mandate PDF, standing-order CSV.\n  - *Criterion:* Use the mandate and schedule already on record and match the specific instruction. Asking for the cancellation does not confirm it, and a payment already in progress is not guaranteed to stop.\n  - *Source:* `skill:scheduled-payments`, a skill rule. The authority itself comes from the bank's mandate document.\n  - *Limits:* The instruction keeps the scope narrow: no closure, no balance move, no other change. It repeats the no-phone hold, and asks for confirmation to come back to the case desk.\n- **s3: Safeguarding referral**\n  - *Explanation:* Yara asked what help she can get safely and said she fears retaliation. E04 lists safeguarding support through secure chat, which matches the only contact method she has approved.\n  - *Evidence:* E03, E05, E04.\n  - *Criterion:* Where coercion or a risk of retaliation is disclosed, refer to a trained specialist through a contact method the customer says is safe.\n  - *Source:* `skill:financial-abuse`, a skill rule. That safeguarding support exists through secure chat comes from the bank's directory in E04.\n  - *Limits:* The referral passes on her own words only and records no finding of abuse. It notes that she has not asked for a restriction, and that restrictions need specialist authorisation (E04).\n- **s4: Reply in secure chat**\n  - *Explanation:* The reply answers all three questions from E05 using the records. The cancellation is reported as pending because no execution record exists.\n  - *Evidence:* E01–E05, both attachments, `request.md`.\n  - *Criterion:* Reply with the status on record and say clearly what it does not confirm. Be truthful about what the other holder can see, and give general safety help.\n  - *Source:* `general:planner`. This is a general planning rule, not a bank policy.\n  - The 999 line is general safety guidance in the plan's message. It is not drawn from a supplied bank document.\n- **Order:** s4 depends on s1, s2 and s3, because the reply says the hold has been recorded, the request passed on and the referral made. The reply is therefore held as a NOT SENT draft until those three steps are confirmed as done.\n- **Alternatives:** Contacting Orin to confirm is ruled out. It is not required (E04), it is not needed under the mandate, and it conflicts with Yara's safety request (E03). The plan does not consider account restrictions: Yara has not asked for one, and they need specialist authorisation.\n\n## 4. Execution boundaries\n- s1, s2 and s3 have no prerequisites. s4 must wait until s1–s3 are confirmed as done.\n- The plan stops at a pending cancellation and an open referral. Its next dependency is confirmation from joint-account support, including whether the 2026-11-20 payment is stopped. Any report to Yara must go through secure chat only.\n- The plan has no `escalate_if` conditions. If any step is blocked (for example, support cannot process the cancellation), a fresh decision is needed. This memo adds no new branch.\n\n## 5. Expected result and limits\n- **What the steps could achieve:**\n  - a recorded contact and disclosure hold\n  - a cancellation request with the authority to support it\n  - a safeguarding referral that uses her approved channel\n  - a truthful reply to Yara\n- **What remains unconfirmed:**\n  - the actual cancellation, and whether it happens before the 20 November payment\n  - any safeguarding outcome\n  - any effect on her dealings with Sedgepan Club\n- **The reply must state:**\n  - this can be handled here without phoning Orin, and our terms do not require it\n  - either holder can cancel alone under the mandate\n  - the cancellation request has been passed on but is not confirmed\n  - Orin may see the change in statements or the portal\n  - a safeguarding referral has been made and contact will be through secure chat only\n  - cancelling does not end any membership or contract with Sedgepan Club, or settle anything owed to them\n  - she should call 999 if she is in immediate danger\n- **The plan must not:**\n  - contact Orin or tell Orin about this conversation\n  - phone Yara or use any other channel\n  - say the order is cancelled before an execution record confirms it\n  - promise the 20 November payment will be stopped\n  - suggest Orin cannot see the activity\n  - promise a restriction, hidden activity or any particular safeguarding outcome\n  - call the situation confirmed abuse or a legal status\n  - close the account, move the balance or restrict unrelated banking\n  - ask for PINs, passwords or one-time codes\n",
+    "future_messages": [
+      {
+        "after_steps": [
+          "s1",
+          "s2",
+          "s3"
+        ],
+        "message": "Yes, we can handle this here, and we will not phone Orin. Our terms do not require phoning the other holder when a standing order is cancelled, and we've noted that we should contact you only through this secure chat, with no phone calls. Under your joint-account mandate, either of you can cancel an existing standing order alone. We have passed your request to cancel the £200 monthly standing order to Sedgepan Club (next due 20 November 2026) to our joint-account support team. It is not confirmed yet, and we can't promise yet that the 20 November payment will be stopped. We'll confirm here once it has been processed. To be open with you about what Orin can see: both holders can see account activity and standing-order status in shared statements and the online portal, so Orin may be able to see that this standing order has been changed or cancelled. Cancelling it also doesn't end any membership or agreement with Sedgepan Club, or settle anything owed to them. For support, we have referred you to our safeguarding team, who work through secure chat. They will contact you only here and can talk through what help is available. If you are ever in immediate danger, please call 999."
+      }
+    ]
+  }
+}

@@ -1,0 +1,120 @@
+{
+  "intent": "The authenticated cardholder wants the £600 hotel amount added back to her available balance today. She believes the hotel took £600 and £520.",
+  "summary": "The records show one booked hotel debit of £520 (FINAL-022). The £600 is an active authorisation reservation (AUTH-022), not a second charge. Its reference matches the reservation linked to the £520 debit and the hotel's final receipt. The case desk cannot release holds, so we will ask card operations to investigate AUTH-022 and release it if eligible, noting the customer's same-day need. We will then explain the position to the customer without promising a release or a time.",
+  "facts": [
+    {
+      "claim": "Rois Fenwick is the account holder and current contact authentication is recorded as passed; the 09:10 chat is labelled authenticated.",
+      "evidence": [
+        "history.md"
+      ]
+    },
+    {
+      "claim": "At 08:30 the card ledger booked one card debit of £520.00, reference FINAL-022, linked to authorisation AUTH-022.",
+      "evidence": [
+        "attachments/card-entries.csv"
+      ]
+    },
+    {
+      "claim": "An authorisation reservation AUTH-022 for £600.00 shows as active in the 09:00 snapshot. It is a reservation, not a booked debit.",
+      "evidence": [
+        "attachments/card-entries.csv"
+      ]
+    },
+    {
+      "claim": "The 09:00 snapshot shows a ledger balance of £980.00 (£1,500 opening minus £520) and an available balance of £380.00, which equals £980 minus the £600 reservation.",
+      "evidence": [
+        "attachments/card-entries.csv"
+      ]
+    },
+    {
+      "claim": "The hotel's final receipt states that the stay ran from 7 to 10 November 2026 and that the final card amount was £520.00. It gives payment reference FINAL-022 and authorisation reference AUTH-022.",
+      "evidence": [
+        "attachments/hotel-receipt.pdf",
+        "history.md"
+      ]
+    },
+    {
+      "claim": "Card operations can investigate a lingering linked authorisation after a completed purchase. They can release an eligible stale hold after checking linkage and current network state. The case desk may request this investigation but cannot release a hold itself, and release timing depends on those checks.",
+      "evidence": [
+        "history.md"
+      ]
+    },
+    {
+      "claim": "The customer asks for the £600 to be added back to her available money today because she needs to buy groceries.",
+      "evidence": [
+        "history.md",
+        "request.md"
+      ]
+    }
+  ],
+  "missing": [
+    "Card operations' result on whether the AUTH-022 £600 reservation is eligible for release, based on linkage and current network state",
+    "When any release would take effect; no timing commitment is supplied",
+    "Any balance data after the 09:00 snapshot"
+  ],
+  "identity_authority": "established",
+  "safety_flags": [],
+  "steps": [
+    {
+      "id": "s1",
+      "kind": "proposed_action",
+      "action": "request_team_action",
+      "instruction": "Ask card operations to investigate the lingering authorisation reservation AUTH-022 (£600.00, active in the 09:00 ledger snapshot) on account SYN-ACCT-B022 for cardholder Rois Fenwick (contact authentication recorded as passed). Ask them to release it if they find it is an eligible stale hold. Pass on these details: (1) at 08:30 the ledger booked card debit FINAL-022 for £520.00, linked to AUTH-022; (2) the Alderclock Hotel final receipt SYN-HOTEL-022 states that the stay ended on 10 November 2026 and gives a final amount of £520.00 with references FINAL-022 and AUTH-022; (3) at 09:00 the available balance was £380.00 against a ledger balance of £980.00. Say that the customer needs the funds for groceries today and ask them to prioritise the check if their procedure allows. Ask them to confirm receipt of the request and send the outcome to the case desk.",
+      "rationale": {
+        "explanation": "The £600 reservation shares its authorisation reference with a completed £520 purchase and the hotel's final receipt. That matches the lingering linked authorisation which card operations can investigate. The case desk can request the investigation but cannot release the hold.",
+        "evidence": [
+          "attachments/card-entries.csv",
+          "attachments/hotel-receipt.pdf",
+          "history.md"
+        ],
+        "criterion": "The case desk may request investigation of a lingering linked authorisation after a completed purchase. Only card operations can release an eligible stale hold, after checking linkage and network state.",
+        "source": "evidence:history.md"
+      },
+      "target": "Brackenfold Bank card operations",
+      "arguments": {},
+      "requires": [],
+      "condition": null
+    },
+    {
+      "id": "s2",
+      "kind": "proposed_action",
+      "action": "reply_to_customer",
+      "instruction": "Reply in chat: 'Thank you for sending the hotel receipt. Our records show the hotel took one payment of £520 (reference FINAL-022), which matches your final receipt. The £600 is not a second charge. It is a pending authorisation hold with the same authorisation reference (AUTH-022) as your stay. At 09:00, your account balance was £980 and your available balance was £380, because the £600 is still reserved. We have asked our card operations team to check this hold and release it if it is eligible. I can't release it myself, and I can't promise it will be back in your available balance today, because the timing depends on their checks. You can still use the £380 available balance. We will update you once card operations has finished its checks.' Only say the request has been sent if s1 has been acknowledged. If not, say the request is being raised.",
+      "rationale": {
+        "explanation": "The customer thinks she was charged £1,120. The supplied ledger and receipt directly show one £520 debit and one £600 reservation. She needs a specific, accurate answer about the hold and the release process, not a generic answer or a promise of timing.",
+        "evidence": [
+          "attachments/card-entries.csv",
+          "attachments/hotel-receipt.pdf",
+          "history.md"
+        ],
+        "criterion": "State only the stage the supplied record proves, keep a reservation separate from a booked debit, and do not promise a release time without an applicable commitment.",
+        "source": "skill:payments"
+      },
+      "target": "Rois Fenwick (authenticated chat)",
+      "arguments": {},
+      "requires": [
+        "s1"
+      ],
+      "condition": null
+    }
+  ],
+  "escalate_if": [],
+  "must_state": [
+    "Our records show the hotel took one payment of £520 (reference FINAL-022). The £600 is a pending authorisation hold, not a second charge.",
+    "As of 09:00, your ledger balance was £980 and your available balance was £380, because the £600 hold is reserved.",
+    "The £600 hold has the same authorisation reference (AUTH-022) as the £520 payment and the hotel's final receipt.",
+    "The case desk cannot release the hold itself. Card operations must first check it, and the timing depends on those checks.",
+    "We cannot promise the money will be available today.",
+    "The £380 available balance shown at 09:00 can still be used."
+  ],
+  "must_not": [
+    "Say the £600 was charged, debited or taken as a second payment",
+    "Promise the hold will be released today or by any specific time",
+    "Say the hold has been released or that the investigation is finished",
+    "Say the hold is definitely stale or eligible before card operations has checked it",
+    "Say the investigation request has been sent before card operations acknowledges it",
+    "Say the hotel made an error or that a refund is due",
+    "Ask for a PIN, password or one-time code"
+  ],
+  "expected_disposition": "escalated"
+}

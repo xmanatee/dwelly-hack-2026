@@ -1,0 +1,162 @@
+{
+  "intent": "Customer (ID&V passed) wants his H&V current account closed today with the £12.40 balance paid out, and wants any future incoming payments forwarded to his new account at another bank.",
+  "summary": "Give the warning that closure policy requires before closing. The customer believes nothing is left on the account, but the records show live items: two active Direct Debits due 1 Oct (Meridian Motor Insurance £68.20 and FitLife £45.00), a £200 standing order to S PRICE due 28 Sep, and irregular employer expense credits. Turn down the manual forwarding request. Point him to the CASS full switch requested by his new bank, which redirects payments for 3 years. Ask him to choose: close today knowing these will fail, or use CASS. No closure has been carried out.",
+  "facts": [
+    {
+      "claim": "Customer passed ID&V on the personal banking phone line and asked to close the account today and have the remaining balance sent to him.",
+      "evidence": [
+        "event-002",
+        "request.md"
+      ]
+    },
+    {
+      "claim": "The balance is £12.40. There is no CASS switch request on file. Salary was moved manually in August.",
+      "evidence": [
+        "event-001",
+        "attachments/account_summary.csv"
+      ]
+    },
+    {
+      "claim": "Active items still attached: DD to Meridian Motor Insurance (policy MMI-44-88120), £68.20, next 2026-10-01; DD to FitLife Gyms Ltd, £45.00, next 2026-10-01; standing order of £200.00 to S PRICE (ref MUM), next 2026-09-28; irregular inbound employer expenses from Elmstead Logistics Ltd, last £83.10 on 2026-09-14.",
+      "evidence": [
+        "event-001",
+        "attachments/account_summary.csv"
+      ]
+    },
+    {
+      "claim": "The customer said there is nothing on the account and asked for any future incoming payments to be forwarded to his new account. The new account details are mentioned but are not included in the supplied snapshot.",
+      "evidence": [
+        "event-004"
+      ]
+    },
+    {
+      "claim": "Closure policy: an account with active DDs/SOs can be closed on instruction, but the bank must warn that they will fail. A CASS full switch redirects payments in and out for 3 years and is available at the new bank's request within 7 working days.",
+      "evidence": [
+        "event-001"
+      ]
+    },
+    {
+      "claim": "The insurer's letter dated 15 Sep 2026 says that if a monthly payment is not received and stays unpaid after 14 days, the policy will be cancelled. It also states that driving without insurance is a criminal offence.",
+      "evidence": [
+        "attachments/insurer_reminder_letter.txt"
+      ]
+    },
+    {
+      "claim": "The agent said 'I can arrange that' and asked to check the attached items first. The customer has not yet been given the required warning.",
+      "evidence": [
+        "event-003",
+        "event-004"
+      ]
+    }
+  ],
+  "missing": [
+    "The customer's informed choice after hearing the warning: close today, knowing the DDs, SO and future credits will fail or not be received, or arrange a CASS full switch through his new bank instead",
+    "New account details (sort code/account number/name) for paying out the £12.40 balance: given verbally on the call but not present in the supplied snapshot",
+    "No supported H&V procedure for manually forwarding credits to an external account after closure is in the supplied evidence"
+  ],
+  "identity_authority": "established",
+  "safety_flags": [],
+  "steps": [
+    {
+      "id": "s1",
+      "kind": "proposed_action",
+      "action": "confirm_identity_authority",
+      "instruction": "Record that Owen Price passed ID&V on this personal banking call and has authority to instruct closure of his own personal current account and payout of its balance. No further identity challenge is needed.",
+      "rationale": {
+        "explanation": "The call record shows ID&V passed for the account holder asking to close his own account, so authority is already established.",
+        "evidence": [
+          "event-002"
+        ],
+        "criterion": "Reuse an established verified session; do not insert a redundant identity challenge.",
+        "source": "skill:cards-access"
+      },
+      "target": "Servicing agent (Harrow & Vale Bank plc)",
+      "arguments": {},
+      "requires": [],
+      "condition": null
+    },
+    {
+      "id": "s2",
+      "kind": "proposed_action",
+      "action": "hold_or_decline",
+      "instruction": "Do not submit the closure until the customer has heard the required warning and confirmed his choice (s4). Decline the request to manually forward future incoming payments after closure: no such supported procedure appears in the supplied evidence. The supported redirection route is a CASS full switch requested by his new bank.",
+      "rationale": {
+        "explanation": "Closure policy requires a warning before an account with active DDs/SOs is closed. The customer gave his instruction believing nothing is attached, and the records contradict that. The only redirection route in evidence is CASS at the new bank's request.",
+        "evidence": [
+          "event-001",
+          "event-004",
+          "attachments/account_summary.csv"
+        ],
+        "criterion": "Closure on instruction is allowed only after warning that active DDs/SOs will fail; do not invent an unsupported forwarding operation.",
+        "source": "evidence:event-001"
+      },
+      "target": "Servicing agent (Harrow & Vale Bank plc)",
+      "arguments": {},
+      "requires": [],
+      "condition": null
+    },
+    {
+      "id": "s3",
+      "kind": "proposed_action",
+      "action": "reply_to_customer",
+      "instruction": "Tell the customer on this call: 'Before I close it, I need to tell you what's still set up on this account. There are two active Direct Debits due on 1 October: Meridian Motor Insurance £68.20 for policy MMI-44-88120, and FitLife Gyms £45.00. There's also a £200 standing order to S PRICE, reference MUM, due on 28 September. Your employer's expense payments from Elmstead Logistics are still coming in here; the last was £83.10 on 14 September. If I close the account, those Direct Debits and the standing order will fail. Meridian's letter of 15 September says that if a payment stays unpaid for 14 days your policy will be cancelled, and that driving without insurance is a criminal offence. We can't forward payments to your new bank after the account closes. Your new bank can request a full Current Account Switch, which moves payments in and out and redirects them for 3 years. It can be done within 7 working days of their request. Nothing has been closed yet.'",
+      "rationale": {
+        "explanation": "The customer says nothing is attached, but the records show two DDs, a standing order and recurring credits. The insurer's letter sets out a concrete risk of the motor policy being cancelled.",
+        "evidence": [
+          "event-001",
+          "event-004",
+          "attachments/account_summary.csv",
+          "attachments/insurer_reminder_letter.txt"
+        ],
+        "criterion": "The bank must warn that active DDs/SOs will fail on closure. Cancelling an instruction does not move or settle the obligation behind it.",
+        "source": "skill:scheduled-payments"
+      },
+      "target": "Customer (Owen Price), current phone call",
+      "arguments": {},
+      "requires": [
+        "s2"
+      ],
+      "condition": null
+    },
+    {
+      "id": "s4",
+      "kind": "proposed_action",
+      "action": "request_confirmation",
+      "instruction": "Ask the customer to choose and confirm one option. (a) Close the H&V account today, accepting that the Meridian and FitLife DDs and the S PRICE standing order will fail and that future employer expense credits will not be redirected. Then read back the new account name, sort code and account number he gave for the £12.40 balance payout and get his confirmation. (b) Leave the account open and ask his new bank to request a CASS full switch. Record his answer; do not close the account before he confirms.",
+      "rationale": {
+        "explanation": "Closure needs the customer's informed instruction after the warning. The payout account details were mentioned on the call but are not in the snapshot, so they must be read back and confirmed.",
+        "evidence": [
+          "event-001",
+          "event-002",
+          "event-004"
+        ],
+        "criterion": "Do not claim closure from a request alone. Confirm the essential payout parameters before acting.",
+        "source": "skill:cards-access"
+      },
+      "target": "Customer (Owen Price), current phone call",
+      "arguments": {},
+      "requires": [
+        "s3"
+      ],
+      "condition": null
+    }
+  ],
+  "escalate_if": [],
+  "must_state": [
+    "Our records show the account still has active items: Meridian Motor Insurance DD £68.20 and FitLife Gyms DD £45.00, both due 1 Oct; a £200 standing order to S PRICE (ref MUM) due 28 Sep; and employer expense credits from Elmstead Logistics (last £83.10 on 14 Sep)",
+    "If the account is closed, these Direct Debits and the standing order will fail",
+    "Meridian's letter of 15 Sep says that if a monthly payment stays unpaid after 14 days the policy will be cancelled, and that driving without insurance is a criminal offence",
+    "H&V cannot simply forward future payments to the new account. The supported route is a CASS full switch, requested by his new bank, which redirects payments in and out for 3 years and is available within 7 working days",
+    "The account has not been closed yet; we need his confirmation of how he wants to proceed"
+  ],
+  "must_not": [
+    "Do not claim the account has been closed or the balance paid out",
+    "Do not promise that incoming payments will be forwarded after closure",
+    "Do not claim the DDs, standing order or employer payments have been moved to the new bank",
+    "Do not refuse closure outright; policy permits closure on instruction once the warning is given",
+    "Do not request a further identity check; ID&V has already passed",
+    "Do not ask for any PIN, password or one-time code",
+    "Do not speculate about whether the insurer or gym will accept late payment beyond what the letter says"
+  ],
+  "expected_disposition": "needs_info"
+}

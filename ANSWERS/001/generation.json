@@ -1,0 +1,224 @@
+{
+  "case_id": "001",
+  "plan": {
+    "intent": "The verified customer (Marcus Bell) wants the £750 hold released so he can pay £900 rent due tomorrow. The hold was placed after Meridian Bank sent a funds-recovery request saying the £2,600 he received was a scam. He says it was payment for a van he sold, and he has supporting evidence.",
+    "summary": "The servicing agent will not release the £750 on this call. The hold follows Meridian's recovery request MER-FR-2026-081734 under bank policy. The case goes to H&V Fraud Operations now for review, together with the customer's sale evidence and his rent deadline. The customer is asked for the V5C/DVLA handover proof he mentioned, offered a referral to financial support for the rent, and told honestly what is happening without any promise of release or timing.",
+    "facts": [
+      {
+        "claim": "The customer passed ID&V on this phone call.",
+        "evidence": [
+          "event-002"
+        ]
+      },
+      {
+        "claim": "On 21 Sep at 14:10 a £2,600 Faster Payment arrived from 'L FARRELL' (Meridian Bank) with reference 'VAN'. On 21 Sep at 16:40, £1,850 went to BARCLAYCARD, a payee on file since 2022.",
+        "evidence": [
+          "event-001",
+          "attachments/account_hold_notice.txt"
+        ]
+      },
+      {
+        "claim": "Meridian's recovery request was received on 23 Sep at 17:55. The payer reported a purchase scam: they paid for a Transit van, the seller said it would be delivered Tuesday, and no van arrived. Meridian asks H&V to hold and return the remaining funds and to respond within 2 working days. No police reference was supplied, and there are no previous reports against the payee account.",
+        "evidence": [
+          "attachments/funds_recovery_request_MERIDIAN.txt"
+        ]
+      },
+      {
+        "claim": "Bank policy is to hold whatever part of the disputed amount is still available and to respond to the sending bank within 2 working days. The system held £750, which is all available funds. Balance is £750 and the hold is £750.",
+        "evidence": [
+          "event-001",
+          "attachments/account_hold_notice.txt"
+        ]
+      },
+      {
+        "claim": "The customer has no fraud markers, no contact history in 12 months, no other inbound credits from unknown parties in 90 days, and has been with the bank 6 years.",
+        "evidence": [
+          "event-001",
+          "attachments/account_hold_notice.txt"
+        ]
+      },
+      {
+        "claim": "The customer says he sold his Transit on a marketplace, the buyer collected it on Monday and paid by transfer on his drive, and he has the messages, the listing and the V5 handover. He says he used most of the money to pay off his credit card.",
+        "evidence": [
+          "event-004"
+        ]
+      },
+      {
+        "claim": "The listing the customer exported is a 2017 Ford Transit Custom at £2,600, collection only, marked sold on 21 Sep 2026. The chat he exported with buyer 'Lou F.' shows the buyer arriving at 13:52 on 21 Sep, saying at 14:06 they are sending the money with reference VAN, and the seller confirming at 14:11 that the V5C slip was filled in and keys handed over. This conflicts with the payer's account of a promised delivery. The evidence is customer-supplied and has not been verified by the bank. That 'Lou F.' is 'L FARRELL' is plausible but not confirmed.",
+        "evidence": [
+          "attachments/customer_evidence_listing.txt",
+          "attachments/customer_evidence_messages.txt",
+          "attachments/funds_recovery_request_MERIDIAN.txt"
+        ]
+      },
+      {
+        "claim": "The customer says his rent of £900 is due tomorrow and he cannot pay it while his funds are held.",
+        "evidence": [
+          "event-002",
+          "event-006"
+        ]
+      }
+    ],
+    "missing": [
+      "The V5C / DVLA change-of-keeper evidence the customer mentioned. It has not been supplied; only the listing and chat export are attached.",
+      "Fraud Operations' decision on the hold and its response to Meridian. Nothing is recorded yet.",
+      "Whether the marketplace buyer 'Lou F.' and payer 'L FARRELL' are the same person. Not confirmed.",
+      "Whether the customer has any other means to meet tomorrow's £900 rent. Not known."
+    ],
+    "identity_authority": "established",
+    "safety_flags": [
+      "financial_difficulty"
+    ],
+    "steps": [
+      {
+        "id": "s1",
+        "kind": "proposed_action",
+        "action": "hold_or_decline",
+        "instruction": "Tell Marcus Bell the servicing agent cannot release the £750 hold on this call. The hold stays in place while Fraud Operations reviews recovery request MER-FR-2026-081734. Do not widen any restriction beyond the existing £750 hold.",
+        "rationale": {
+          "explanation": "The hold was applied under bank policy after an inbound recovery request for the disputed £2,600. A servicing agent releasing it would bypass the bank's review and the response it owes the sending bank.",
+          "evidence": [
+            "event-001",
+            "attachments/account_hold_notice.txt",
+            "attachments/funds_recovery_request_MERIDIAN.txt"
+          ],
+          "criterion": "When there is an inbound recovery request, bank policy is to hold the disputed amount still available and respond to the sending bank within 2 working days.",
+          "source": "evidence:event-001"
+        },
+        "target": "Customer (phone) / account SYN-ACCT-01-1",
+        "arguments": {},
+        "requires": [],
+        "condition": null
+      },
+      {
+        "id": "s2",
+        "kind": "proposed_action",
+        "action": "request_team_action",
+        "instruction": "Pass recovery case MER-FR-2026-081734 for account SYN-ACCT-01-1 (Marcus Bell) to H&V Fraud Operations for review of the £750 hold and the reply to Meridian, which is due within 2 working days of receipt on 23 Sep 17:55. Include: (1) the customer's ID&V-passed account on the call: van sold on a marketplace, collected Monday 21 Sep, paid by transfer on his drive, V5 handed over; (2) the customer-exported listing (collection only, £2,600, marked sold 21 Sep) and buyer chat ('Lou F.' arrived 13:52, sent payment ref VAN 14:06, seller confirmed V5C slip and keys 14:11); (3) the conflict with the payer's statement about a promised Tuesday delivery and no van; (4) that 'Lou F.'/'L FARRELL' being the same person is plausible but unconfirmed; (5) account profile: 6 years, no fraud markers, no other unknown inbound credits in 90 days, £1,850 paid to his own Barclaycard (payee since 2022) before the request; (6) the customer says £900 rent is due tomorrow and all his available funds are held, so the review is time-sensitive; (7) the customer has been asked to provide V5C/DVLA change-of-keeper proof.",
+        "rationale": {
+          "explanation": "Customer-supplied evidence directly contradicts the payer's claim. Fraud Operations owns the recovery request and the reply to Meridian, so it needs this evidence before the 2-working-day deadline.",
+          "evidence": [
+            "event-004",
+            "attachments/customer_evidence_listing.txt",
+            "attachments/customer_evidence_messages.txt",
+            "attachments/funds_recovery_request_MERIDIAN.txt",
+            "attachments/account_hold_notice.txt"
+          ],
+          "criterion": "Pass material evidence and the conflict between records to the team responsible for the review; do not resolve the conflict by guessing.",
+          "source": "skill:payments"
+        },
+        "target": "H&V Fraud Operations",
+        "arguments": {},
+        "requires": [],
+        "condition": null
+      },
+      {
+        "id": "s3",
+        "kind": "proposed_action",
+        "action": "ask_customer",
+        "instruction": "Ask Marcus Bell to provide the V5C / DVLA change-of-keeper confirmation for the Transit sold on 21 Sep (for example the DVLA confirmation of sale, or a photo of his retained V5C part). Tell him how to send it through the bank's usual secure document route, and that it will be added to the fraud operations review.",
+        "rationale": {
+          "explanation": "The customer said he has the V5 handover, but it is not among the supplied attachments. It is independent proof that the vehicle changed hands at collection.",
+          "evidence": [
+            "event-004",
+            "request.md"
+          ],
+          "criterion": "Ask for the one specific missing piece of evidence that bears on the dispute.",
+          "source": "general:evidence"
+        },
+        "target": "Customer (phone)",
+        "arguments": {},
+        "requires": [],
+        "condition": null
+      },
+      {
+        "id": "s4",
+        "kind": "proposed_action",
+        "action": "refer_specialist",
+        "instruction": "Offer Marcus Bell a referral to the financial support team about his £900 rent due tomorrow while all available funds (£750) are held. If he agrees, refer him with that context, his phone channel, and the fact that the hold is under fraud operations review. Do not suggest high-cost borrowing.",
+        "rationale": {
+          "explanation": "The customer says he cannot meet an essential living cost (rent due tomorrow) because his only available funds are held. Support with the shortfall is separate from the outcome of the fraud review.",
+          "evidence": [
+            "event-002",
+            "event-006",
+            "event-001"
+          ],
+          "criterion": "When essential living costs are at risk, refer to the appropriate support team. Do not recommend high-cost borrowing.",
+          "source": "skill:vulnerability-support"
+        },
+        "target": "H&V financial support team",
+        "arguments": {},
+        "requires": [],
+        "condition": null
+      },
+      {
+        "id": "s5",
+        "kind": "proposed_action",
+        "action": "reply_to_customer",
+        "instruction": "Say: 'I understand how stressful this is with your rent due tomorrow. Yesterday evening the bank that sent the £2,600 told us their customer has disputed the payment, and under our policy we have to hold the disputed money that's still in the account while it's looked at. That's why the £750 is held. I can't release it myself on this call. Your case is going to our fraud operations team to review, together with what you've told me, the marketplace listing and your chat with the buyer showing she collected the van on the 21st. It would really help if you could send us the V5C or DVLA change-of-keeper confirmation. I can't promise when the review will be finished or what the outcome will be. I can also put you in touch with our financial support team about your rent if you'd like.' Report the Fraud Operations referral and any financial support referral as made only once each is acknowledged; until then, say they are being arranged.",
+        "rationale": {
+          "explanation": "The customer asked what is going on and wants his money released. The reply gives the recorded reason for the hold, says who is reviewing it, and explains what the call cannot do or promise.",
+          "evidence": [
+            "event-001",
+            "event-002",
+            "event-006",
+            "attachments/funds_recovery_request_MERIDIAN.txt"
+          ],
+          "criterion": "Reply with the recorded status and what it does not confirm. Do not promise outcomes or timescales without evidence.",
+          "source": "general:planner"
+        },
+        "target": "Customer (phone)",
+        "arguments": {},
+        "requires": [
+          "s1",
+          "s2",
+          "s3",
+          "s4"
+        ],
+        "condition": null
+      }
+    ],
+    "escalate_if": [],
+    "must_state": [
+      "The £750 hold was placed because the sending bank reported the £2,600 payment as disputed and asked for remaining funds to be held. Under bank policy the available disputed funds are held while the claim is reviewed.",
+      "The agent on this call cannot release the hold. The case and his evidence are being passed to the bank's fraud operations team to review.",
+      "His explanation and evidence (the listing, the chat showing collection on 21 Sep, the V5C handover) will be included in that review.",
+      "Ask him to send the V5C / DVLA change-of-keeper confirmation and any other proof of the handover.",
+      "No decision or release time can be promised yet.",
+      "Offer a referral to the financial support team about the rent due tomorrow."
+    ],
+    "must_not": [
+      "Do not promise or imply that the hold will be released, or by when.",
+      "Do not say or imply the customer committed fraud, or that the payer's claim is false or true; this is unresolved.",
+      "Do not disclose the payer's account details or anything beyond what is needed to explain the dispute.",
+      "Do not say the £1,850 already paid to Barclaycard will be reclaimed or is affected.",
+      "Do not tell the customer the bank has already responded to Meridian or decided anything.",
+      "Do not suggest high-cost borrowing to cover the rent.",
+      "Do not ask for PINs, passwords or one-time codes."
+    ],
+    "expected_disposition": "escalated"
+  },
+  "context": "# Supplied case 001\n\n## history.md\n\n# Incoming payment under review — history\n\nTotal events: 6\n\nThe opening internal note is a snapshot available to the servicing agent at the time of contact; any earlier dates within it refer to records, not to the creation time of this note. Events on the same day without individual timestamps follow the source conversation order.\n\n<a id=\"event-001\"></a>\n## 2026-09-24 (individual event time not recorded) — event 001\n\n- **Channel:** Internal account view\n- **From:** Harrow & Vale Bank plc (case record)\n- **To:** Servicing agent (Harrow & Vale Bank plc)\n\nCustomer: **Marcus Bell** — personal current account, 6 years with the bank, no previous fraud markers.\n| Date | Event |\n|---|---|\n| 21 Sep 14:10 | Credit +£2,600.00, Faster Payment from \"L FARRELL\" (Meridian Bank), ref \"VAN\" |\n| 21 Sep 16:40 | Debit −£1,850.00 to \"BARCLAYCARD\" (his own card, payee on file since 2022) |\n| 23 Sep 17:55 | **Inbound funds-recovery request** from Meridian: their customer reports the £2,600 as an authorised push payment scam (\"vehicle not delivered\"). Bank policy: place a hold on the disputed amount still available, respond to the sending bank within 2 working days |\n| 23 Sep 17:56 | Hold applied: £750.00 (all available funds); account balance £750.00, hold £750.00 |\n\nCustomer's contact history: none in the last 12 months. No other inbound payments from unknown parties in the last 90 days.\n\n<a id=\"event-002\"></a>\n## 2026-09-24 (individual event time not recorded) — event 002\n\n- **Channel:** Phone (personal banking)\n- **From:** Customer\n- **To:** Servicing agent (Harrow & Vale Bank plc)\n\n[ID&V passed] I've got no access to my money. It says £750 is held and I can't pay my rent tomorrow. What's going on?\n\n<a id=\"event-003\"></a>\n## 2026-09-24 (individual event time not recorded) — event 003\n\n- **Channel:** Phone (personal banking)\n- **From:** Servicing agent (Harrow & Vale Bank plc)\n- **To:** Customer / caller\n\nI can see a hold was placed yesterday evening. I need to ask you about a payment you received on the 21st — £2,600 from an L Farrell.\n\n<a id=\"event-004\"></a>\n## 2026-09-24 (individual event time not recorded) — event 004\n\n- **Channel:** Phone (personal banking)\n- **From:** Customer\n- **To:** Servicing agent (Harrow & Vale Bank plc)\n\nThat's the van. I sold my old Transit on a marketplace site, she came and picked it up Monday, paid me by transfer while she was standing in my drive. I've got the messages, the listing, the V5 handover — all of it. I used most of it to pay off my credit card. Why is that your business?\n\n<a id=\"event-005\"></a>\n## 2026-09-24 (individual event time not recorded) — event 005\n\n- **Channel:** Phone (personal banking)\n- **From:** Servicing agent (Harrow & Vale Bank plc)\n- **To:** Customer / caller\n\nThank you — that context matters. Let me explain what has happened and what I need from you.\n\n<a id=\"event-006\"></a>\n## 2026-09-24 (individual event time not recorded) — event 006\n\n- **Channel:** Phone (personal banking)\n- **From:** Customer\n- **To:** Servicing agent (Harrow & Vale Bank plc)\n\nYou need to release my money is what you need to do. My rent's £900 and it's due tomorrow.\n\n\n## request.md\n\n# Incoming payment under review\n\n## Case details\n\n- **Source role:** Bank customer\n- **Status:** Requires decision\n- **Created:** 2026-09-24 (day precision)\n- **Updated:** 2026-09-24 (day precision)\n- **Bank:** Harrow & Vale Bank plc\n- **Channel:** Phone (personal banking)\n- **Contact start:** 09:20 local UK time (individual message times not recorded)\n\n## Initial request\n\nI've got no access to my money. It says £750 is held and I can't pay my rent tomorrow. What's going on?\n\n## History\n\n[Read the complete event history](history.md).\n\n## Attachments\n\n- [internal hold notice on the account](attachments/account_hold_notice.txt)\n- [marketplace listing exported by the customer](attachments/customer_evidence_listing.txt)\n- [marketplace chat with the buyer, exported by the customer](attachments/customer_evidence_messages.txt)\n- [interbank recovery request as received from Meridian](attachments/funds_recovery_request_MERIDIAN.txt)\n\n\n## attachments/account_hold_notice.txt\n\nH&V internal - account hold notice\nAccount: Marcus Bell, SYN-SC-01-1 / SYN-ACCT-01-1\nHold applied: 2026-09-23 17:56 by system (inbound recovery request MER-FR-2026-081734)\nAmount held: GBP 750.00 (all available funds). Disputed amount: GBP 2,600.00. Already spent before request: GBP 1,850.00 (2026-09-21 16:40 to BARCLAYCARD, payee on file since 2022).\nCustomer contact history (12 months): none. Fraud markers: none. Other inbound credits from unknown parties (90 days): none.\n\n\n## attachments/customer_evidence_listing.txt\n\n[Listing exported by customer from marketplace app]\nTitle: Ford Transit Custom 2017, 2.0 TDCi, 98k miles, MOT till Feb 2027\nPrice: £2,600  |  Listed: 12 Sep 2026  |  Seller: Marcus B. (member since 2019, 14 reviews, 4.9)\nLocation: Reading  |  Collection only\nDescription: Selling my work van, moving to a car. Two owners, full service history, new brake pads June 2026. Small dent rear door (photos). V5C present, buyer welcome to inspect and test drive. No delivery, collection only.\nStatus: SOLD (marked sold 21 Sep 2026)\n\n\n## attachments/customer_evidence_messages.txt\n\n[Marketplace chat exported by customer - buyer account \"Lou F.\"]\n19 Sep 20:14  Lou F.: Hi is the Transit still available? Can I come see it Monday?\n19 Sep 20:31  Marcus B.: Yes still here. Monday 2pm ok? RG1 4TP, I'll send the exact address once you confirm.\n19 Sep 20:35  Lou F.: Perfect. Will bring my partner to drive it back.\n21 Sep 13:52  Lou F.: Here, parked outside no 14\n21 Sep 14:06  Lou F.: Happy with it, sending the money now by bank transfer, ref VAN\n21 Sep 14:11  Marcus B.: Got it, thanks. V5C green slip filled in, you've got the keys, both sets. Safe drive.\n21 Sep 14:12  Lou F.: Cheers mate\n\n\n## attachments/funds_recovery_request_MERIDIAN.txt\n\nINTERBANK FUNDS RECOVERY REQUEST (APP scam - Best Practice Standards)\nReceived: 2026-09-23 17:55:12 BST\nFrom: Meridian Bank plc, Fraud Operations   To: Harrow & Vale Bank plc, Fraud Operations\nCase ref (sending bank): MER-FR-2026-081734\nOriginal payment: Faster Payment, 2026-09-21 14:10:07, GBP 2,600.00\nPayer: L FARRELL (Meridian SYN-SC-01-2 / SYN-ACCT-01-2)   Payee: sort SYN-SC-01-1 acct SYN-ACCT-01-1 (H&V)   Reference: VAN\nReported by payer: 2026-09-23 16:40. Category: Purchase scam - goods not received (vehicle).\nPayer statement (summary): \"Paid for a Transit van seen online. Seller said it would be delivered Tuesday. No van, seller not answering.\"\nRequest: hold any remaining funds and return to Meridian. Please respond within 2 working days.\nNote: no police reference supplied. No previous reports against payee account.\n",
+  "generator": {
+    "planner": "available",
+    "kind": "model"
+  },
+  "output": {
+    "answer": "# Case 001: £750 hold after Meridian recovery request (Marcus Bell)\n\n## Decision\n**Escalated. The £750 hold stays in place for now.** The servicing agent will not release it on this call. Meridian's funds-recovery request **MER-FR-2026-081734** triggered the hold under bank policy. The proposed next step is to pass the case to **H&V Fraud Operations** for review, together with Mr Bell's sale evidence and his rent deadline. None of the steps below has been carried out yet.\n\n## Proposed actions (in order, all pending)\n1. **Keep the hold (s1).** Tell Mr Bell the agent cannot release the £750 on this call. The hold stays while Fraud Operations reviews MER-FR-2026-081734. No restriction beyond the existing £750 hold is to be added.\n2. **Refer to H&V Fraud Operations (s2).** Pass recovery case MER-FR-2026-081734 for account SYN-ACCT-01-1 for review of the hold and of the reply to Meridian. That reply is due within 2 working days of receipt on 23 Sep at 17:55. The referral should include:\n   - Mr Bell's account of the sale, given on this call after he passed ID&V. He sold the van on a marketplace, it was collected on Monday 21 Sep, he was paid by transfer on his drive and he handed over the V5.\n   - The listing he exported: collection only, £2,600, marked sold on 21 Sep.\n   - The chat he exported: \"Lou F.\" arrived at 13:52, said at 14:06 she was sending the money with reference VAN, and at 14:11 the seller confirmed the V5C slip was filled in and the keys handed over.\n   - The conflict with the payer's statement that delivery was promised for Tuesday and no van arrived.\n   - That \"Lou F.\" and \"L FARRELL\" being the same person is plausible but not confirmed.\n   - The account profile: 6 years with the bank, no fraud markers, no other unknown inbound credits in 90 days, and £1,850 paid to his own Barclaycard (a payee since 2022) before the request arrived.\n   - That his £900 rent is due tomorrow and all his available funds are held, so the review is time-sensitive.\n   - That he has been asked for V5C/DVLA change-of-keeper proof.\n3. **Ask for missing evidence (s3).** Ask Mr Bell for the V5C/DVLA change-of-keeper confirmation for the Transit sold on 21 Sep. This could be the DVLA confirmation of sale or a photo of the part of the V5C he kept. Explain how to send it through the bank's usual secure document route, and that it will be added to the Fraud Operations review.\n4. **Offer financial support (s4).** Offer a referral to the H&V financial support team about the £900 rent due tomorrow. If he agrees, the referral should include that context, that he is on the phone channel, and that the hold is under Fraud Operations review. Do not suggest high-cost borrowing.\n5. **Reply to the customer (s5).** This depends on steps s1–s4. Use the message below. Describe the Fraud Operations referral and any financial support referral as being arranged. Only call them made once each one has been acknowledged.\n\n## Message to the customer (phone, proposed)\n> I understand how stressful this is with your rent due tomorrow. Yesterday evening the bank that sent the £2,600 told us their customer has disputed the payment, and under our policy we have to hold the disputed money that's still in the account while it's looked at. That's why the £750 is held. I can't release it myself on this call. Your case is going to our fraud operations team to review, together with what you've told me, the marketplace listing and your chat with the buyer showing she collected the van on the 21st. It would really help if you could send us the V5C or DVLA change-of-keeper confirmation, and any other proof of the handover you have. I can't promise when the review will be finished or what the outcome will be. I can also put you in touch with our financial support team about your rent if you'd like.\n\n## Message guardrails\n- Don't promise or suggest that the hold will be released, or say when.\n- Don't say or suggest that the customer committed fraud, or that the payer's claim is true or false.\n- Don't disclose the payer's account details.\n- Don't say the £1,850 already paid to Barclaycard will be reclaimed or is affected.\n- Don't say the bank has already responded to Meridian or made any decision.\n- Don't suggest high-cost borrowing.\n- Never ask for PINs, passwords or one-time codes.",
+    "reasoning": "# Decision memo: Case 001, £750 hold after an inbound funds-recovery request\n\nThe full input is saved in `context.md`. This memo explains the plan of record. It does not change it. All actions are still proposed. Nothing has been executed.\n\n## 1. Situation and history\n\n**Authenticated bank records:**\n- **event-001** (internal account view, 24 Sep 2026) and **attachments/account_hold_notice.txt** show:\n  - **21 Sep 14:10:** a £2,600 Faster Payment arrived from \"L FARRELL\" (Meridian Bank) with reference \"VAN\".\n  - **21 Sep 16:40:** £1,850 was paid to BARCLAYCARD, a payee on file since 2022.\n  - **23 Sep 17:55:** Meridian's funds-recovery request arrived.\n  - **23 Sep 17:56:** the system applied a hold of £750, which is all available funds. Balance £750, hold £750.\n  - The customer has been with the bank 6 years, has no fraud markers, no contact history in 12 months and no other inbound credits from unknown parties in 90 days.\n- **attachments/funds_recovery_request_MERIDIAN.txt** (ref MER-FR-2026-081734, received 23 Sep 17:55:12):\n  - The payer reported the payment on 23 Sep at 16:40 as a purchase scam where goods were not received.\n  - The payer's summary says: \"Seller said it would be delivered Tuesday. No van, seller not answering.\"\n  - Meridian asks H&V to hold the remaining funds and return them, and to respond within 2 working days.\n  - No police reference was supplied, and there are no previous reports against the payee account.\n\n**What the customer said on the call** (phone, 24 Sep, contact started 09:20):\n- **event-002:** he passed ID&V. He has no access to his money and his rent is due tomorrow.\n- **event-004:** he sold his old Transit on a marketplace, the buyer collected it on Monday and paid by transfer on his drive, and he has \"the messages, the listing, the V5 handover\". He used most of the money to pay off his credit card.\n- **event-006:** he wants the money released. His rent is £900 and due tomorrow.\n- At **event-003** the agent mentioned the payment from \"L Farrell\". At **event-005** the agent acknowledged his explanation.\n\n**Evidence the customer exported (not verified by the bank):**\n- **attachments/customer_evidence_listing.txt:** a 2017 Ford Transit Custom at £2,600, listed 12 Sep, \"Collection only… No delivery\", marked SOLD on 21 Sep 2026.\n- **attachments/customer_evidence_messages.txt:** buyer \"Lou F.\" arranged a Monday viewing. On 21 Sep she was \"parked outside\" at 13:52 and said at 14:06 she was \"sending the money now… ref VAN\". At 14:11 the seller confirmed \"V5C green slip filled in, you've got the keys\".\n\n## 2. Evidence and gaps\n\n- **Conflict between accounts.** The payer's account (promised Tuesday delivery, no van) conflicts with the customer's account and exports (collection only, keys and V5C slip handed over at about the time the payment arrived at 14:10). The bank has not verified the exports. The plan does not settle the conflict. It passes it to the team that owns the review.\n- **What supports the customer's version.** The timing fits: the chat says payment was being sent at 14:06 and the credit arrived at 14:10:07. The amount and reference \"VAN\" also match. However, these items come from the customer's own exports.\n- **Gaps recorded in the plan:**\n  - The V5C/DVLA change-of-keeper evidence he mentioned has not been supplied.\n  - Fraud Operations has not recorded any decision or reply to Meridian.\n  - It is not confirmed that \"Lou F.\" and \"L FARRELL\" are the same person.\n  - It is not known whether he has any other way to pay tomorrow's £900 rent.\n- **Things the plan does not determine:**\n  - The exact calendar date of the 2-working-day deadline.\n  - Whether the £1,850 Barclaycard payment has any bearing on the dispute. The message must not suggest it does.\n\n## 3. Why this plan\n\n- **s1: keep the hold and do not release it on this call.**\n  - *Explanation:* the hold followed an inbound recovery request for the disputed £2,600. If a servicing agent released it, that would bypass the bank's review and the reply owed to the sending bank.\n  - *Evidence:* event-001, account_hold_notice.txt, funds_recovery_request_MERIDIAN.txt.\n  - *Criterion:* when there is an inbound recovery request, hold the disputed amount still available and respond to the sending bank within 2 working days.\n  - *Source:* the **bank policy stated in the case record** (evidence:event-001). This is supplied bank policy, not a legal obligation cited by the plan.\n  - The plan also says not to widen restrictions beyond the existing £750.\n- **s2: refer to H&V Fraud Operations.**\n  - *Explanation:* the customer's evidence directly contradicts the payer's claim. Fraud Operations owns the recovery request and the reply to Meridian, so it needs this material before the deadline.\n  - *Evidence:* event-004, the listing and chat exports, the Meridian request, the hold notice.\n  - *Criterion:* pass material evidence and conflicts between records to the responsible team, and do not resolve them by guessing.\n  - *Source:* **skill:payments**, a handling rule rather than a bank policy.\n  - The referral flags the rent deadline so the review is treated as time-sensitive.\n- **s3: ask for the V5C/DVLA proof.**\n  - *Explanation:* he said he has the V5 handover, but it is not among the attachments. It would be independent proof that the vehicle changed hands at collection.\n  - *Evidence:* event-004, request.md (the attachment list).\n  - *Criterion:* ask for the one specific missing piece of evidence that bears on the dispute.\n  - *Source:* **general:evidence**.\n- **s4: offer a financial support referral.**\n  - *Explanation:* an essential cost (rent due tomorrow) is at risk because his only available funds are held. Help with the shortfall is separate from the outcome of the fraud review.\n  - *Evidence:* event-002, event-006, event-001. The plan flags `financial_difficulty`.\n  - *Criterion:* refer to the support team when essential living costs are at risk, and do not recommend high-cost borrowing.\n  - *Source:* **skill:vulnerability-support**.\n- **s5: reply to the customer.**\n  - *Explanation:* he asked what is going on. The reply gives the recorded reason for the hold, says who is reviewing it, and explains what the call cannot do or promise.\n  - *Evidence:* event-001, event-002, event-006, the Meridian request.\n  - *Criterion:* give the recorded status and what it does not confirm, and do not promise outcomes or timescales without evidence.\n  - *Source:* **general:planner**.\n  - Note that the scripted phrase \"showing she collected the van\" restates his own evidence. The bank has not verified it.\n\n**Order of steps:** s5 depends on s1–s4. The message reports the hold position, the referral, the evidence request and the support offer. It must describe the referrals as being arranged until each one is acknowledged.\n\n## 4. Execution boundaries\n\n- The plan stops at escalation. The decision on the hold and the reply to Meridian rest with Fraud Operations, and nothing about them is recorded yet.\n- The financial support referral goes ahead only if the customer agrees (s4).\n- The plan has no conditional branches (`escalate_if` is empty).\n- If any step cannot be carried out, for example the Fraud Operations referral is not acknowledged, a fresh decision is needed. This memo does not propose another strategy.\n\n## 5. Expected result and limits\n\n**What the plan could achieve:**\n- Fraud Operations receives the customer's evidence and the conflict in time for the Meridian reply.\n- The customer understands why the hold was applied and is asked for the V5C/DVLA proof.\n- He is offered support with his rent.\n\n**What remains unconfirmed:**\n- Whether the hold will be released or the funds returned, and when.\n- Whether the buyer and the payer are the same person.\n- Whether he can pay his rent tomorrow.\n\n**The message must state:**\n- The sending bank reported the payment as disputed and asked for the remaining funds to be held, and under policy the available disputed funds are held during review.\n- The agent cannot release the hold, and the case is going to Fraud Operations.\n- His explanation and evidence will be included in the review.\n- A request for the V5C/DVLA confirmation and any other proof of the handover.\n- No decision or release time can be promised.\n- An offer of a financial support referral.\n\n**The message must not:**\n- Promise or suggest release or a timescale.\n- Suggest that he committed fraud, or that the payer's claim is true or false.\n- Disclose the payer's account details.\n- Suggest the £1,850 Barclaycard payment will be reclaimed or is affected.\n- Say the bank has already responded to Meridian or decided anything.\n- Suggest high-cost borrowing.\n- Ask for PINs, passwords or one-time codes.",
+    "future_messages": [
+      {
+        "after_steps": [
+          "s2"
+        ],
+        "message": "Mr Bell, I've now passed your case to our fraud operations team, with your explanation, the marketplace listing and your chat with the buyer. Please send the V5C or DVLA change-of-keeper confirmation through our secure document route, and we'll add it to the review. I can't promise when the review will be finished or what the outcome will be."
+      },
+      {
+        "after_steps": [
+          "s4"
+        ],
+        "message": "I've referred you to our financial support team about your £900 rent due tomorrow. They know your available funds are currently held while our fraud operations team reviews the case."
+      }
+    ]
+  }
+}

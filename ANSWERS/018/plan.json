@@ -1,0 +1,163 @@
+{
+  "intent": "The customer, who passed ID&V, wants to reduce their rent standing order from £500 to £400 starting next month. They have told us they lost their job in July and now have irregular agency income.",
+  "summary": "Amend the standing order to HARROW & VALE RE LIME PROPERTY CA (ref \"862A BEV RD\") from £500 to £400 on the 1st, starting 1 October 2026. Keep payee, reference and date the same. Don't set up the £550 increase, which is only a future intention. Say the change is confirmed only once processed. Offer an optional financial support referral and free debt advice contacts. Don't make either a condition of the change or challenge the decision.",
+  "facts": [
+    {
+      "claim": "The customer passed ID&V on this phone call and is asking to change a standing order on their own personal current account.",
+      "evidence": [
+        "event-001",
+        "event-002"
+      ]
+    },
+    {
+      "claim": "The standing order is £500.00 on the 1st to HARROW & VALE RE LIME PROPERTY CA, ref \"862A BEV RD\", and has been in place since Feb 2026.",
+      "evidence": [
+        "event-001"
+      ]
+    },
+    {
+      "claim": "The customer asked to change it to £400 from next month and wants it done today. They said they would raise it to £550 later, once back in proper work.",
+      "evidence": [
+        "event-002",
+        "request.md"
+      ]
+    },
+    {
+      "claim": "The customer said they lost their job in July and are doing agency work. Account records match this: the final KP Logistics salary credit was £1,640.00 on 2026-07-25, and since then there have been irregular TEMPFORCE agency credits of £150–£285.",
+      "evidence": [
+        "event-002",
+        "event-001",
+        "attachments/account_activity_jul-sep.csv"
+      ]
+    },
+    {
+      "claim": "The balance is £96.00 and there is no overdraft. That is less than both the current £500 and the requested £400.",
+      "evidence": [
+        "event-001",
+        "attachments/account_activity_jul-sep.csv"
+      ]
+    },
+    {
+      "claim": "The customer knows £400 is less than the rent and says they have told the agency they will sort it. The bank has no record of whether the agency or landlord has agreed.",
+      "evidence": [
+        "event-004"
+      ]
+    },
+    {
+      "claim": "The agent has said the standing order can be changed because it is the customer's instruction.",
+      "evidence": [
+        "event-003"
+      ]
+    }
+  ],
+  "missing": [
+    "Whether the bank's processing cut-off still allows the amendment to apply to the 1 October 2026 payment. No cut-off information was supplied.",
+    "Execution acknowledgement for the amendment. Only proposals are possible here, with no connected systems.",
+    "Whether the customer agrees to a referral to the financial support team, and which contact method they prefer."
+  ],
+  "identity_authority": "established",
+  "safety_flags": [
+    "financial_difficulty"
+  ],
+  "steps": [
+    {
+      "id": "s1",
+      "kind": "proposed_action",
+      "action": "request_team_action",
+      "instruction": "Amend the standing order on Laszlo F.'s personal current account to HARROW & VALE RE LIME PROPERTY CA, ref \"862A BEV RD\". Change the amount from £500.00 to £400.00. Keep the same payee, reference and payment date (the 1st). Start with the payment due 1 October 2026. Do not add any future increase. Record the execution acknowledgement and the first payment date the change actually applies to.",
+      "rationale": {
+        "explanation": "The customer passed ID&V and gave a clear instruction to change their own standing order. They confirmed it again after acknowledging the amount is less than the rent. The amount change is the only operation requested now.",
+        "evidence": [
+          "event-002",
+          "event-003",
+          "event-004",
+          "event-001"
+        ],
+        "criterion": "Match the instruction, next due date and intended change, and reuse the supplied schedule state. Disclosed vulnerability alone does not justify refusing a supported request.",
+        "source": "skill:scheduled-payments"
+      },
+      "target": "Servicing agent (Harrow & Vale Bank plc) – standing order maintenance",
+      "arguments": {},
+      "requires": [],
+      "condition": null
+    },
+    {
+      "id": "s2",
+      "kind": "proposed_action",
+      "action": "reply_to_customer",
+      "instruction": "Tell the customer: 'I've asked for your rent standing order to HARROW & VALE RE LIME PROPERTY CA, ref 862A BEV RD, to be changed from £500 to £400 on the 1st, starting 1 October. The payee and date stay the same. [Give the amendment acknowledgement and the first date it applies; if there is no acknowledgement, say the change is still pending.] I haven't set up the increase to £550. Just contact us when you want to do that. Your balance is £96 today, so the 1 October payment will only go out if there's enough money in the account on the day. Changing the standing order doesn't change what you've agreed with your letting agent.'",
+      "rationale": {
+        "explanation": "The customer needs the exact change and its limits. Their balance (£96) is below £400 and the bank has no record of the agency's agreement, so the reply must not promise more than has happened.",
+        "evidence": [
+          "event-001",
+          "event-004",
+          "attachments/account_activity_jul-sep.csv"
+        ],
+        "criterion": "A request to change an amount is not a confirmed change, and cancelling or amending does not settle a debt or merchant contract. Report status only from an execution acknowledgement.",
+        "source": "skill:scheduled-payments"
+      },
+      "target": "Customer (current phone call)",
+      "arguments": {},
+      "requires": [
+        "s1"
+      ],
+      "condition": null
+    },
+    {
+      "id": "s3",
+      "kind": "proposed_action",
+      "action": "refer_specialist",
+      "instruction": "On this call, offer a referral to the financial support team, making clear it is optional and separate from the standing order change. Pass on only what the customer agrees to share: job loss in July, irregular agency income (£150–£285 per credit), £96 balance with no overdraft, rent standing order being reduced to £400, and the contact method and times the customer chooses. Do not treat this phone channel as consent to future contact.",
+      "rationale": {
+        "explanation": "The customer disclosed job loss and cannot afford the rent, and account activity matches this. That is evidenced financial difficulty, which calls for a supportive specialist route without blocking their request.",
+        "evidence": [
+          "event-002",
+          "event-001",
+          "attachments/account_activity_jul-sep.csv"
+        ],
+        "criterion": "For unaffordable essential living costs, refer to the appropriate support team. Respond to the needs the customer disclosed and adapt the contact route.",
+        "source": "skill:vulnerability-support"
+      },
+      "target": "Financial support team (Harrow & Vale Bank plc)",
+      "arguments": {},
+      "requires": [],
+      "condition": null
+    },
+    {
+      "id": "s4",
+      "kind": "proposed_action",
+      "action": "signpost",
+      "instruction": "Tell the customer about free, independent debt and money advice: MoneyHelper, StepChange and Citizens Advice. These can help them prioritise essential bills such as rent and talk to their letting agent. Do not recommend borrowing.",
+      "rationale": {
+        "explanation": "The customer has a rent shortfall and an uncertain income. Independent free advice can help beyond what the bank can do.",
+        "evidence": [
+          "event-002",
+          "event-004"
+        ],
+        "criterion": "Refer to independent debt advice for unaffordable essential living costs, and do not recommend high-cost borrowing.",
+        "source": "skill:vulnerability-support"
+      },
+      "target": "Customer (current phone call)",
+      "arguments": {},
+      "requires": [],
+      "condition": null
+    }
+  ],
+  "escalate_if": [],
+  "must_state": [
+    "The standing order will be changed to £400 on the 1st, starting 1 October 2026, with the same payee, reference and date. It is confirmed only once processing is acknowledged.",
+    "The £550 increase has not been set up. The customer can ask for it whenever they are ready.",
+    "The balance is currently £96. A payment can only go out if there is enough money in the account on the day.",
+    "Help is available from the bank's financial support team and from free, independent debt advice. Using it is the customer's choice."
+  ],
+  "must_not": [
+    "Do not refuse or delay the change, or ask the customer to justify it, because of their finances.",
+    "Do not say the change has been made before processing is acknowledged.",
+    "Do not say the landlord or agency has accepted £400 or that the shortfall is resolved.",
+    "Do not promise that the 1 October payment will go through or will avoid charges.",
+    "Do not set up the future £550 increase now.",
+    "Do not recommend borrowing or give tenancy or legal advice.",
+    "Do not make a financial support referral without the customer's agreement, and do not pass on contact details the customer hasn't approved."
+  ],
+  "expected_disposition": "escalated"
+}

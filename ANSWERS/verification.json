@@ -1,0 +1,18 @@
+{
+  "cases": 30,
+  "terminal_errors": 0,
+  "model_requests": 98,
+  "run_cost_usd_estimate": 9.6331666,
+  "cumulative_settled_usd_estimate": 10.1483502,
+  "budget_usd": 100,
+  "remaining_local_guard_usd": 89.8516498,
+  "checks": [
+    "30 unique organizer case folders",
+    "nonempty answer/reasoning/plan/context/generation and journal per case",
+    "all planner and generator stages succeeded",
+    "input hashes match prepared evidence",
+    "no configured credentials in exported files",
+    "no pending budget reservations"
+  ],
+  "note": "Costs are configured-price estimates, not provider invoices. No paid judge run and no claim of perfect decision accuracy."
+}

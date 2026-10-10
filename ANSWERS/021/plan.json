@@ -1,0 +1,132 @@
+{
+  "intent": "The authenticated sole trader of Pennick Loomworks wants to know if the GBP 2,400 salary payment P-A (SAL-021-A) failed after an app timeout, and has asked us to send GBP 2,400 again to the same payee under the new reference SAL-021-B.",
+  "summary": "Hold the requested second GBP 2,400 payment (SAL-021-B). The records do not show that P-A failed. The gateway accepted it at 09:00:01. The only timeout was a status lookup at 09:00:05. GBP 2,400 is still reserved against P-A, reconciliation is Pending and there is no final execution status. Sending again could pay the employee twice, and the case desk only has enquiry access. Ask Payment operations to check P-A's execution record and confirm its final status. Tell the customer the confirmed status and the reasons for the hold.",
+  "facts": [
+    {
+      "claim": "The identity/session check passed, and Dara Pennick approved GBP 2,400 salary instruction P-A, client reference SAL-021-A, to destination SYN-ACCT-EMP021.",
+      "evidence": [
+        "history.md"
+      ]
+    },
+    {
+      "claim": "The case desk has enquiry access only. Payment operations keeps the execution records, indexed by payment ID.",
+      "evidence": [
+        "history.md",
+        "request.md"
+      ]
+    },
+    {
+      "claim": "The gateway log for P-A records a submission accepted at 09:00:01 and a status lookup timeout at 09:00:05. terminal_execution_status is null.",
+      "evidence": [
+        "attachments/gateway-log.json"
+      ]
+    },
+    {
+      "claim": "The app message the customer quoted was about retrieving the payment status: 'Connection timed out while retrieving payment status.'",
+      "evidence": [
+        "history.md"
+      ]
+    },
+    {
+      "claim": "At 09:06 account SYN-ACCT-B021 showed a ledger balance of GBP 5,000.00, a GBP 2,400.00 reservation under P-A and an available balance of GBP 2,600.00. Reconciliation state for P-A: Pending.",
+      "evidence": [
+        "attachments/balance-view.csv",
+        "history.md"
+      ]
+    },
+    {
+      "claim": "At 09:07 the customer asked for GBP 2,400 to be sent again to the same destination under the new reference SAL-021-B.",
+      "evidence": [
+        "history.md",
+        "request"
+      ]
+    }
+  ],
+  "missing": [
+    "P-A's final execution status (executed/sent, rejected or failed), from the Payment operations execution record",
+    "Whether the funds have been credited to SYN-ACCT-EMP021 (no record yet)"
+  ],
+  "identity_authority": "established",
+  "safety_flags": [],
+  "steps": [
+    {
+      "id": "s1",
+      "kind": "proposed_action",
+      "action": "hold_or_decline",
+      "instruction": "Do not submit or arrange the second GBP 2,400 payment with reference SAL-021-B. Reasons: (1) P-A, for the same amount to the same destination, was accepted by the gateway at 09:00:01, still has a GBP 2,400 reservation and is Pending reconciliation with no final status, so a second payment could pay the employee twice; (2) the case desk only has enquiry access. Keep this hold until Payment operations reports P-A's final status.",
+      "rationale": {
+        "explanation": "The timeout happened during a status lookup after the submission was accepted. It is not a recorded failure. The open reservation and Pending reconciliation show P-A may still execute, so a fresh reference would not stop a duplicate.",
+        "evidence": [
+          "attachments/gateway-log.json",
+          "attachments/balance-view.csv",
+          "history.md"
+        ],
+        "criterion": "Only state the payment stage the record proves. A status timeout is not a failure, and a second similar transfer must not be created while the first has no final status.",
+        "source": "skill:payments"
+      },
+      "target": "Customer request SAL-021-B (GBP 2,400 to SYN-ACCT-EMP021, account SYN-ACCT-B021)",
+      "arguments": {},
+      "requires": [],
+      "condition": null
+    },
+    {
+      "id": "s2",
+      "kind": "proposed_action",
+      "action": "request_team_action",
+      "instruction": "Ask Payment operations to review the execution record for payment ID P-A and confirm its final status (executed/sent, rejected or failed) back to the case desk. Pass on: account SYN-ACCT-B021 (Pennick Loomworks, sole trader Dara Pennick, authenticated), P-A, client reference SAL-021-A, GBP 2,400.00, destination SYN-ACCT-EMP021; gateway submission accepted 2026-11-09 09:00:01, status lookup timed out 09:00:05, terminal_execution_status null; ledger at 09:06 shows a GBP 2,400 reservation under P-A and reconciliation Pending. Note that the customer has asked for a resend under SAL-021-B, which is on hold to avoid a duplicate, and that the salary is said to be needed today.",
+      "rationale": {
+        "explanation": "P-A's final status is the gap that decides the case. Payment operations holds execution records indexed by payment ID, and the case desk cannot see them.",
+        "evidence": [
+          "history.md",
+          "attachments/gateway-log.json",
+          "attachments/balance-view.csv"
+        ],
+        "criterion": "Request a named record lookup from the responsible team only where there is a material status gap.",
+        "source": "skill:payments"
+      },
+      "target": "Payment operations",
+      "arguments": {},
+      "requires": [],
+      "condition": null
+    },
+    {
+      "id": "s3",
+      "kind": "proposed_action",
+      "action": "reply_to_customer",
+      "instruction": "Reply: \"Thank you for sending the exact message. It means the app couldn't get the payment status, not that the payment failed. Our records show salary payment P-A (GBP 2,400, reference SAL-021-A) was accepted when submitted at 09:00. GBP 2,400 is currently reserved on your account against it, and it is still pending, with no final result recorded yet. Because of that, we are not sending a second GBP 2,400 under SAL-021-B now. If the original payment also goes through, your employee would be paid twice. We have asked our Payment operations team to check the execution record for P-A and confirm its final status. We'll update you with the result once they confirm it. We can't confirm yet whether or when the funds will reach your employee.\" Say the request to Payment operations has been made only if s2 is acknowledged. Otherwise say the request is being raised.",
+      "rationale": {
+        "explanation": "The customer asked whether the payment failed and wants a resend. The reply gives the recorded stage, says what it does not confirm and explains the hold.",
+        "evidence": [
+          "history.md",
+          "attachments/gateway-log.json",
+          "attachments/balance-view.csv"
+        ],
+        "criterion": "Reply with the recorded status and what it does not confirm. Do not promise arrival times without a commitment that applies.",
+        "source": "skill:payments"
+      },
+      "target": "Dara Pennick, authenticated customer chat",
+      "arguments": {},
+      "requires": [
+        "s1",
+        "s2"
+      ],
+      "condition": null
+    }
+  ],
+  "escalate_if": [],
+  "must_state": [
+    "The records do not show that P-A failed. The gateway accepted the submission, and the timeout was only on the status lookup.",
+    "GBP 2,400 is currently reserved against P-A and its reconciliation status is Pending. No final execution status has been recorded yet.",
+    "We are not sending a second GBP 2,400 under SAL-021-B now, because the employee could be paid twice if P-A also completes.",
+    "We have asked Payment operations to confirm P-A's final status from its execution record, and that result is still pending."
+  ],
+  "must_not": [
+    "Do not say that P-A failed, was rejected or was cancelled.",
+    "Do not say that P-A was sent, settled or credited to the employee.",
+    "Do not submit or approve the SAL-021-B payment, or say it has been submitted.",
+    "Do not promise that the salary will arrive today or give any arrival time.",
+    "Do not say that Payment operations has already completed its check.",
+    "Do not ask for PINs, passwords or one-time codes."
+  ],
+  "expected_disposition": "escalated"
+}

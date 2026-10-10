@@ -1,0 +1,130 @@
+{
+  "case_id": "028",
+  "plan": {
+    "intent": "The authenticated sender asks why the recipient of INT-028 got EUR1,135 instead of the EUR1,160 estimate. They want EUR25 compensation today and confirmation that the recipient should have received the estimate.",
+    "summary": "The EUR25 is not missing. EUR10 comes from the executed rate (1.1500) being lower than the non-binding indicative rate (1.1600). The other EUR15 is an intermediary deduction reported by the recipient bank on the Shared charge option, which was disclosed before confirmation. Do not say the recipient should have received EUR1,160 and do not promise compensation. Register the compensation demand as a complaint for the complaints team to review. Then give the customer the breakdown and say the complaint registration is awaiting confirmation.",
+    "facts": [
+      {
+        "claim": "The customer authenticated through the portal and confirmed a £1,000 principal with a separate £5 sending fee and the Shared charge option. The displayed EUR1,160 estimate used an indicative rate of 1.1600 and was stated as non-binding until execution. Possible intermediary/receiving-bank charges were disclosed.",
+        "evidence": [
+          "history.md"
+        ]
+      },
+      {
+        "claim": "The bank's execution advice shows INT-028 executed at 2026-11-18 09:08+00:00 at 1.1500 EUR per GBP. Gross transferred: EUR 1150.00. Total account debit: GBP 1005.00. Charge option: SHA.",
+        "evidence": [
+          "attachments/execution-advice.pdf"
+        ]
+      },
+      {
+        "claim": "The recipient bank's advice, forwarded through the customer, shows gross EUR 1150.00 received. It reports an intermediary deduction of EUR 15.00 and a net credit of EUR 1135.00.",
+        "evidence": [
+          "attachments/recipient-advice.pdf",
+          "history.md"
+        ]
+      },
+      {
+        "claim": "The EUR25 difference breaks down as EUR10 (1000 × 1.1600 = 1160 minus 1000 × 1.1500 = 1150) plus EUR15 intermediary deduction (1150 − 15 = 1135).",
+        "evidence": [
+          "attachments/execution-advice.pdf",
+          "attachments/recipient-advice.pdf",
+          "history.md"
+        ]
+      },
+      {
+        "claim": "The customer asks for EUR25 compensation today and for confirmation that the recipient should have received the original estimate. No desk response is recorded yet.",
+        "evidence": [
+          "history.md",
+          "request.md"
+        ]
+      }
+    ],
+    "missing": [
+      "The bank has no independent record identifying the intermediary or confirming the EUR15 deduction. That figure comes only from the recipient bank's advice, forwarded by the customer.",
+      "No complaint reference or acknowledgement exists yet."
+    ],
+    "identity_authority": "established",
+    "safety_flags": [
+      "complaint_rights"
+    ],
+    "steps": [
+      {
+        "id": "s1",
+        "kind": "proposed_action",
+        "action": "request_team_action",
+        "instruction": "Register a complaint for Perrin Wessel (SYN-ACCT-B028) about international payment INT-028. Scope: the customer is unhappy that recipient Osa Melwick was credited EUR1,135 rather than the displayed EUR1,160 estimate. The customer asks for EUR25 compensation today and a statement that the recipient should have received the estimate. Information to pass: (1) the instruction at 2026-11-18 09:00: indicative rate 1.1600, estimate stated as non-binding, Shared charge option, intermediary charges disclosed; (2) the execution advice: 1.1500 rate, EUR1,150 gross, GBP1,005 debit; (3) the recipient bank's advice, forwarded by the customer: EUR15 intermediary deduction, EUR1,135 net. Breakdown: EUR10 from the rate difference and EUR15 intermediary deduction. Ask the team to review the compensation request and acknowledge registration with a reference.",
+        "rationale": {
+          "explanation": "The customer is seeking redress (EUR25 compensation). That makes it a complaint to register separately from the factual explanation, even though the records account for the difference.",
+          "evidence": [
+            "history.md",
+            "request.md",
+            "attachments/execution-advice.pdf",
+            "attachments/recipient-advice.pdf"
+          ],
+          "criterion": "Handle the operational query and the complaint as separate work. Include a concrete complaint/team action without making it conditional or promising redress.",
+          "source": "skill:complaints-rights"
+        },
+        "target": "Brackenfold Bank complaints team",
+        "arguments": {},
+        "requires": [],
+        "condition": null
+      },
+      {
+        "id": "s2",
+        "kind": "proposed_action",
+        "action": "reply_to_customer",
+        "instruction": "Reply: 'I've checked both advices for INT-028. The EUR25 isn't missing. Here's how it breaks down. Your EUR1,160 figure was an estimate at an indicative rate of 1.1600, and it was shown as non-binding until execution. The payment was executed at 09:08 at 1.1500 EUR per GBP, so EUR1,150 was sent for your £1,000. Your account was debited £1,005, including the separate £5 fee. That accounts for EUR10. The recipient's bank advice shows EUR1,150 arrived. It reports a EUR15 intermediary deduction, leaving EUR1,135 credited. That accounts for the remaining EUR15. You chose the Shared charge option, and possible intermediary or receiving-bank charges were disclosed before you confirmed. So I can't confirm that the recipient should have received EUR1,160. I've passed your compensation request to our complaints team as a complaint for review. I can't promise an outcome or a payment today. I'll share the complaint reference once registration is confirmed.' If s1's acknowledgement has not arrived, say the registration is requested and confirmation is pending.",
+        "rationale": {
+          "explanation": "The authoritative execution advice and the forwarded recipient advice together account for the full EUR25. That lets the desk answer the factual question now. Only what the records show is stated, and the complaint status is reported as pending until it is acknowledged.",
+          "evidence": [
+            "history.md",
+            "attachments/execution-advice.pdf",
+            "attachments/recipient-advice.pdf"
+          ],
+          "criterion": "Use the supplied authoritative status directly and state only the stage each record proves. Do not promise outcomes or report an operation as done without acknowledgement.",
+          "source": "skill:payments"
+        },
+        "target": "Perrin Wessel via authenticated chat",
+        "arguments": {},
+        "requires": [
+          "s1"
+        ],
+        "condition": null
+      }
+    ],
+    "escalate_if": [],
+    "must_state": [
+      "EUR1,160 was an estimate at an indicative rate of 1.1600 and was stated as non-binding until execution.",
+      "The payment was executed at 1.1500, so EUR1,150 was transferred gross. That accounts for EUR10 of the difference.",
+      "The recipient bank's advice reports a EUR15 intermediary deduction, leaving EUR1,135 credited. That accounts for the other EUR15.",
+      "Possible intermediary/receiving-bank charges under the Shared option were disclosed before the customer confirmed.",
+      "The compensation request is being passed to the complaints team for review. Its registration confirmation or reference is pending, and no outcome is promised."
+    ],
+    "must_not": [
+      "Do not state that the recipient should have received EUR1,160.",
+      "Do not promise or imply EUR25 compensation, a refund or same-day payment.",
+      "Do not claim the bank or anyone else made an error, or that funds were lost.",
+      "Do not name an intermediary or say why it charged, beyond what the recipient advice reports.",
+      "Do not say the bank independently verified the EUR15 deduction.",
+      "Do not quote a complaint reference or response deadline that has not been recorded."
+    ],
+    "expected_disposition": "escalated"
+  },
+  "context": "# Supplied case 028\n\n## history.md\n\n# Case 028 history — Amount received on an international payment\n\nTotal events: 5\n\n## 2026-11-18 09:00+00:00 — event 001 (E01)\n\n- **Channel:** Authenticated portal instruction\n- **From:** Perrin Wessel\n- **To:** Brackenfold Bank international payments\n\nIdentity check passed. Principal: £1,000. Separate sending-bank fee: £5. Selected charge option: Shared. Displayed estimate: EUR1,160 at indicative 1.1600 EUR/GBP; non-binding until execution. Possible intermediary/receiving-bank charges disclosed; customer confirmed the instruction.\n\n## 2026-11-18 09:10+00:00 — event 002 (E02)\n\n- **Channel:** Internal execution view\n- **From:** Brackenfold Bank international payments\n- **To:** Brackenfold Bank case desk\n\nExecution advice for INT-028 is attached.\n\nAttachments: [execution-advice.pdf](attachments/execution-advice.pdf)\n\n## 2026-11-18 10:00+00:00 — event 003 (E03)\n\n- **Channel:** Recipient email forwarded with provenance\n- **From:** Recipient Osa Melwick\n- **To:** Perrin Wessel\n\nThis is the advice my bank supplied for the payment received this morning.\n\nAttachments: [recipient-advice.pdf](attachments/recipient-advice.pdf)\n\n## 2026-11-18 10:10+00:00 — event 004 (E04)\n\n- **Channel:** Authenticated customer chat\n- **From:** Perrin Wessel\n- **To:** Brackenfold Bank case desk\n\nThe recipient got EUR1,135, not the EUR1,160 I saw. I think EUR25 went missing. The advice is above; please check it.\n\n## 2026-11-18 10:15+00:00 — event 005 (E05)\n\n- **Channel:** Customer chat\n- **From:** Perrin Wessel\n- **To:** Brackenfold Bank case desk\n\nPlease compensate the EUR25 today and tell me the recipient should have received the original estimate.\n\n\n## request.md\n\n# Case 028: Amount received on an international payment\n\n## Case details\n\n- **Source role:** Perrin Wessel\n- **Status:** Requires decision\n- **Created:** 2026-11-18 09:00+00:00\n- **Updated:** 2026-11-18 10:15+00:00\n- **Operator:** Brackenfold Bank case desk\n\n## Context\n\nAn authenticated sender asks about international payment INT-028 from SYN-ACCT-B028. The supplied recipient advice came through the customer.\n\n## Initial request\n\nPlease compensate the EUR25 today and tell me the recipient should have received the original estimate.\n\n## Decision point\n\nNo desk response to the final request is recorded. Using the complete history and supplied evidence, recommend the next action, recipient and communication, explaining uncertainty and confidence.\n\n## History\n\n[Read the complete event history](history.md)\n\n## Attachments\n\n- [execution-advice.pdf](attachments/execution-advice.pdf)\n- [recipient-advice.pdf](attachments/recipient-advice.pdf)\n\n\n## attachments/execution-advice.pdf\n\nFICTIONAL FACSIMILE · SYNTHETIC EXERCISE\nInternational payment execution advice\nIssuer: Brackenfold Bank\nReference: INT-028\nSender: Perrin Wessel / SYN-ACCT-B028\nExecution: 2026-11-18 09:08+00:00\nPrincipal converted: GBP 1000.00\nExecuted rate: 1.1500 EUR per GBP\nGross transferred: EUR 1150.00\nSeparate sending-bank fee: GBP 5.00\nTotal account debit: GBP 1005.00\nCharge option: SHA / Shared\nDestination: SYN-ACCT-REC028\nSynthetic exercise material | Page 1 of 1\n\n## attachments/recipient-advice.pdf\n\nFICTIONAL FACSIMILE · SYNTHETIC EXERCISE\nIncoming payment advice\nIssuer: Synthetic Overseas Recipient Bank\nRecipient: Osa Melwick / SYN-ACCT-REC028\nReference: INT-028\nReceived: 2026-11-18 09:50+00:00\nGross amount: EUR 1150.00\nIntermediary deduction reported: EUR 15.00\nNet credited: EUR 1135.00\nAdvice issued: 2026-11-18 09:55+00:00\nSynthetic exercise material | Page 1 of 1",
+  "generator": {
+    "planner": "available",
+    "kind": "model"
+  },
+  "output": {
+    "answer": "# Case 028: INT-028, recipient credited EUR1,135 instead of the EUR1,160 estimate\n\n## Decision\n**Disposition: escalated.** We can account for the whole EUR25 difference from the records:\n- **EUR10** comes from the exchange rate. The rate at execution was 1.1500. The non-binding indicative rate shown before confirmation was 1.1600.\n- **EUR15** is an intermediary deduction. Only the recipient bank's advice reports it. The payment used the Shared charge option, and possible intermediary charges were disclosed before the customer confirmed.\n\nThe desk should not confirm that the recipient should have received EUR1,160. It should not promise compensation either. Because the customer is asking for compensation, the plan treats this as a complaint and sends it to the complaints team for review.\n\nNothing below has been done yet. Every step is proposed and pending.\n\n## Proposed actions (in order)\n1. **s1: Ask the Brackenfold Bank complaints team to register a complaint (pending).**\n   - **Who and what:** Perrin Wessel (SYN-ACCT-B028), payment INT-028. The recipient, Osa Melwick, was credited EUR1,135 instead of the EUR1,160 estimate. The customer wants EUR25 compensation today and a statement that the recipient should have received the estimate.\n   - **Information to pass on:**\n     - The instruction at 2026-11-18 09:00: indicative rate 1.1600, estimate shown as non-binding, Shared charge option, intermediary charges disclosed.\n     - The execution advice: rate 1.1500, EUR1,150 sent, GBP1,005 debited.\n     - The recipient bank's advice, which came to us through the customer: EUR15 intermediary deduction, EUR1,135 credited.\n     - The breakdown: EUR10 from the rate difference plus EUR15 intermediary deduction.\n   - **Request:** review the compensation request and confirm registration with a reference.\n2. **s2: Reply to Perrin Wessel in the authenticated chat (pending; depends on s1).** Send the message below. If the complaints team hasn't confirmed s1 yet, the reply must say registration has been requested and confirmation is pending.\n\n## Message to the customer (draft, not sent; for when s1 is still unconfirmed)\n> I've checked both advices for INT-028. The EUR25 isn't missing. Here's how it breaks down.\n>\n> Your EUR1,160 figure was an estimate at an indicative rate of 1.1600, and it was shown as non-binding until execution. The payment was executed at 09:08 at 1.1500 EUR per GBP, so EUR1,150 was sent for your £1,000. Your account was debited £1,005, including the separate £5 fee. That accounts for EUR10.\n>\n> The recipient's bank advice shows EUR1,150 arrived. It reports a EUR15 intermediary deduction, leaving EUR1,135 credited. That accounts for the remaining EUR15. You chose the Shared charge option, and possible intermediary or receiving-bank charges were disclosed before you confirmed.\n>\n> So I can't confirm that the recipient should have received EUR1,160.\n>\n> We've asked our complaints team to register your compensation request as a complaint for review. That registration hasn't been confirmed yet. I can't promise an outcome or a payment today. I'll share the complaint reference once registration is confirmed.\n",
+    "reasoning": "# Why case 028 (INT-028) is handled this way\n\nThe full input is saved in `context.md`. The sources cited here are `history.md` (events E01–E05), `request.md`, `attachments/execution-advice.pdf` and `attachments/recipient-advice.pdf`.\n\n## 1. What happened\n\n**From the bank's own authenticated records:**\n- **E01, 2026-11-18 09:00:** Perrin Wessel passed the identity check and gave the instruction in the authenticated portal. The terms were:\n  - £1,000 principal and a separate £5 sending fee.\n  - Shared charge option.\n  - An estimate of EUR1,160 at an indicative rate of 1.1600 EUR/GBP, marked \"non-binding until execution\".\n  - Possible intermediary or receiving-bank charges were disclosed, and the customer confirmed.\n- **E02, 09:10:** The international payments team supplied `execution-advice.pdf` (INT-028). It shows:\n  - executed at 09:08 at 1.1500 EUR per GBP\n  - GBP 1,000.00 converted, EUR 1,150.00 sent\n  - GBP 5.00 fee, GBP 1,005.00 total debit\n  - charge option SHA\n  - destination SYN-ACCT-REC028\n\n**From outside the bank, passed on by the customer:**\n- **E03, 10:00:** The recipient, Osa Melwick, emailed Perrin Wessel the advice from her bank, and he forwarded it with its origin shown. `recipient-advice.pdf` was issued by Synthetic Overseas Recipient Bank. It shows:\n  - received at 09:50\n  - gross EUR 1,150.00\n  - \"Intermediary deduction reported: EUR 15.00\"\n  - net credit EUR 1,135.00\n\n**What the customer is asking:**\n- **E04, 10:10 (authenticated chat):** \"The recipient got EUR1,135… I think EUR25 went missing.\"\n- **E05, 10:15:** He asks for EUR25 compensation today and wants us to say the recipient should have received the estimate.\n- `request.md` confirms that no desk response has been recorded yet.\n\n## 2. What the evidence shows, and what it doesn't\n\n**The EUR25 is fully explained:**\n- EUR10: 1,000 × 1.1600 = 1,160, minus 1,000 × 1.1500 = 1,150 (E01 against `execution-advice.pdf`).\n- EUR15: 1,150 − 15 = 1,135 (`recipient-advice.pdf`).\n- The gross amount matches on both sides: EUR 1,150.00 sent and EUR 1,150.00 received. Nothing in the records suggests money was lost.\n\n**Gaps:**\n- **The bank cannot confirm the EUR15 itself.** It has no record of which intermediary was involved or of the deduction. The figure comes only from the recipient bank's advice, which reached us through the customer. That is why the reply describes the EUR15 as something the advice \"reports\" and doesn't claim the bank checked it.\n- **There is no complaint reference or acknowledgement yet.**\n- **Minor point:** E05 is labelled \"Customer chat\", while E04 is labelled \"Authenticated customer chat\". The plan treats identity and authority as established on the strength of E01 and E04. This does not change the decision.\n- **What the records can't tell us:** who the intermediary was, why it charged, or whether the complaints team will award anything.\n\n## 3. Why this plan\n\n**s1: send the complaint to the complaints team**\n- **Why:** The customer is asking for redress (EUR25 compensation). That makes it a complaint to register on its own track, even though the records explain the difference.\n- **Evidence:** `history.md`, `request.md` and both advices.\n- **Rule applied:** keep the factual query and the complaint as separate pieces of work. The complaint action must be concrete, not conditional, and must not promise redress.\n- **Source:** the skill handling rule `skill:complaints-rights`. No bank complaints policy or legal clause was supplied, so none is cited. The plan also flags `complaint_rights`.\n\n**s2: reply to the customer**\n- **Why:** The bank's execution advice and the forwarded recipient advice together explain the full EUR25, so the desk can answer the factual question now. The reply states only what the records show, and it reports the complaint as pending until it is acknowledged.\n- **Evidence:** `history.md` and both advices.\n- **Rule applied:** use the authoritative status directly and state only what each record proves. Don't promise outcomes, and don't report an operation as done before it is acknowledged.\n- **Source:** the skill handling rule `skill:payments`.\n\n**Why s1 comes first:** s2 depends on s1 because the reply mentions the complaint. Sending the complaint request first means the reply can describe its status accurately, either as requested and pending or as confirmed.\n\n**Why we refuse the customer's two requests:**\n- **\"The recipient should have received EUR1,160\":** E01 records that this figure was a non-binding estimate, so saying the recipient should have received it would contradict the records.\n- **Paying EUR25 today:** promising payment would get ahead of the complaints team's review.\n\n## 4. Limits on execution\n- **Nothing has been executed.**\n- **s1:** the complaints team's acknowledgement and reference are still awaited.\n- **s2:** depends on s1. If no acknowledgement has arrived when the reply goes out, it must say the registration has been requested and confirmation is pending. The plan's own wording (\"I've passed your compensation request…\") is kept as a separate draft, to be used only once s1 has been confirmed.\n- **What the plan doesn't cover:** it has no escalation conditions and no further steps. It stops at sending the complaint and giving the explanation, and the complaints team's review decides the outcome. If either step is blocked, someone needs to make a fresh decision.\n\n## 5. What this can achieve, and what it can't\n\n**If both steps go ahead:**\n- The customer gets a clear EUR10 + EUR15 explanation.\n- His compensation request reaches the complaints team for review.\n\n**Still unconfirmed:**\n- the complaint reference and any deadline\n- the result of the review\n- independent confirmation of the EUR15\n\n**The customer message must state:**\n- EUR1,160 was an estimate at an indicative rate of 1.1600, non-binding until execution.\n- The payment was executed at 1.1500, so EUR1,150 was sent gross. That accounts for EUR10.\n- The recipient bank's advice reports a EUR15 intermediary deduction, leaving EUR1,135 credited. That accounts for the other EUR15.\n- Possible intermediary or receiving-bank charges under the Shared option were disclosed before the customer confirmed.\n- The compensation request is going to the complaints team for review. Registration and the reference are pending, and no outcome is promised.\n\n**The customer message must not:**\n- say the recipient should have received EUR1,160\n- promise or imply EUR25 compensation, a refund or same-day payment\n- claim anyone made an error or that money was lost\n- name an intermediary or explain why it charged, beyond what the recipient advice reports\n- say the bank independently verified the EUR15\n- quote a complaint reference or response deadline that hasn't been recorded\n",
+    "future_messages": [
+      {
+        "after_steps": [
+          "s1"
+        ],
+        "message": "I've checked both advices for INT-028. The EUR25 isn't missing. Here's how it breaks down. Your EUR1,160 figure was an estimate at an indicative rate of 1.1600, and it was shown as non-binding until execution. The payment was executed at 09:08 at 1.1500 EUR per GBP, so EUR1,150 was sent for your £1,000. Your account was debited £1,005, including the separate £5 fee. That accounts for EUR10. The recipient's bank advice shows EUR1,150 arrived. It reports a EUR15 intermediary deduction, leaving EUR1,135 credited. That accounts for the remaining EUR15. You chose the Shared charge option, and possible intermediary or receiving-bank charges were disclosed before you confirmed. So I can't confirm that the recipient should have received EUR1,160. I've passed your compensation request to our complaints team as a complaint for review. I can't promise an outcome or a payment today. I'll share the complaint reference once registration is confirmed."
+      }
+    ]
+  }
+}

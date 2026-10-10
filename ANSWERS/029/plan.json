@@ -1,0 +1,131 @@
+{
+  "intent": "The customer wants the bank to put back £3,200 she believes was taken after a recovery request on incoming payment IN-029. She also wants confirmation that the sender has been repaid, and says she needs money for food while this is sorted.",
+  "summary": "Records show £3,200 was not taken. The £2,000 is only a recovery request; nothing has been returned (£0.00), and the decision is pending. The only effect is an active £1,200 reservation (HOLD-029). It leaves a £1,900 ledger balance and £700 available. The desk will decline both the £3,200 restoration and the claim that the sender was repaid, since the records do not support either. Because she needs money for food, the desk will ask the recovery team, which owns hold reviews, for a hardship review of HOLD-029, then reply without promising a release.",
+  "facts": [
+    {
+      "claim": "Booked entries on SYN-ACCT-B029: opening £500, incoming IN-029 £2,000, outgoing OUT-029 £600. Booked ledger balance is £1,900. Customer contact authentication passed.",
+      "evidence": [
+        "history.md",
+        "attachments/ledger-and-reservations.csv"
+      ]
+    },
+    {
+      "claim": "Synthetic Sender Bank requested recovery of £2,000 on IN-029. The request was received and the investigation is pending.",
+      "evidence": [
+        "history.md"
+      ]
+    },
+    {
+      "claim": "The recovery team makes recovery decisions and reviews holds. The case desk may ask for the current status and a hardship review.",
+      "evidence": [
+        "history.md"
+      ]
+    },
+    {
+      "claim": "Recovery status at 09:15: request_received. Requested £2,000.00, reserved £1,200.00, booked return £0.00, decision pending.",
+      "evidence": [
+        "attachments/recovery-status.json"
+      ]
+    },
+    {
+      "claim": "Reservation HOLD-029 of £1,200 is active (not a booked debit). Available balance is £700 (£1,900 ledger minus £1,200 reserved).",
+      "evidence": [
+        "attachments/ledger-and-reservations.csv"
+      ]
+    },
+    {
+      "claim": "The customer asked whether the bank took both amounts. She asked for £3,200 to be restored, asked for confirmation that the sender was repaid, and said she needs money for food.",
+      "evidence": [
+        "history.md",
+        "request.md"
+      ]
+    }
+  ],
+  "missing": [
+    "The recovery team's outcome on the IN-029 recovery request (pending at 09:15)",
+    "The outcome of a hardship review of HOLD-029 (not yet requested)",
+    "Any recovery status recorded after the 09:15 packet"
+  ],
+  "identity_authority": "established",
+  "safety_flags": [
+    "financial_difficulty"
+  ],
+  "steps": [
+    {
+      "id": "s1",
+      "kind": "proposed_action",
+      "action": "hold_or_decline",
+      "instruction": "Decline both requests. Do not restore £3,200: no £3,200 was debited. Only HOLD-029 (£1,200) is active, and decisions on the hold belong to the recovery team, not the case desk. Do not confirm the sender was repaid: the recovery record shows £0.00 returned and a pending decision.",
+      "rationale": {
+        "explanation": "Records show £1,200 reserved and £0.00 returned on a pending £2,000 request, so the £3,200 premise and the repayment claim are both unsupported.",
+        "evidence": [
+          "attachments/recovery-status.json",
+          "attachments/ledger-and-reservations.csv",
+          "history.md"
+        ],
+        "criterion": "State only the stage the record proves. A recovery request is not a completed return, and a reservation is not a debit.",
+        "source": "skill:payments"
+      },
+      "target": "Enna Prysett / SYN-ACCT-B029",
+      "arguments": {},
+      "requires": [],
+      "condition": null
+    },
+    {
+      "id": "s2",
+      "kind": "proposed_action",
+      "action": "refer_specialist",
+      "instruction": "Ask the recovery team for a hardship review of reservation HOLD-029 (£1,200) on SYN-ACCT-B029, linked to the pending recovery request on IN-029 (£2,000 requested, £0.00 returned). Pass on: the customer is authenticated; ledger £1,900, available £700; she says she needs money for food while the recovery is decided. Ask for the current recovery status as well. Do not pre-authorise any release.",
+      "rationale": {
+        "explanation": "The customer reports essential living-cost hardship. Under the bank's process, the case desk may request a hardship review, and hold decisions stay with the recovery team.",
+        "evidence": [
+          "history.md",
+          "attachments/ledger-and-reservations.csv"
+        ],
+        "criterion": "When essential living costs are affected, refer to the appropriate support team, using the case desk's stated permission to request a hardship review from the team that owns hold decisions.",
+        "source": "skill:vulnerability-support"
+      },
+      "target": "Brackenfold Bank recovery team",
+      "arguments": {},
+      "requires": [],
+      "condition": null
+    },
+    {
+      "id": "s3",
+      "kind": "proposed_action",
+      "action": "reply_to_customer",
+      "instruction": "Reply: 'We haven't taken £3,200 from your account. The £2,000 shown is a request from the sender's bank to recover payment IN-029. It isn't a debit, and no money has been returned to the sender so far (£0.00), so we can't confirm they've been repaid. The decision is still pending with our recovery team. While they review it, £1,200 is on hold. It's still in your £1,900 balance, but it can't be spent, so £700 is available. I can't release the hold myself. Because you told us you need money for food, I've asked the recovery team for a hardship review of the hold [only if s2 was acknowledged; otherwise say the request is being made]. I can't promise what they'll decide or when. If you're struggling with essential costs, free independent debt advice is available, for example from MoneyHelper.'",
+      "rationale": {
+        "explanation": "The customer needs a clear explanation of what was reserved and what was requested, the true return status, and the hardship step that was taken, without any promised outcome.",
+        "evidence": [
+          "attachments/recovery-status.json",
+          "attachments/ledger-and-reservations.csv",
+          "history.md"
+        ],
+        "criterion": "Reply with the recorded status and what it does not confirm. Only report a referral if it was acknowledged.",
+        "source": "general:evidence"
+      },
+      "target": "Enna Prysett (authenticated chat)",
+      "arguments": {},
+      "requires": [
+        "s2"
+      ],
+      "condition": null
+    }
+  ],
+  "escalate_if": [],
+  "must_state": [
+    "£3,200 has not been taken. The £2,000 is a recovery request from the sender's bank, not a debit.",
+    "£1,200 is currently reserved (on hold) pending the recovery team's decision. It is still in the £1,900 ledger balance, which is why £700 is available.",
+    "Records show no money has been returned to the sender (£0.00 returned). The recovery decision is pending, so the desk cannot confirm the sender has been repaid.",
+    "The case desk has asked the recovery team for a hardship review of the hold because she needs money for food. The outcome is not yet known."
+  ],
+  "must_not": [
+    "Do not say £3,200 or £2,000 was debited or taken from the account",
+    "Do not confirm the sender has been repaid",
+    "Do not promise the hold will be released, reduced or decided by any time",
+    "Do not predict the recovery outcome or guess at the reason for the dispute",
+    "Do not suggest high-cost borrowing"
+  ],
+  "expected_disposition": "escalated"
+}

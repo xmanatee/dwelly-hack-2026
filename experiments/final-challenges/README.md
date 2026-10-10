@@ -18,3 +18,13 @@ uv run python experiments/final-challenges/prepare.py \
 uv run hackathon-winner .cache/datasets/final-banking-input/cases \
   --config experiments/final-challenges/config.json
 ```
+
+## Completed submission
+
+All 30 cases completed successfully, with zero terminal errors and 98 model requests.
+Configured-price run estimate: $9.6332; cumulative including readiness: $10.1484.
+[Actual outputs and report](../../ANSWERS/README.md) · [Verification](../../ANSWERS/verification.json).
+
+33 affected offline tests passed, with Ruff and strict type checks. Case completeness, input
+hashes, credential absence and final ledger settlement were verified. No manual answer corrections
+and no paid judging were performed.

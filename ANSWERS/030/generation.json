@@ -1,0 +1,132 @@
+{
+  "case_id": "030",
+  "plan": {
+    "intent": "The customer, authenticated through the independent recovery route, wants the lost phone's access to account SYN-ACCT-B030 revoked. They also want tomorrow's £750 rent standing order SO-030 to stay scheduled.",
+    "summary": "Fara Tovell's identity was confirmed through the bank's independent recovery route. Ask Brackenfold Bank security service to revoke the sessions of lost device SYN-DEVICE-030 on SYN-ACCT-B030, and tell them not to cancel or change standing order SO-030. Under the account's workflow, revoking sessions does not cancel standing orders. The misuse review is still open, and no compromise affecting SO-030 has been found. Then tell the customer the revocation has been requested and is awaiting confirmation. SO-030 is currently scheduled for 2026-11-21. Do not promise that the payment will go out.",
+    "facts": [
+      {
+        "claim": "The identity desk authenticated Fara Tovell through the established independent recovery route, not the lost phone session. She reported losing her phone at about 08:00 on 2026-11-20 and asked to secure account SYN-ACCT-B030.",
+        "evidence": [
+          "history.md"
+        ]
+      },
+      {
+        "claim": "The device audit, retrieved at 09:05, shows lost device SYN-DEVICE-030 with session_state active and misuse_review open. In the window 00:00–09:05 on 2026-11-20 it records 0 new payment instructions and 0 beneficiary edits.",
+        "evidence": [
+          "attachments/device-audit.json"
+        ]
+      },
+      {
+        "claim": "Standing order SO-030 (Rent, £750.00, to SYN-ACCT-LAND030) was created on 2026-02-02. It is status scheduled, next due 2026-11-21, with 0 beneficiary edits since creation, as retrieved at 09:10 on 2026-11-20.",
+        "evidence": [
+          "attachments/standing-order-history.csv"
+        ]
+      },
+      {
+        "claim": "Under this account's workflow, lost-device session revocation is a separate control from standing-order cancellation, and revoking sessions does not itself cancel established standing orders. Specific payment restrictions may be referred for review if compromise is identified. The case desk can request both checks but cannot promise a scheduled payment will execute.",
+        "evidence": [
+          "history.md"
+        ]
+      },
+      {
+        "claim": "The customer asked for the lost phone's access to be revoked while keeping tomorrow's £750 rent order scheduled.",
+        "evidence": [
+          "history.md",
+          "request.md"
+        ]
+      },
+      {
+        "claim": "No desk response to the final request is recorded, and session revocation has not been executed or confirmed.",
+        "evidence": [
+          "request.md",
+          "attachments/device-audit.json"
+        ]
+      }
+    ],
+    "missing": [
+      "Confirmation from Brackenfold Bank security service that the SYN-DEVICE-030 sessions have actually been revoked",
+      "Outcome of the open misuse review on the lost-device session, including activity after the audit window ended at 09:05 on 2026-11-20"
+    ],
+    "identity_authority": "established",
+    "safety_flags": [],
+    "steps": [
+      {
+        "id": "s1",
+        "kind": "proposed_action",
+        "action": "request_team_action",
+        "instruction": "Ask the security service to revoke all active sessions for lost device SYN-DEVICE-030 on account SYN-ACCT-B030, as authorised by Fara Tovell. Pass on: (1) she was authenticated via the independent recovery route at 09:00 on 2026-11-20; (2) she reported the phone lost at about 08:00 that day; (3) the audit at 09:05 showed the session active, the misuse review open, and no new payment instructions or beneficiary edits since 00:00; (4) she asked that standing order SO-030 (£750 rent to SYN-ACCT-LAND030, next due 2026-11-21) stay scheduled, so revocation must not cancel or change it. Ask them to confirm when revocation is done, and to keep the misuse review open, including activity after 09:05.",
+        "rationale": {
+          "explanation": "The customer is authenticated through a route separate from the lost phone and has asked for revocation. The session is still recorded as active, so revoking it is the protective step. The workflow says revocation is a separate control from standing-order cancellation, so the rent order can be kept while access is removed.",
+          "evidence": [
+            "history.md",
+            "attachments/device-audit.json",
+            "attachments/standing-order-history.csv"
+          ],
+          "criterion": "An authenticated customer's request for lost-device session revocation may be requested by the case desk as a control separate from standing-order cancellation.",
+          "source": "evidence:history.md"
+        },
+        "target": "Brackenfold Bank security service",
+        "arguments": {},
+        "requires": [],
+        "condition": null
+      },
+      {
+        "id": "s2",
+        "kind": "proposed_action",
+        "action": "reply_to_customer",
+        "instruction": "Tell Fara: 'We have asked our security team to remove the lost phone's access to your account. That request is being processed, and we will confirm once it is done; it is not confirmed yet. Removing the phone's access is a separate step from cancelling payments and does not by itself cancel standing orders. We have also told the team you want your rent order kept. Your £750 rent standing order is currently recorded as scheduled for 21 November 2026, with no changes to the payee since it was set up, and we have not cancelled or changed it. We can't guarantee the payment will go out, but nothing in this request cancels it. Our review of whether the lost phone's session was misused is still open. Our check up to 09:05 today found no new payments set up and no payee changes. If you notice any payment or change you don't recognise, tell us straight away. We will never ask for your PIN, password or one-time codes.'",
+        "rationale": {
+          "explanation": "The customer asked whether the account can be protected without cancelling the rent. The workflow and standing-order record answer this. The revocation is still only a pending request, so the reply must say that. The case desk cannot promise the payment will execute, and the misuse review is unresolved.",
+          "evidence": [
+            "history.md",
+            "attachments/standing-order-history.csv",
+            "attachments/device-audit.json"
+          ],
+          "criterion": "Report the recorded status and what it does not confirm: a pending operation stays pending until acknowledged, and an active schedule does not guarantee execution.",
+          "source": "skill:scheduled-payments"
+        },
+        "target": "Fara Tovell via recovery-line call",
+        "arguments": {},
+        "requires": [
+          "s1"
+        ],
+        "condition": null
+      }
+    ],
+    "escalate_if": [],
+    "must_state": [
+      "Revoking the lost phone's access has been requested and is pending confirmation; it is not yet confirmed as done",
+      "Under the account's workflow, revoking device sessions does not by itself cancel established standing orders",
+      "Standing order SO-030 (£750 rent) is currently recorded as scheduled with next due date 21 November 2026 and no payee changes since it was set up",
+      "The bank cannot promise that the scheduled payment will execute",
+      "The review of possible misuse of the lost phone's session is still open",
+      "The bank will never ask for a PIN, password or one-time code"
+    ],
+    "must_not": [
+      "Do not claim the lost device's sessions have been revoked before security service confirms it",
+      "Do not cancel, amend or restrict standing order SO-030 as part of session revocation",
+      "Do not promise that the £750 rent payment will execute or reach the landlord",
+      "Do not state that misuse has been ruled out or that the account was taken over; the review is open and no compromise has been identified",
+      "Do not ask for a PIN, password or one-time code",
+      "Do not broaden the action into a block on all account activity without a supplied rule"
+    ],
+    "expected_disposition": "escalated"
+  },
+  "context": "# Supplied case 030\n\n## history.md\n\n# Case 030 history — Account access and a forthcoming payment\n\nTotal events: 5\n\n## 2026-11-20 09:00+00:00 — event 001 (E01)\n\n- **Channel:** Authenticated recovery-line record\n- **From:** Fara Tovell and bank identity desk\n- **To:** Brackenfold Bank case desk\n\nIdentity desk: authenticated via the established independent recovery route, not the lost phone session. Customer: My phone was lost at about 08:00 today. I need to secure access to account SYN-ACCT-B030.\n\n## 2026-11-20 09:05+00:00 — event 002 (E02)\n\n- **Channel:** Internal security view\n- **From:** Brackenfold Bank security service\n- **To:** Brackenfold Bank case desk\n\nDevice/session audit retrieved. Investigation of possible session misuse is still open.\n\nAttachments: [device-audit.json](attachments/device-audit.json)\n\n## 2026-11-20 09:10+00:00 — event 003 (E03)\n\n- **Channel:** Internal payment view\n- **From:** Brackenfold Bank standing-order service\n- **To:** Brackenfold Bank case desk\n\nCurrent rent mandate and change history attached.\n\nAttachments: [standing-order-history.csv](attachments/standing-order-history.csv)\n\n## 2026-11-20 09:15+00:00 — event 004 (E04)\n\n- **Channel:** Internal control procedure\n- **From:** Brackenfold Bank security and payment support\n- **To:** Brackenfold Bank case desk\n\nUnder this account’s workflow, authorised lost-device session revocation is a separate control from standing-order cancellation. Revoking sessions does not itself cancel established standing orders. Specific payment restrictions may be referred for review if compromise is identified. Case desk can request both checks; it cannot promise a scheduled payment will execute.\n\n## 2026-11-20 09:20+00:00 — event 005 (E05)\n\n- **Channel:** Customer recovery-line call\n- **From:** Fara Tovell\n- **To:** Brackenfold Bank case desk\n\nPlease revoke the lost phone’s access but keep tomorrow’s £750 rent order scheduled. Can you protect the account without cancelling my rent?\n\n\n## request.md\n\n# Case 030: Account access and a forthcoming payment\n\n## Case details\n\n- **Source role:** Fara Tovell\n- **Status:** Requires decision\n- **Created:** 2026-11-20 09:00+00:00\n- **Updated:** 2026-11-20 09:20+00:00\n- **Operator:** Brackenfold Bank case desk\n\n## Context\n\nA customer independently authenticated through the bank’s recovery route reports a lost phone. A pre-existing rent standing order is due tomorrow.\n\n## Initial request\n\nPlease revoke the lost phone’s access but keep tomorrow’s £750 rent order scheduled. Can you protect the account without cancelling my rent?\n\n## Decision point\n\nNo desk response to the final request is recorded. Using the complete history and supplied evidence, recommend the next action, recipient and communication, explaining uncertainty and confidence.\n\n## History\n\n[Read the complete event history](history.md)\n\n## Attachments\n\n- [device-audit.json](attachments/device-audit.json)\n- [standing-order-history.csv](attachments/standing-order-history.csv)\n\n\n## attachments/device-audit.json\n\n{\"issuer\":\"Brackenfold Bank security service\",\"account\":\"SYN-ACCT-B030\",\"retrieved_at\":\"2026-11-20T09:05:00+00:00\",\"lost_device\":\"SYN-DEVICE-030\",\"session_state\":\"active\",\"misuse_review\":\"open\",\"audit_window\":\"2026-11-20T00:00:00+00:00/2026-11-20T09:05:00+00:00\",\"new_payment_instructions_in_window\":0,\"beneficiary_edits_in_window\":0}\n\n\n## attachments/standing-order-history.csv\n\naccount,order_id,payee,destination,amount_gbp,created_at,next_due,status,beneficiary_edits_since_creation,retrieved_at\nSYN-ACCT-B030,SO-030,Rent,SYN-ACCT-LAND030,750.00,2026-02-02T10:00:00+00:00,2026-11-21,scheduled,0,2026-11-20T09:10:00+00:00\n",
+  "generator": {
+    "planner": "available",
+    "kind": "model"
+  },
+  "output": {
+    "answer": "# ANSWER.md\n\n## Decision\n**Disposition: escalated.** Fara Tovell was authenticated through the bank's independent recovery route, not through the lost phone. The proposal is to ask the Brackenfold Bank security service to revoke the sessions of lost device SYN-DEVICE-030 on account SYN-ACCT-B030. Standing order SO-030, the £750 rent payment, must stay as it is and must not be cancelled or changed. None of the steps below has been carried out yet.\n\n## Proposed actions (in order, all pending)\n1. **s1 – Request to Brackenfold Bank security service (proposed).** Ask the security service to revoke all active sessions for SYN-DEVICE-030 on SYN-ACCT-B030, as Fara Tovell authorised. The request should include these points:\n   - She was authenticated through the independent recovery route at 09:00 on 2026-11-20.\n   - She reported the phone lost at about 08:00 that day.\n   - The audit retrieved at 09:05 showed:\n     - the session was still active\n     - the misuse review was open\n     - there were no new payment instructions and no beneficiary edits since 00:00\n   - She asked that SO-030 stay scheduled. SO-030 pays £750 rent to SYN-ACCT-LAND030 and is next due on 2026-11-21. Revoking the sessions must not cancel or change it.\n   - Ask the service to confirm when revocation is done.\n   - Ask the service to keep the misuse review open, including activity after 09:05.\n2. **s2 – Reply to Fara Tovell on the recovery-line call (proposed; needs s1 first).** This reply can only be given after the s1 request has actually been made and acknowledged. The draft wording is in the future messages, labelled NOT SENT.\n\n## What the customer message must cover\n- Removing the lost phone's access has been requested but is **not yet confirmed**.\n- Under the account's workflow, revoking device sessions does not by itself cancel standing orders. The team will be told she wants the rent order kept.\n- SO-030 (£750 rent) is currently recorded as scheduled for 21 November 2026, with no payee changes since it was set up. It has not been cancelled or changed.\n- The bank **cannot guarantee** the payment will go out.\n- The review of possible misuse of the lost phone's session is **still open**. The check up to 09:05 found no new payments and no payee changes.\n- She should report anything she doesn't recognise straight away.\n- The bank will never ask for her PIN, password or one-time codes.\n\n## Not part of this plan\n- Saying the sessions are revoked before the security service confirms it.\n- Cancelling, changing or restricting SO-030.\n- Promising the rent will be paid or will reach the landlord.\n- Saying misuse has been ruled out, or that the account was taken over.\n- Blocking all activity on the account.\n- Asking for a PIN, password or one-time code.",
+    "reasoning": "# REASONING.md\n\n## 1. Situation and history\nAll events are on 2026-11-20 and are taken from `history.md`. The full input is in the saved `context.md`.\n\n- **E01 (09:00):** An authenticated recovery-line record. The identity desk authenticated Fara Tovell through \"the established independent recovery route, not the lost phone session\". She reported that her phone was lost at about 08:00 and asked to secure account SYN-ACCT-B030.\n  - The authentication is a bank record.\n  - The time of loss is the customer's own report.\n- **E02 (09:05):** The security service supplied `attachments/device-audit.json`. It shows:\n  - device SYN-DEVICE-030 with `session_state: active` and `misuse_review: open`\n  - audit window 00:00–09:05\n  - `new_payment_instructions_in_window: 0` and `beneficiary_edits_in_window: 0`\n- **E03 (09:10):** The standing-order service supplied `attachments/standing-order-history.csv`. SO-030:\n  - payee \"Rent\", destination SYN-ACCT-LAND030, £750.00\n  - created 2026-02-02\n  - status `scheduled`, next due 2026-11-21\n  - 0 beneficiary edits since it was created\n- **E04 (09:15):** An internal control-procedure note for this account's workflow. It says:\n  - Authorised lost-device session revocation is a separate control from standing-order cancellation.\n  - Revoking sessions does not itself cancel established standing orders.\n  - Specific payment restrictions may be referred for review if compromise is identified.\n  - The case desk can request both checks but cannot promise a scheduled payment will execute.\n- **E05 (09:20):** The customer asked: \"Please revoke the lost phone's access but keep tomorrow's £750 rent order scheduled. Can you protect the account without cancelling my rent?\"\n\n`request.md` records no desk response to E05.\n\n## 2. Evidence and gaps\n- **Authority to act:** E01 shows authentication on a route that does not depend on the lost device. The plan treats identity authority as established.\n- **Need for revocation:** `device-audit.json` shows the lost device's session still active. Nothing in the record shows revocation has been carried out or confirmed (`request.md`, `device-audit.json`).\n- **Rent order:** `standing-order-history.csv` shows a long-standing order with no payee edits. The audit shows no new payment instructions or beneficiary edits up to 09:05. No compromise affecting SO-030 has been identified.\n- **Gaps (from the plan's `missing` list):**\n  - There is no confirmation from the security service that the SYN-DEVICE-030 sessions have been revoked.\n  - The outcome of the open misuse review is unknown. This includes any activity after the audit window closed at 09:05. Activity between 09:05 and now cannot be ruled out from the supplied evidence.\n- There are no contradictions between the records. The loss time of about 08:00 is the customer's statement and has not been independently verified.\n\n## 3. Why this plan\n**s1 – Ask the security service to revoke sessions.**\n- *Explanation:* The customer is authenticated separately from the lost phone and has asked for revocation. The session is still active, so revoking it is the protective step. Because revocation is a separate control from standing-order cancellation, access can be removed while the rent order is kept.\n- *Evidence:* `history.md` (E01, E04, E05), `device-audit.json`, `standing-order-history.csv`.\n- *Criterion:* The case desk may request lost-device session revocation for an authenticated customer, as a control separate from standing-order cancellation.\n- *Rule source:* `evidence:history.md`, which is the E04 internal control-procedure note for this account's workflow. It is a supplied account-level procedure. It is not cited as a wider bank policy or as a legal obligation.\n- *Why the request is shaped this way:*\n  - The plan explicitly tells the service not to touch SO-030.\n  - It asks the service to keep the misuse review open, including activity after 09:05.\n  - It does **not** propose a wider account block, because no supplied rule supports that.\n  - E04 allows payment restrictions to be referred only if compromise is identified, and none has been.\n\n**s2 – Reply to the customer.**\n- *Explanation:* The customer's question (\"protect the account without cancelling my rent?\") is answered by the E04 workflow and the SO-030 record. The revocation is only a pending request, so the reply must say so. The desk cannot promise the payment will execute, and the misuse review is unresolved.\n- *Evidence:* `history.md`, `standing-order-history.csv`, `device-audit.json`.\n- *Criterion:* Report the recorded status and what it does not confirm. A pending operation stays pending until it is acknowledged, and an active schedule does not guarantee execution.\n- *Rule source:* `skill:scheduled-payments`. This is a handling rule for the desk, not a supplied bank policy.\n- *Order:* s2 needs s1 first. The reply says the request \"has been asked\", so it can only be given once the s1 request has actually been made.\n\n## 4. Execution boundaries\n- Nothing has been executed.\n- s1 is a request to the security service. Whether revocation happens depends on that service.\n- s2 depends on s1 having been sent and acknowledged.\n- The plan sets no escalation conditions. It stops at two points:\n  - waiting for the security service to confirm revocation\n  - waiting for the misuse review outcome\n- Any later decision should be a fresh decision, made on that confirmation or any new evidence. Examples are a review finding of compromise, or a failed revocation. This memo adds no branches for those cases.\n- The disposition is **escalated** because the protective action sits with the security service.\n\n## 5. Expected result and limits\n- **What the plan could achieve:** the lost phone's sessions on SYN-ACCT-B030 revoked, with SO-030 left untouched. It also gives the customer an accurate picture of where things stand.\n- **What stays unconfirmed:**\n  - whether revocation has actually completed\n  - whether there was any misuse, especially after 09:05\n  - whether the £750 payment on 2026-11-21 will actually execute or reach the landlord\n- **What the message must say (`must_state`):**\n  - Revocation is requested and pending, not confirmed.\n  - Revoking sessions does not by itself cancel standing orders.\n  - SO-030 is scheduled for 21 November 2026, with no payee changes since it was set up.\n  - Payment execution cannot be promised.\n  - The misuse review is still open.\n  - The bank never asks for a PIN, password or one-time code.\n- **What must not happen (`must_not`):**\n  - claiming revocation before it is confirmed\n  - cancelling, amending or restricting SO-030\n  - promising the payment will execute\n  - saying misuse is ruled out, or that the account was taken over\n  - asking for credentials\n  - blocking all account activity without a supplied rule",
+    "future_messages": [
+      {
+        "after_steps": [
+          "s1"
+        ],
+        "message": "We have asked our security team to remove the lost phone's access to your account. That request is being processed, and we will confirm once it is done; it is not confirmed yet. Removing the phone's access is a separate step from cancelling payments and does not by itself cancel standing orders. We have also told the team you want your rent order kept. Your £750 rent standing order is currently recorded as scheduled for 21 November 2026, with no changes to the payee since it was set up, and we have not cancelled or changed it. We can't guarantee the payment will go out, but nothing in this request cancels it. Our review of whether the lost phone's session was misused is still open. Our check up to 09:05 today found no new payments set up and no payee changes. If you notice any payment or change you don't recognise, tell us straight away. We will never ask for your PIN, password or one-time codes."
+      }
+    ]
+  }
+}

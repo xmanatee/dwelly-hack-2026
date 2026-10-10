@@ -1,0 +1,88 @@
+{
+  "intent": "Customer wants the bank to recall her completed £651 Faster Payment of 12 Aug to Co-Clean Services Ltd. She says the letting agency paid the same invoice on 15 Aug, and Co-Clean has agreed to refund her.",
+  "summary": "Reply in chat to explain what a recall would and wouldn't do. The 12 Aug payment completed and the beneficiary bank received it. Her account shows one £651 debit to Co-Clean. The second payment was the agency's 15 Aug payment from her rental funds. A recall is only a request to Co-Clean's bank and still needs Co-Clean to agree. Co-Clean already agreed in writing on 17 Sep, so a recall is unlikely to be faster. Suggest she ask Co-Clean for the refund date and details. Don't promise a refund date or outcome.",
+  "facts": [
+    {
+      "claim": "On 12 Aug 2026 at 10:14, £651.00 was sent by Faster Payment HV26081210144802 to CO-CLEAN SERVICES LTD, ref INV 4471 53 WINCHESTER. Its status is Completed, and the confirmation says the beneficiary bank received it.",
+      "evidence": [
+        "attachments/payment_confirmation_2026-08-12.pdf",
+        "event-001"
+      ]
+    },
+    {
+      "claim": "The payee was new and was a Confirmation of Payee match at the time of payment.",
+      "evidence": [
+        "event-001"
+      ]
+    },
+    {
+      "claim": "The customer-supplied Oakfield PM statement extract shows a £651.00 contractor payment to Co-Clean for invoice 4471 on 15/08/2026, made from the agency's landlord funds and not from her account with us.",
+      "evidence": [
+        "attachments/agency_statement_extract.txt",
+        "event-001"
+      ]
+    },
+    {
+      "claim": "Co-Clean's email of 17 Sep 2026 acknowledges receiving both payments and says they will refund £651 to Linda on their next payment run. It gives no date.",
+      "evidence": [
+        "attachments/coclean_refund_agreement.eml"
+      ]
+    },
+    {
+      "claim": "The customer asked the bank to recall the payment so she gets the money back faster, and she believes the duplicate is exactly what recalls are for.",
+      "evidence": [
+        "event-002",
+        "event-004",
+        "request"
+      ]
+    }
+  ],
+  "missing": [
+    "The date of Co-Clean's next payment run, and whether the refund has been sent (neither is in the evidence)",
+    "No bank recall procedure or eligibility criteria were supplied"
+  ],
+  "identity_authority": "not_needed",
+  "safety_flags": [],
+  "steps": [
+    {
+      "id": "s1",
+      "kind": "proposed_action",
+      "action": "reply_to_customer",
+      "instruction": "Send this reply: \"Thanks, Linda. I've looked at your 12 August payment of £651 to CO-CLEAN SERVICES LTD (Faster Payment HV26081210144802, ref INV 4471 53 WINCHESTER). Our record shows it completed and the receiving bank got it. It's the only £651 payment to Co-Clean from your account with us. The second payment was the one Oakfield PM made from your rental funds on 15 August, according to the agency statement you sent. That's why a recall doesn't really fit here. We can't reverse a completed Faster Payment ourselves. A recall only asks Co-Clean's bank to contact Co-Clean, and the money comes back only if Co-Clean agrees to return it. They've already agreed in writing (their email of 17 September says they'll refund £651 to you on their next payment run), so a recall would go through the same people who have already said yes. It's unlikely to get your money back any faster. I can't see that the refund has been sent yet, and Co-Clean didn't give a date. The quickest step is probably to ask Co-Clean for the date of their next payment run and check they have the right account details for the refund. You may also want to tell Oakfield PM that Co-Clean is refunding you directly, so the agency doesn't chase the same refund.\"",
+      "rationale": {
+        "explanation": "The payment confirmation shows a completed payment that the beneficiary bank received. The account view shows a single debit from her account. The second payment came from the agency, according to the customer-supplied statement. Co-Clean has acknowledged the double payment in writing and agreed to refund £651, with no date given. The evidence therefore answers her question: a recall is only a request that depends on the recipient's consent, which Co-Clean has already given.",
+        "evidence": [
+          "event-001",
+          "event-002",
+          "event-004",
+          "attachments/payment_confirmation_2026-08-12.pdf",
+          "attachments/agency_statement_extract.txt",
+          "attachments/coclean_refund_agreement.eml"
+        ],
+        "criterion": "State only the payment stage the record proves. A recall request is not a completed return. Do not promise arrival times or outcomes without an applicable commitment. Similar payments are not automatically duplicates on the same account.",
+        "source": "skill:payments"
+      },
+      "target": "Linda Ferris, in-app chat (personal banking)",
+      "arguments": {},
+      "requires": [],
+      "condition": null
+    }
+  ],
+  "escalate_if": [],
+  "must_state": [
+    "The 12 Aug payment shows as completed and received by the beneficiary bank",
+    "Her account shows only one £651 payment to Co-Clean; the second payment was made by Oakfield PM on 15 Aug, according to the statement she supplied",
+    "A recall is a request to the receiving bank, not a reversal, and only works if the recipient agrees to return the money",
+    "Co-Clean has already agreed in writing to refund £651, so a recall is unlikely to be faster",
+    "We can't confirm the refund has been sent or when it will arrive"
+  ],
+  "must_not": [
+    "Claim the bank can reverse or pull back the completed payment by itself",
+    "Promise that a recall would succeed or be faster",
+    "State or imply that Co-Clean's refund has been sent or will arrive by a particular date",
+    "Describe the payment as fraud, a scam or a bank error",
+    "Cite an invented bank policy as the reason a recall can't be raised",
+    "Describe the agency's 15 Aug payment as a debit from her account with us"
+  ],
+  "expected_disposition": "completed"
+}

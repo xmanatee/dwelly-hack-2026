@@ -1,0 +1,165 @@
+{
+  "intent": "The customer wants an immediate refund of the £900 Direct Debit collected on 3 Sep under the Direct Debit Guarantee, and wants that Direct Debit cancelled. She says the amount is wrong because her rent is £1,000 and she was also charged £1,000 by standing order on 1 Sep.",
+  "summary": "Ask the Direct Debit team to cancel the Harbour Lets mandate (HL-27ELM-0091), as she instructed. Send her Guarantee claim for the £900 to the team that handles Guarantee claims. Do not promise a refund today: the £900 matches the advance notice sent on 24 Aug, so an error is not shown. Her point that she never agreed to £900 goes to the claims team. Ask her whether she completed the Harbour Lets setup on 20 Aug. Leave the £1,000 standing order active. Tell her both requests are pending.",
+  "facts": [
+    {
+      "claim": "A £1,000 standing order to HARROW & VALE RE HARBOUR LETS LTD CA, ref RENT 27 ELM RD, was paid on 1 Sep 2026. It was set up in Feb 2025, is still active and is next due on 1 Oct 2026.",
+      "evidence": [
+        "event-001",
+        "attachments/standing_order_on_file.json",
+        "attachments/statement_extract_sep.csv"
+      ]
+    },
+    {
+      "claim": "A £900 Direct Debit to H&V COLLECT / HARBOUR LETS, ref HL-27ELM-0091, was collected on 3 Sep 2026. The mandate was created on 20 Aug 2026 through an invitation from the company collecting the payments (the originator).",
+      "evidence": [
+        "event-001",
+        "attachments/statement_extract_sep.csv"
+      ]
+    },
+    {
+      "claim": "An advance notice dated 24 Aug 2026 and addressed to priya.desai@example.net said £900 would be collected on or around 3 Sep and then monthly. It advised cancelling any rent standing order before the first collection to avoid paying twice. The bank record says the collection amount matches the notice.",
+      "evidence": [
+        "attachments/dd_advance_notice_2026-08-24.eml",
+        "event-001"
+      ]
+    },
+    {
+      "claim": "The customer says she never agreed to £900, that her rent is £1,000, and that the amount is an error. She asks for a Guarantee refund today and for the Direct Debit to be cancelled.",
+      "evidence": [
+        "event-002",
+        "event-004",
+        "request"
+      ]
+    },
+    {
+      "claim": "The records do not show whether the customer herself completed the 20 Aug mandate setup or received the 24 Aug notice. They do not show the agreed rent amount either.",
+      "evidence": [
+        "event-001",
+        "attachments/dd_advance_notice_2026-08-24.eml"
+      ]
+    },
+    {
+      "claim": "The request was made by the account holder, Priya Desai, in the personal banking in-app chat.",
+      "evidence": [
+        "event-001",
+        "event-002"
+      ]
+    }
+  ],
+  "missing": [
+    "Whether the customer completed or authorised the Harbour Lets Direct Debit setup on 20 Aug 2026 (the record shows only that it was created through the originator's invitation)",
+    "Whether the customer received the 24 Aug 2026 advance notice",
+    "The rent amount agreed with Harbour Lets (customer says £1,000; the originator's notice says £900)",
+    "The outcome of the Direct Debit cancellation request and of the Guarantee claim review (neither has been carried out)"
+  ],
+  "identity_authority": "established",
+  "safety_flags": [],
+  "steps": [
+    {
+      "id": "s1",
+      "kind": "proposed_action",
+      "action": "request_team_action",
+      "instruction": "Cancel the Direct Debit mandate to H&V COLLECT / HARBOUR LETS, ref HL-27ELM-0091 (created 20 Aug 2026), on Priya Desai's personal current account, as she instructed in in-app chat on 4 Sep 2026. Do not reverse the 3 Sep £900 collection under this request. Do not change the standing order (RENT 27 ELM RD, £1,000 monthly, next due 1 Oct 2026). Confirm when the cancellation is done.",
+      "rationale": {
+        "explanation": "The account holder gave a clear instruction to cancel this Direct Debit. Cancelling it changes only future collections and does not settle the refund.",
+        "evidence": [
+          "event-002",
+          "event-001"
+        ],
+        "criterion": "Act on the account holder's clear instruction about future payments, and keep cancellation separate from any Guarantee claim or reversal of a collection already taken.",
+        "source": "skill:scheduled-payments"
+      },
+      "target": "Direct Debit servicing team",
+      "arguments": {},
+      "requires": [],
+      "condition": null
+    },
+    {
+      "id": "s2",
+      "kind": "proposed_action",
+      "action": "request_team_action",
+      "instruction": "Register and review a Direct Debit Guarantee claim from Priya Desai for the £900 collected on 3 Sep 2026 (H&V COLLECT / HARBOUR LETS, ref HL-27ELM-0091). Pass on her statement that she never agreed to £900, that her rent is £1,000 and that the amount is wrong, plus her request for a refund today. Include these records: mandate created 20 Aug 2026 through the originator's invitation; advance notice dated 24 Aug 2026 for £900 on or around 3 Sep then monthly; collection matching that notice; £1,000 standing order to Harbour Lets paid 1 Sep 2026. Note that it is not known whether she completed the mandate setup, received the notice, or what rent was agreed. Decide whether an originator or bank error happened, and send the outcome to the customer. No refund has been promised.",
+      "rationale": {
+        "explanation": "She has claimed under the Guarantee. The records show the collection matched the advance notice, but her statement that she never agreed to £900 has not been resolved. The claims team must decide; the chat agent cannot approve or refuse it.",
+        "evidence": [
+          "event-002",
+          "event-004",
+          "event-001",
+          "attachments/dd_advance_notice_2026-08-24.eml"
+        ],
+        "criterion": "Identify the claimed error and send it to the right review route, without promising a refund for every dispute with a supplier.",
+        "source": "skill:scheduled-payments"
+      },
+      "target": "Direct Debit Guarantee claims team",
+      "arguments": {},
+      "requires": [],
+      "condition": null
+    },
+    {
+      "id": "s3",
+      "kind": "proposed_action",
+      "action": "reply_to_customer",
+      "instruction": "Send: 'I understand you want this sorted today, so here is what I have done. On 1 Sep your £1,000 rent standing order to Harbour Lets was paid. On 3 Sep a separate £900 Direct Debit was collected (ref HL-27ELM-0091). That mandate was set up on 20 Aug through Harbour Lets' invitation. Their advance notice of 24 Aug said £900 would be collected on or around 3 Sep and then monthly. It also said to cancel any rent standing order to avoid paying twice. The £900 matches that notice, so I can't confirm today that it was an error or promise an immediate refund. I have passed your Direct Debit Guarantee claim for review, including your point that you never agreed to £900, and the team will tell you the result. I have also asked for the Harbour Lets Direct Debit to be cancelled as you instructed. [Say it is confirmed only if s1 has been confirmed; otherwise say it has been requested and is pending.] Cancelling stops future collections but does not reverse the £900 already taken. Your £1,000 standing order is still active for 1 Oct and we have not changed it. You can contact Harbour Lets directly about paying twice for September. If you are unhappy with how this is being handled, you can make a complaint and I can register it for you.' Report s2 as passed for review only if it has been acknowledged; otherwise say it is pending.",
+      "rationale": {
+        "explanation": "The customer needs the recorded facts, what has been requested, and what is still unconfirmed, given directly and not as a list of options.",
+        "evidence": [
+          "event-001",
+          "event-004",
+          "attachments/dd_advance_notice_2026-08-24.eml",
+          "attachments/standing_order_on_file.json"
+        ],
+        "criterion": "Report recorded status without claiming execution or an outcome, keep future-instruction changes separate from the refund claim, and explain the route to complain.",
+        "source": "skill:complaints-rights"
+      },
+      "target": "Customer (in-app chat)",
+      "arguments": {},
+      "requires": [
+        "s1",
+        "s2"
+      ],
+      "condition": null
+    },
+    {
+      "id": "s4",
+      "kind": "proposed_action",
+      "action": "ask_customer",
+      "instruction": "Ask: 'To help the claim review, did you complete the Harbour Lets Direct Debit setup on or around 20 Aug 2026? Or are you saying you did not set up this Direct Debit at all?' Add her answer to the s2 claim.",
+      "rationale": {
+        "explanation": "The record shows only that the mandate came from the originator's invitation. Whether she authorised it is the key unknown for deciding whether there was an error.",
+        "evidence": [
+          "event-001",
+          "event-002"
+        ],
+        "criterion": "When a gap affects the decision, ask the customer for that one specific missing fact.",
+        "source": "general:evidence"
+      },
+      "target": "Customer (in-app chat)",
+      "arguments": {},
+      "requires": [
+        "s3"
+      ],
+      "condition": null
+    }
+  ],
+  "escalate_if": [],
+  "must_state": [
+    "The £900 collected on 3 Sep matches the advance notice dated 24 Aug, which said £900 on or around 3 Sep and then monthly, so I cannot confirm today that this was an error or promise an immediate refund",
+    "Your Guarantee claim, including your statement that you never agreed to £900, has been passed for review; the result is not yet known",
+    "Cancellation of the Harbour Lets Direct Debit (HL-27ELM-0091) has been requested as you instructed; it is not confirmed yet",
+    "Cancelling the Direct Debit stops future collections but does not reverse the £900 already taken or change your arrangement with Harbour Lets",
+    "Your £1,000 rent standing order is still active and due on 1 Oct; we have not changed it",
+    "You can contact Harbour Lets directly about paying twice for September",
+    "If you are unhappy with how this is handled, you can make a complaint"
+  ],
+  "must_not": [
+    "Promise or imply a refund of the £900 today, or at all, before the claim is reviewed",
+    "Say the Direct Debit has been cancelled or the claim lodged before execution is confirmed",
+    "State as fact that the customer authorised the mandate or received the notice",
+    "Give a final refusal of the Guarantee claim or say the Guarantee can never apply",
+    "Cancel or change the standing order without the customer's instruction",
+    "Give legal advice about the tenancy or decide what rent is owed",
+    "Give the customer a list of options instead of stating the actions taken"
+  ],
+  "expected_disposition": "escalated"
+}

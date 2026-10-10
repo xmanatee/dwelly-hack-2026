@@ -1,22 +1,21 @@
-# Reality Test output layout
+# Banking & Financial Services — final challenge answers
 
-```sh
-uv run hackathon-winner /path/to/challenge/cases
-```
+These are the actual system-generated outputs for cases **001–030** from
+[Dwelly HackatonChallenges](https://github.com/DwellyOrg/HackatonChallenges),
+source commit `ce84e8c0d8f7f8ddacd8d8fcfe53516c22885db7`.
 
-Winner writes `ANSWERS/<original-case-folder>/ANSWER.md` and `REASONING.md` by default.
-Use `--output .cache/winner/evaluation-1` for a separate evaluation run. Folder identifiers
-are preserved exactly. No extra submission flag is required. Existing generated results
-are never overwritten.
+Each numbered folder contains `ANSWER.md`, `REASONING.md`, the structured plan,
+complete rendered input, and generation receipt. `journals/` retains local model
+traces; `predictions.json` records case status and cost estimates. The
+[submission manifest](submission-manifest.json) pins original evidence hashes and
+implementation/configuration provenance. [Report](report.html).
 
-Each case also retains `context.md`, `plan.json` and `generation.json`. `predictions.json`
-records inputs, hashes, statuses and costs; `journals/` holds actual local model traces.
-There is no banking execution in this route: output actions are proposals. Failed model
-cases retain their failure notices; they must not be manually replaced with corrected answers.
+The shared Planner and Winner renderer use **Claude Opus 5.5, high effort**.
+All history, initial requests and attachments are supplied. Images have local OCR
+sidecars; PDF text is extracted. Original challenge data remains unchanged.
 
-The bundled smoke cases and public examples are development data, regardless of output
-location. Only actual challenge inputs belong in the submitted results. Generation neither
-publishes this directory nor verifies eligibility. Review local journals before publication.
+**All operational actions are proposals.** No bank system, payment, email or phone
+action was executed. Recorded historical actions are distinguished from next steps.
+Answers and reasoning are model outputs; they have not been manually corrected.
 
-The older `dwelly-bot export` command remains a separate saved-execution exporter with its
-own numbered-folder mapping and dataset guards. [Winner setup](../src/hackathon_winner/README.md).
+[Reproduction configuration and commands](../experiments/final-challenges/README.md).
