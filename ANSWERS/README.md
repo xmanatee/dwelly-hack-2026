@@ -10,7 +10,7 @@ traces; `predictions.json` records case status and cost estimates. The
 [submission manifest](submission-manifest.json) pins original evidence hashes and
 implementation/configuration provenance. [Report](report.html).
 
-The shared Planner and Winner renderer use **Claude Opus 5.5, high effort**.
+The shared Planner and Winner renderer produced **21 Fable 5.1 high / 9 Opus 5.5 high**. Completed Fable refresh cases replace the original Opus outputs; all other cases retain Opus. See the per-case model receipts in `predictions.json` and the [refresh run](../experiments/final-challenges-fable/README.md).
 All history, initial requests and attachments are supplied. Images have local OCR
 sidecars; PDF text is extracted. Original challenge data remains unchanged.
 

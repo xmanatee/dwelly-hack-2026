@@ -26,8 +26,8 @@ The recorded voice scenario uses a prepared demo plan; external banking actions 
 
 **Reality Test:** all **30 Banking & Financial Services challenges** have generated
 [answers and reasoning](ANSWERS/README.md), with plans, evidence references and local traces.
-Opus 5.5 at high effort completed all cases with **zero generation failures**,
-preserving the proposed actions, explanations and evidence for review.
+The final set contains **21 Fable 5.1 high / 9 Opus 5.5 high**, with complete answers for all 30 cases.
+Completed refresh outputs include their plans, explanations and evidence.
 [Run report](ANSWERS/report.html) · [Verification](ANSWERS/verification.json).
 
 ## Context. Decision. Action.

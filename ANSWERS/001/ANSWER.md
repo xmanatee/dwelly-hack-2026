@@ -1,43 +1,30 @@
-# Case 001: £750 hold after Meridian recovery request (Marcus Bell)
+# ANSWER — Case 001: Marcus Bell, £750 hold after Meridian recovery request
 
 ## Decision
-**Escalated. The £750 hold stays in place for now.** The servicing agent will not release it on this call. Meridian's funds-recovery request **MER-FR-2026-081734** triggered the hold under bank policy. The proposed next step is to pass the case to **H&V Fraud Operations** for review, together with Mr Bell's sale evidence and his rent deadline. None of the steps below has been carried out yet.
+**Escalated.** The existing £750 hold on account SYN-ACCT-01-1 stays in place and is not widened; the servicing agent cannot release it while interbank recovery request MER-FR-2026-081734 is live. The case is to be referred urgently to Harrow & Vale Fraud Operations, who own the hold decision and the reply to Meridian (due within 2 working days of 23 Sep 17:55). The customer is asked for the one missing piece of evidence (V5C/DVLA sale confirmation) and given a clear explanation on the call, including hardship support.
 
-## Proposed actions (in order, all pending)
-1. **Keep the hold (s1).** Tell Mr Bell the agent cannot release the £750 on this call. The hold stays while Fraud Operations reviews MER-FR-2026-081734. No restriction beyond the existing £750 hold is to be added.
-2. **Refer to H&V Fraud Operations (s2).** Pass recovery case MER-FR-2026-081734 for account SYN-ACCT-01-1 for review of the hold and of the reply to Meridian. That reply is due within 2 working days of receipt on 23 Sep at 17:55. The referral should include:
-   - Mr Bell's account of the sale, given on this call after he passed ID&V. He sold the van on a marketplace, it was collected on Monday 21 Sep, he was paid by transfer on his drive and he handed over the V5.
-   - The listing he exported: collection only, £2,600, marked sold on 21 Sep.
-   - The chat he exported: "Lou F." arrived at 13:52, said at 14:06 she was sending the money with reference VAN, and at 14:11 the seller confirmed the V5C slip was filled in and the keys handed over.
-   - The conflict with the payer's statement that delivery was promised for Tuesday and no van arrived.
-   - That "Lou F." and "L FARRELL" being the same person is plausible but not confirmed.
-   - The account profile: 6 years with the bank, no fraud markers, no other unknown inbound credits in 90 days, and £1,850 paid to his own Barclaycard (a payee since 2022) before the request arrived.
-   - That his £900 rent is due tomorrow and all his available funds are held, so the review is time-sensitive.
-   - That he has been asked for V5C/DVLA change-of-keeper proof.
-3. **Ask for missing evidence (s3).** Ask Mr Bell for the V5C/DVLA change-of-keeper confirmation for the Transit sold on 21 Sep. This could be the DVLA confirmation of sale or a photo of the part of the V5C he kept. Explain how to send it through the bank's usual secure document route, and that it will be added to the Fraud Operations review.
-4. **Offer financial support (s4).** Offer a referral to the H&V financial support team about the £900 rent due tomorrow. If he agrees, the referral should include that context, that he is on the phone channel, and that the hold is under Fraud Operations review. Do not suggest high-cost borrowing.
-5. **Reply to the customer (s5).** This depends on steps s1–s4. Use the message below. Describe the Fraud Operations referral and any financial support referral as being arranged. Only call them made once each one has been acknowledged.
+Nothing below has been executed. All steps are proposals pending execution.
 
-## Message to the customer (phone, proposed)
-> I understand how stressful this is with your rent due tomorrow. Yesterday evening the bank that sent the £2,600 told us their customer has disputed the payment, and under our policy we have to hold the disputed money that's still in the account while it's looked at. That's why the £750 is held. I can't release it myself on this call. Your case is going to our fraud operations team to review, together with what you've told me, the marketplace listing and your chat with the buyer showing she collected the van on the 21st. It would really help if you could send us the V5C or DVLA change-of-keeper confirmation, and any other proof of the handover you have. I can't promise when the review will be finished or what the outcome will be. I can also put you in touch with our financial support team about your rent if you'd like.
+## Proposed actions (in order)
 
-## Message guardrails
-- Don't promise or suggest that the hold will be released, or say when.
-- Don't say or suggest that the customer committed fraud, or that the payer's claim is true or false.
-- Don't disclose the payer's account details.
-- Don't say the £1,850 already paid to Barclaycard will be reclaimed or is affected.
-- Don't say the bank has already responded to Meridian or made any decision.
-- Don't suggest high-cost borrowing.
-- Never ask for PINs, passwords or one-time codes.
+1. **s1 — Maintain the hold / decline immediate release (hold_or_decline)**
+   Keep the system hold of GBP 750.00 on SYN-ACCT-01-1 linked to MER-FR-2026-081734. Decline the customer's request for agent-level release. Scope: the £750 already held only; no other account function is to be restricted. Reason to record: active interbank APP-scam recovery request with an unresolved factual conflict; decision reserved to Fraud Operations under bank policy.
 
-## Future message draft — NOT SENT
+2. **s2 — Urgent referral to H&V Fraud Operations (refer_specialist)**
+   Refer case 001 for a decision on the £750 hold and the reply to Meridian. Pass: Meridian ref MER-FR-2026-081734; the customer's ID&V-passed account (24 Sep) that the buyer collected the van in person on 21 Sep and paid by transfer on his drive; attachments `customer_evidence_listing.txt` (collection only, SOLD 21 Sep) and `customer_evidence_messages.txt` (buyer "Lou F." on site 13:52–14:12, payment ref VAN at 14:06 matching the 14:10 credit); the conflict with the payer's "delivery promised" statement; £1,850 paid to his own Barclaycard before the request arrived; no fraud markers, 6-year relationship, no other unknown-party credits; hardship: £900 rent due 25 Sep with all available funds held. Ask Fraud Operations to prioritise, decide retain / part-release / release, and notify the customer via his registered phone contact.
 
-Use only after confirmed execution of: s2.
+3. **s3 — Ask the customer for the missing evidence (ask_customer)**
+   Ask Marcus Bell to send, via the bank's secure document upload or secure message (not read out over the phone), the DVLA notification-of-sale confirmation (email/reference) or a copy of the completed V5C/2 new-keeper slip showing the buyer's details and the 21 Sep date. Confirm the listing and chat exports already on file do not need re-sending.
 
-> Mr Bell, I've now passed your case to our fraud operations team, with your explanation, the marketplace listing and your chat with the buyer. Please send the V5C or DVLA change-of-keeper confirmation through our secure document route, and we'll add it to the review. I can't promise when the review will be finished or what the outcome will be.
+4. **s4 — Reply to the customer on the call (reply_to_customer)**
+   Deliver the message below. Do not quote the Meridian payer's statement verbatim or share their account details.
 
-## Future message draft — NOT SENT
+## Proposed message to the customer (to be delivered on the call — not yet delivered)
 
-Use only after confirmed execution of: s4.
+> I understand this is urgent with rent due tomorrow. Here is exactly what happened: on the evening of 23 September the bank that sent you the £2,600 raised a formal recovery request saying their customer reports that payment as a scam – a van paid for but not received. Our rules mean the system automatically held whatever was still available, which is the £750, while that request is reviewed. It is not a fraud marker against you and nothing else on your account is restricted. I can't release the £750 myself and I can't promise when or whether it will be released – that decision sits with our fraud team, who must respond to the other bank within 2 working days. What I am doing now is sending your account of the collection, your listing and your chat messages to that team today as evidence in your favour, flagging your rent deadline, and asking them to prioritise. Please send your V5C/DVLA sale confirmation through the secure upload so they have it too. I have to be straight with you: even if the full £750 were released it is less than your £900 rent, so it would help to speak to your landlord today. If this is going to leave you short on essentials, I can refer you to our financial support team.
 
-> I've referred you to our financial support team about your £900 rent due tomorrow. They know your available funds are currently held while our fraud operations team reviews the case.
+## What remains open
+- Fraud Operations' decision on the hold and the response to Meridian.
+- The V5C/DVLA sale evidence the customer says he holds (not yet on file).
+- Whether marketplace buyer "Lou F." can be linked to payer L FARRELL on bank records.
+- Whether any other funds or income are expected before rent is due.

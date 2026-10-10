@@ -1,11 +1,54 @@
 {
   "case_id": "011",
   "plan": {
-    "intent": "Sole-trader customer Paul Devlin wants to refund one of two identical £1,096 credits from his client. The refund details given use a different name (\"M Kowalczyk\") from the payer name on the credits (\"A KOWALCZYK\").",
-    "summary": "The bank record shows the refund details (SYN-SC-11-2 / SYN-ACCT-11-2) are the same Meridian account that sent both credits. Confirmation of Payee (CoP) matched \"M KOWALCZYK\" on that account. Sending the refund back to the source account fits the client's own text and does not redirect funds elsewhere. Decision: tell Paul this and set up one £1,096 Faster Payment for the second credit (22 Sep, E2E MER26092214204811) back to that account. Paul must confirm it securely. It is not sent until he does.",
+    "intent": "Business customer (Paul Devlin t/a Devlin Plumbing) asks to refund one of two duplicate £1,096.00 Faster Payment credits to the details his client supplied; agent queried the payer-name difference (A vs M Kowalczyk).",
+    "summary": "Proceed with the refund as a return-to-source: the refund sort code/account number supplied are identical to the originating account of both credits, and CoP matches \"M KOWALCZYK\". First check the bank's inbound-payment/recall records for any existing Meridian recall on either credit (to avoid a double return), then set up the £1,096.00 outbound payment for Paul's secure confirmation, and reply explaining the basis, that nothing has been sent yet, and what the bank cannot verify (the holder relationship behind the A/M name difference).",
     "facts": [
       {
-        "claim": "Paul Devlin t/a Devlin Plumbing holds sole-trader business account SYN-SC-11-1 / SYN-ACCT-11-1 and is the person requesting the refund in business banking chat.",
+        "claim": "Two Faster Payment credits of £1,096.00 each were received on 21 Sep 09:40 and 22 Sep 14:20 (BST) from payer name text \"A KOWALCZYK\", Meridian Bank SYN-SC-11-2 / SYN-ACCT-11-2, both with reference \"INV 2211 BOILER\" and distinct end-to-end IDs MER26092109401201 and MER26092214204811.",
+        "evidence": [
+          "event-001",
+          "attachments/inbound_payments.json"
+        ]
+      },
+      {
+        "claim": "The refund destination given by the client and relayed by Paul (SYN-ACCT-11-2 / SYN-SC-11-2, M Kowalczyk) has the same sort code and account number as the originating account of both credits.",
+        "evidence": [
+          "attachments/client_text_message.txt",
+          "attachments/inbound_payments.json",
+          "event-002"
+        ]
+      },
+      {
+        "claim": "Confirmation of Payee on SYN-SC-11-2 / SYN-ACCT-11-2 with name \"M Kowalczyk\" (personal account) returned matched=true, name at bank \"M KOWALCZYK\", checked 2026-09-23T10:05:33Z.",
+        "evidence": [
+          "attachments/cop_result_refund_details.json",
+          "event-001"
+        ]
+      },
+      {
+        "claim": "The payer name text on the inbound credits (\"A KOWALCZYK\") differs from the CoP account name (\"M KOWALCZYK\"); the agent raised this with the customer.",
+        "evidence": [
+          "event-003",
+          "attachments/inbound_payments.json",
+          "attachments/cop_result_refund_details.json"
+        ]
+      },
+      {
+        "claim": "Paul states (customer assertion, unverified by the bank) that Anna is his client, Marek is her husband, the account is Marek's and she uses it; he wants to refund without sending to the wrong place.",
+        "evidence": [
+          "event-004",
+          "request"
+        ]
+      },
+      {
+        "claim": "The client's text (forwarded by Paul, dated Tue 22 Sep 19:02) asks for one payment to be sent back to the account she paid from; this is a forwarded third-party message, not a bank-verified instruction.",
+        "evidence": [
+          "attachments/client_text_message.txt"
+        ]
+      },
+      {
+        "claim": "The request is made in the bank's business banking chat by the account holder about his own sole-trader account SYN-SC-11-1 / SYN-ACCT-11-1; no separate verification record is supplied and no refund has been sent.",
         "evidence": [
           "event-001",
           "event-002",
@@ -13,43 +56,17 @@
         ]
       },
       {
-        "claim": "Two Faster Payment credits of £1,096.00 each, both with reference \"INV 2211 BOILER\" and payer name text \"A KOWALCZYK\", came from Meridian Bank account SYN-SC-11-2 / SYN-ACCT-11-2. They were received on 21 Sep 2026 at 09:40:12 (E2E MER26092109401201) and on 22 Sep 2026 at 14:20:48 (E2E MER26092214204811).",
+        "claim": "No recall or return request from Meridian Bank for either credit is recorded in the supplied snapshot (absence of record, not a negative finding).",
         "evidence": [
-          "attachments/inbound_payments.json",
-          "event-001"
-        ]
-      },
-      {
-        "claim": "The refund details the client gave (SYN-SC-11-2 / SYN-ACCT-11-2, M Kowalczyk) are the same sort code and account number that sent both credits.",
-        "evidence": [
-          "attachments/client_text_message.txt",
-          "attachments/inbound_payments.json",
-          "event-001"
-        ]
-      },
-      {
-        "claim": "The CoP check on the refund details (personal account, name supplied \"M Kowalczyk\") returned matched=true, with name at bank \"M KOWALCZYK\", at 2026-09-23T10:05:33Z.",
-        "evidence": [
-          "attachments/cop_result_refund_details.json"
-        ]
-      },
-      {
-        "claim": "The client's text, forwarded by Paul (sent Tue 22 Sep 19:02 from a number saved as \"Anna K - boiler job\"), says she paid twice and asks for one payment back to her husband's account, which she says she paid from.",
-        "evidence": [
-          "attachments/client_text_message.txt"
-        ]
-      },
-      {
-        "claim": "Paul says Anna is the client and Marek is her husband, and that the account is Marek's but Anna uses it. This is his account of what she told him and is not a bank record of who holds that account.",
-        "evidence": [
-          "event-004"
+          "event-001",
+          "attachments/inbound_payments.json"
         ]
       }
     ],
     "missing": [
-      "Whether Anna is a holder of or authorised user on the Meridian account. Not needed for this decision, because the refund goes back to the account the money came from.",
-      "Paul's available balance for the outbound payment. Not supplied, and the payment confirmation process will check it.",
-      "Paul's secure confirmation of the refund payment."
+      "Whether Meridian Bank has already lodged a recall/return request for either credit (end-to-end IDs MER26092109401201 / MER26092214204811) — needed to avoid returning the same funds twice",
+      "Paul's secure confirmation of the outbound £1,096.00 payment to SYN-SC-11-2 / SYN-ACCT-11-2",
+      "Independent evidence of who holds the Meridian account or of the Anna/Marek relationship (not obtainable by this bank and not required because the destination is the originating account)"
     ],
     "identity_authority": "established",
     "safety_flags": [],
@@ -57,20 +74,19 @@
       {
         "id": "s1",
         "kind": "proposed_action",
-        "action": "reply_to_customer",
-        "instruction": "Reply to Paul: \"Thanks, Paul, that helps. The details Anna gave you (SYN-SC-11-2 / SYN-ACCT-11-2) are the same account both £1,096 payments came from. The Confirmation of Payee check on those details matched the name M KOWALCZYK. So the refund would go back to the account the money came from, not to a new account. The different first initial (A on the payments, M on the account) fits what she has told you. I'm setting up one refund of £1,096 for the second payment (received 22 Sep at 14:20) to M Kowalczyk, SYN-SC-11-2 / SYN-ACCT-11-2, with reference 'REFUND DUP INV 2211'. It won't be sent until you approve it in your secure business banking confirmation, and I can't give you an arrival time.\"",
+        "action": "check_record",
+        "instruction": "Check Harrow & Vale Bank's inbound Faster Payment / recall-and-return records for account SYN-SC-11-1 / SYN-ACCT-11-1 for any recall, return request or indemnity claim from Meridian Bank relating to end-to-end IDs MER26092109401201 (21 Sep, £1,096.00) or MER26092214204811 (22 Sep, £1,096.00). Record the result on case 011 before any outbound payment is released.",
         "rationale": {
-          "explanation": "The supplied records show the refund account is the same account that sent both credits, and the CoP check matched the account name. That answers Paul's worry about sending it to the wrong place without asking Anna for more evidence.",
+          "explanation": "The payer told Paul the duplicate was an app glitch and may also have told her own bank; if Meridian has already lodged a recall, a customer-initiated refund would return the same £1,096.00 twice. This is a material gap specific to the identified credits.",
           "evidence": [
             "attachments/inbound_payments.json",
-            "attachments/cop_result_refund_details.json",
             "attachments/client_text_message.txt",
-            "event-004"
+            "event-001"
           ],
-          "criterion": "Identify the exact transaction by reference, amount, date and parties, use the authoritative status supplied, and state only what the record proves.",
+          "criterion": "Request a named journal lookup only for a material gap; a recall/return request is distinct from a completed return and must not be duplicated",
           "source": "skill:payments"
         },
-        "target": "Paul Devlin (business banking chat)",
+        "target": "Harrow & Vale Bank plc payments/inbound credit records",
         "arguments": {},
         "requires": [],
         "condition": null
@@ -79,42 +95,69 @@
         "id": "s2",
         "kind": "proposed_action",
         "action": "request_confirmation",
-        "instruction": "Set up an outbound Faster Payment for £1,096.00 from SYN-SC-11-1 / SYN-ACCT-11-1 (Paul Devlin t/a Devlin Plumbing) to SYN-SC-11-2 / SYN-ACCT-11-2, payee name M Kowalczyk (CoP matched 2026-09-23T10:05:33Z), with reference 'REFUND DUP INV 2211'. Note internally that it refunds the duplicate credit received 2026-09-22 14:20:48 with E2E MER26092214204811. Send it to Paul for secure confirmation. Do not release it without his confirmation.",
+        "instruction": "Set up, for Paul Devlin's secure confirmation in the business banking channel, one outbound Faster Payment of £1,096.00 from SYN-SC-11-1 / SYN-ACCT-11-1 to sort code SYN-SC-11-2, account SYN-ACCT-11-2, payee name \"M Kowalczyk\" (CoP matched \"M KOWALCZYK\" at 2026-09-23T10:05:33Z), reference \"REFUND INV 2211 DUPLICATE\". Note on the case that this returns the second credit (end-to-end ID MER26092214204811) to its originating account. Release only on Paul's confirmation and only if s1 shows no existing Meridian recall for that credit.",
         "rationale": {
-          "explanation": "Paul, the account holder, asked to refund one duplicate. The destination is the account that sent the money and has a CoP match. The payment comes out of his account, so he must confirm it securely before it is released.",
+          "explanation": "The customer is the account holder instructing a payment from his own account; the destination is the exact account both credits originated from and CoP matches, so the 'wrong place' risk he raised is addressed by returning to source. The A/M name difference is unverified but immaterial to a return-to-source. The payment is state-changing and needs his secure authorisation.",
           "evidence": [
             "event-002",
             "event-004",
             "attachments/inbound_payments.json",
-            "attachments/cop_result_refund_details.json",
-            "event-001"
+            "attachments/cop_result_refund_details.json"
           ],
-          "criterion": "A payment from the customer's account needs the account holder's secure confirmation. Returning money to the account that sent it limits the risk of misdirection.",
-          "source": "general:safety"
+          "criterion": "Identify the exact transaction by reference, amount, date and parties; a customer-authorised outbound payment requires the customer's secure confirmation before release",
+          "source": "skill:payments"
         },
-        "target": "Paul Devlin – secure business banking payment confirmation",
+        "target": "Customer (Paul Devlin) via secure business banking channel",
         "arguments": {},
         "requires": [
           "s1"
+        ],
+        "condition": null
+      },
+      {
+        "id": "s3",
+        "kind": "proposed_action",
+        "action": "reply_to_customer",
+        "instruction": "Reply to Paul in the business banking chat: \"Thanks — that helps. The key point is that the details your client gave (SYN-SC-11-2 / SYN-ACCT-11-2) are the same sort code and account number both £1,096 payments came from, and Confirmation of Payee matches 'M KOWALCZYK' on that account. So this would be a return to the account that paid you, not a payment to a new destination. We can't verify who holds that account or confirm the relationship you've described — the payer name on the credits shows 'A KOWALCZYK' — but because it's the originating account, that doesn't block the refund. Nothing has been sent yet. I'm first checking whether the payer's bank has already asked us to return one of the payments, so you don't end up refunding twice. I'll then send you a £1,096.00 payment to those details with reference 'REFUND INV 2211 DUPLICATE' to confirm securely in your business banking; it only goes once you confirm. I can't promise an arrival time. Please keep your client's text and these payment IDs (MER26092109401201, MER26092214204811) for your records.\"",
+        "rationale": {
+          "explanation": "Answers the customer's concern with the evidenced basis (same source account, CoP match), keeps the unverified assertions labelled as such, and states that the payment is pending his confirmation and the recall check rather than implying it has been made.",
+          "evidence": [
+            "event-003",
+            "event-004",
+            "attachments/cop_result_refund_details.json",
+            "attachments/inbound_payments.json"
+          ],
+          "criterion": "State only the stage the supplied record proves; do not promise arrival times absent an applicable commitment",
+          "source": "skill:payments"
+        },
+        "target": "Customer (Paul Devlin) — business banking chat",
+        "arguments": {},
+        "requires": [
+          "s1",
+          "s2"
         ],
         "condition": null
       }
     ],
     "escalate_if": [],
     "must_state": [
-      "The refund details are the same account that sent both £1,096 payments, and the CoP check matched the name \"M KOWALCZYK\" on that account.",
-      "The proposed refund is £1,096 for the second credit (22 Sep, 14:20, end-to-end ID MER26092214204811) only.",
-      "The refund is not sent until Paul confirms it through his secure business banking confirmation."
+      "The refund sort code and account number are the same account both £1,096.00 credits came from, so the payment would go back to its source",
+      "Confirmation of Payee on those details returned a match to \"M KOWALCZYK\"",
+      "The inbound payer name shows \"A KOWALCZYK\"; the bank cannot verify who holds the Meridian account or the relationship Paul describes — the basis for proceeding is that it is the originating account, not the explanation",
+      "Nothing has been sent yet; the payment will only go after Paul confirms it in the secure business banking channel",
+      "The bank is checking whether Meridian has already requested a return of one credit before the payment is released, and will not promise an arrival time",
+      "Suggested reference \"REFUND INV 2211 DUPLICATE\" and advice to keep the client's text and the end-to-end IDs for his records"
     ],
     "must_not": [
-      "Do not say the refund has been sent, has arrived, or has reached Anna or Marek.",
-      "Do not promise an arrival time.",
-      "Do not state that the Meridian account is joint or that Anna is an account holder; the bank has not verified this.",
-      "Do not disclose any other Meridian or payer account information beyond what Paul already supplied.",
-      "Do not ask for passwords, PINs or one-time codes in chat.",
-      "Do not refund both credits or any amount other than £1,096."
+      "Claim the Meridian account is joint, is Marek's, or that Anna is authorised on it",
+      "Claim the refund has been sent, credited or will arrive by a given time",
+      "Claim the name difference has been verified or resolved by the bank",
+      "Disclose any detail of the Meridian account beyond the CoP match result already shown",
+      "Treat the forwarded text as a verified instruction from the payer",
+      "Ask for any PIN, password or one-time code in chat",
+      "State that no recall exists; only that none is recorded in the supplied snapshot"
     ],
-    "expected_disposition": "completed"
+    "expected_disposition": "needs_info"
   },
   "context": "# Supplied case 011\n\n## history.md\n\n# Refund after a duplicate payment — history\n\nTotal events: 4\n\nThe opening internal note is a snapshot available to the servicing agent at the time of contact; any earlier dates within it refer to records, not to the creation time of this note. Events on the same day without individual timestamps follow the source conversation order.\n\n<a id=\"event-001\"></a>\n## 2026-09-23 (individual event time not recorded) — event 001\n\n- **Channel:** Internal account view\n- **From:** Harrow & Vale Bank plc (case record)\n- **To:** Servicing agent (Harrow & Vale Bank plc)\n\nCustomer: **Paul Devlin t/a Devlin Plumbing** — sole-trader business account SYN-SC-11-1 / SYN-ACCT-11-1.\n| Date | Event |\n|---|---|\n| 21 Sep 09:40 | Credit +£1,096.00, Faster Payment, payer name \"A KOWALCZYK\" (Meridian SYN-SC-11-2 / SYN-ACCT-11-2), ref \"INV 2211 BOILER\" |\n| 22 Sep 14:20 | Credit +£1,096.00, Faster Payment, payer name \"A KOWALCZYK\" (Meridian SYN-SC-11-2 / SYN-ACCT-11-2), ref \"INV 2211 BOILER\" |\n\nCustomer's request (below) gives refund details: SYN-SC-11-2 / SYN-ACCT-11-2, name **M. Kowalczyk**. CoP on those details: **Match — \"M KOWALCZYK\"**.\n\n<a id=\"event-002\"></a>\n## 2026-09-23 (individual event time not recorded) — event 002\n\n- **Channel:** Business banking chat\n- **From:** Paul D.\n- **To:** Servicing agent (Harrow & Vale Bank plc)\n\nHi, a customer paid my invoice twice by mistake — £1,096 on Monday and again yesterday. She's texted me: \"please send it back to my husband's account, SYN-ACCT-11-2, SYN-SC-11-2, M Kowalczyk, that's what I paid from\". Can you refund one of them to that?\n\n<a id=\"event-003\"></a>\n## 2026-09-23 (individual event time not recorded) — event 003\n\n- **Channel:** Business banking chat\n- **From:** Servicing agent (Harrow & Vale Bank plc)\n- **To:** Customer / caller\n\nI can see both payments. One thing before I send anything — the payer on the credits shows as \"A Kowalczyk\" and the refund name you've given is \"M Kowalczyk\".\n\n<a id=\"event-004\"></a>\n## 2026-09-23 (individual event time not recorded) — event 004\n\n- **Channel:** Business banking chat\n- **From:** Paul D.\n- **To:** Servicing agent (Harrow & Vale Bank plc)\n\nYeah, Anna's the customer, Marek's her husband, it's their joint money. She says the account's his but she uses it. I don't want to send it to the wrong place, but I also don't want to sit on their money.\n\n\n## request.md\n\n# Refund after a duplicate payment\n\n## Case details\n\n- **Source role:** Bank customer\n- **Status:** Requires decision\n- **Created:** 2026-09-23 (day precision)\n- **Updated:** 2026-09-23 (day precision)\n- **Bank:** Harrow & Vale Bank plc\n- **Channel:** Business banking chat\n\n## Initial request\n\nHi, a customer paid my invoice twice by mistake — £1,096 on Monday and again yesterday. She's texted me: \"please send it back to my husband's account, SYN-ACCT-11-2, SYN-SC-11-2, M Kowalczyk, that's what I paid from\". Can you refund one of them to that?\n\n## History\n\n[Read the complete event history](history.md).\n\n## Attachments\n\n- [the client's text, forwarded by the customer](attachments/client_text_message.txt)\n- [Confirmation of Payee result for the refund details](attachments/cop_result_refund_details.json)\n- [the two inbound payment messages](attachments/inbound_payments.json)\n\n\n## attachments/client_text_message.txt\n\n[Text from client, forwarded by Paul Devlin]\nTue 22 Sep 19:02, from +44 7700 900 415 (saved as \"Anna K - boiler job\")\n\"Hi Paul, so sorry - I paid your invoice twice, the app glitched. Please can you send one back to my husband's account, that's what I paid from: SYN-ACCT-11-2, SYN-SC-11-2, M Kowalczyk. Thank you!\"\n\n\n## attachments/cop_result_refund_details.json\n\n{\n  \"request\": {\n    \"sort_code\": \"SYN-SC-11-2\",\n    \"account_number\": \"SYN-ACCT-11-2\",\n    \"name_supplied\": \"M Kowalczyk\",\n    \"account_type\": \"personal\"\n  },\n  \"response\": {\n    \"matched\": true,\n    \"name_at_bank\": \"M KOWALCZYK\",\n    \"checked_at\": \"2026-09-23T10:05:33Z\"\n  }\n}\n\n\n## attachments/inbound_payments.json\n\n[\n  {\n    \"received\": \"2026-09-21T09:40:12+01:00\",\n    \"amount\": 1096.0,\n    \"payer_name_text\": \"A KOWALCZYK\",\n    \"payer_sort_code\": \"SYN-SC-11-2\",\n    \"payer_account\": \"SYN-ACCT-11-2\",\n    \"payer_bank\": \"Meridian Bank\",\n    \"reference\": \"INV 2211 BOILER\",\n    \"end_to_end_id\": \"MER26092109401201\"\n  },\n  {\n    \"received\": \"2026-09-22T14:20:48+01:00\",\n    \"amount\": 1096.0,\n    \"payer_name_text\": \"A KOWALCZYK\",\n    \"payer_sort_code\": \"SYN-SC-11-2\",\n    \"payer_account\": \"SYN-ACCT-11-2\",\n    \"payer_bank\": \"Meridian Bank\",\n    \"reference\": \"INV 2211 BOILER\",\n    \"end_to_end_id\": \"MER26092214204811\"\n  }\n]\n",
   "generator": {
@@ -122,15 +165,8 @@
     "kind": "model"
   },
   "output": {
-    "answer": "# Decision: refund one duplicate £1,096 credit to the account that sent it (pending Paul's secure confirmation)\n\n**Case:** Paul Devlin t/a Devlin Plumbing, sole-trader business account SYN-SC-11-1 / SYN-ACCT-11-1, business banking chat.\n\nThe refund details Paul's client gave (SYN-SC-11-2 / SYN-ACCT-11-2, M Kowalczyk) are the same Meridian Bank account that sent both £1,096 credits. Confirmation of Payee (CoP) on those details returned a match for \"M KOWALCZYK\". The plan is to explain this to Paul and set up **one** £1,096 Faster Payment back to that account. This refunds only the second credit (22 Sep 2026, 14:20, end-to-end ID MER26092214204811). **Nothing has been sent yet.** The payment will not be released until Paul confirms it through his secure business banking confirmation.\n\n## Proposed actions (in order, none done yet)\n\n1. **s1: Reply to Paul** in business banking chat with the message below.\n2. **s2: Set up the refund and ask Paul to confirm it** (depends on s1):\n   - Faster Payment of **£1,096.00**\n   - From: SYN-SC-11-1 / SYN-ACCT-11-1 (Paul Devlin t/a Devlin Plumbing)\n   - To: SYN-SC-11-2 / SYN-ACCT-11-2, payee name **M Kowalczyk** (CoP matched 2026-09-23T10:05:33Z)\n   - Reference: **REFUND DUP INV 2211**\n   - Internal note: refunds the duplicate credit received 2026-09-22 14:20:48, E2E MER26092214204811\n   - Send it to Paul for secure confirmation. **Do not release it without his confirmation.**\n\n## Proposed message to Paul (not yet sent)\n\n> Thanks, Paul, that helps. The details Anna gave you (SYN-SC-11-2 / SYN-ACCT-11-2) are the same account both £1,096 payments came from. The Confirmation of Payee check on those details matched the name M KOWALCZYK. So the refund would go back to the account the money came from, not to a new account. The different first initial (A on the payments, M on the account) fits what she has told you.\n>\n> I'm setting up one refund of £1,096 for the second payment only (received 22 Sep at 14:20, end-to-end ID MER26092214204811). It goes to M Kowalczyk, SYN-SC-11-2 / SYN-ACCT-11-2, with reference 'REFUND DUP INV 2211'. It won't be sent until you approve it in your secure business banking confirmation, and I can't give you an arrival time.\n\n## Guardrails for this case\n- Do not say the refund has been sent or has arrived, or that it has reached Anna or Marek. Do not promise an arrival time.\n- Do not say the Meridian account is joint or that Anna holds it. The bank has not verified this.\n- Do not share any other Meridian or payer account details beyond what Paul already gave.\n- Refund one credit only, for £1,096. Do not ask for passwords, PINs or one-time codes in chat.\n",
-    "reasoning": "# Decision memo: case 011, refunding a duplicate £1,096 credit\n\nFull input is saved in `context.md`. This memo uses only that context and the plan of record.\n\n## 1. Situation and history\n\n- **event-001 (internal account view, 23 Sep 2026; bank record):** Paul Devlin t/a Devlin Plumbing holds sole-trader account SYN-SC-11-1 / SYN-ACCT-11-1. Two Faster Payment credits of +£1,096.00 arrived on 21 Sep at 09:40 and 22 Sep at 14:20. Both show payer name \"A KOWALCZYK\", come from Meridian SYN-SC-11-2 / SYN-ACCT-11-2 and carry reference \"INV 2211 BOILER\". The same record notes that CoP on the refund details returned **Match: \"M KOWALCZYK\"**.\n- **attachments/inbound_payments.json (bank payment messages):** these confirm the exact details. Received 2026-09-21T09:40:12+01:00 with E2E MER26092109401201, and 2026-09-22T14:20:48+01:00 with E2E MER26092214204811. Both came from the same Meridian Bank sort code and account, with the same amount and reference.\n- **event-002 / request.md (Paul's report in chat):** a customer paid his invoice twice (\"Monday and again yesterday\"). She asked for one payment back to \"my husband's account … M Kowalczyk, that's what I paid from.\" Paul asks for one refund. 21 Sep 2026 is a Monday, so his timeline matches the records.\n- **attachments/client_text_message.txt (forwarded by Paul; not a bank record):** a text sent Tue 22 Sep 19:02 from a number saved as \"Anna K - boiler job\". It says the app glitched, she paid twice, and asks for one payment back to her husband's account, which she says she paid from. It gives the same sort code, account number and name. It was sent after the second credit (14:20), which fits the sequence.\n- **event-003 (agent):** the agent pointed out that the payer name (A Kowalczyk) differs from the refund name (M Kowalczyk).\n- **event-004 (Paul):** Anna is the client and Marek her husband. \"It's their joint money.\" She says the account is his but she uses it. Paul wants neither to misdirect the refund nor to hold on to their money. This is Paul passing on what Anna told him. It is **not** a bank record of who holds the account.\n- **attachments/cop_result_refund_details.json (bank CoP result):** personal account, name supplied \"M Kowalczyk\", matched = true, name at bank \"M KOWALCZYK\", checked 2026-09-23T10:05:33Z.\n\n## 2. Evidence and gaps\n\n**Established by records:**\n- The refund destination is the **same sort code and account number** that sent both credits (inbound_payments.json, event-001, matching the details in client_text_message.txt).\n- CoP matched the supplied name to that account (cop_result_refund_details.json).\n- Which credit is the duplicate is identified by date, time and E2E ID: the second credit, MER26092214204811.\n\n**The name discrepancy:** the credits carry payer name text \"A KOWALCZYK\" and the account name at bank is \"M KOWALCZYK\". The client's text and Paul's account (event-004) explain this: the account is her husband's and she uses it. The bank has not verified Anna's link to the account. The plan treats this as acceptable because the money is going back to the account it came from, not to a new destination.\n\n**Not established / missing (from the plan):**\n- Whether Anna is a holder or authorised user of the Meridian account. The plan says this is not needed for this decision, because the refund goes back to the source account.\n- Paul's available balance. Not supplied. The payment confirmation process will check it.\n- Paul's secure confirmation of the payment. Still pending.\n- Arrival time of the refund. Nothing in the context supports one, so none can be promised.\n\n## 3. Why this plan\n\n**s1: Reply to Paul.**\n- *Explanation:* the records show the refund account is the same account that sent both credits, and CoP matched the account name. That answers Paul's worry about sending money to the wrong place without asking Anna for more evidence.\n- *Evidence:* inbound_payments.json, cop_result_refund_details.json, client_text_message.txt, event-004.\n- *Criterion:* identify the exact transaction by reference, amount, date and parties, use the authoritative status supplied, and state only what the record proves.\n- *Source:* skill handling rule `skill:payments`. This is a servicing skill rule, not a cited bank policy or legal obligation.\n\n**s2: Set up the £1,096 Faster Payment and send it to Paul for secure confirmation (requires s1).**\n- *Explanation:* Paul, the account holder, asked to refund one duplicate. The destination is the account that sent the money and has a CoP match. The payment comes out of his account, so he must confirm it securely before release.\n- *Evidence:* event-002, event-004, inbound_payments.json, cop_result_refund_details.json, event-001.\n- *Criterion:* a payment from the customer's account needs the account holder's secure confirmation, and returning money to the account that sent it limits the risk of misdirection.\n- *Source:* `general:safety`, a general safety principle. It is not a specific supplied bank policy clause or a statute.\n\n**Order:** Paul is told first what the records show and exactly what is being set up: one credit, £1,096, the named destination and the reference. The payment instruction then goes to him for secure confirmation. The plan sets no safety flags and no escalation triggers, and treats identity and authority as established: Paul is the authenticated business-chat customer and the account holder.\n\n## 4. Execution boundaries\n\n- Nothing has been executed. Both steps are proposed.\n- s2 depends on s1. The payment must not be released unless Paul confirms it through secure business banking. If he does not confirm, the payment stays unsent. The plan has no other branch, and any other outcome would need a fresh decision.\n- The plan's scope is one Faster Payment of exactly £1,096.00, for the 22 Sep credit (E2E MER26092214204811) only, with reference 'REFUND DUP INV 2211'. It does not cover refunding both credits, any other amount, or any other destination.\n\n## 5. Expected result and limits\n\n- **Could achieve:** Paul gets a clear, record-based answer to his concern and a ready refund instruction he can approve. If he approves it and it passes the confirmation checks (including balance), the duplicate is returned to its source account. The plan's expected disposition is \"completed\".\n- **Remains unconfirmed:** Paul's approval, whether his balance is sufficient, when the payment would arrive, and Anna's relationship to the Meridian account.\n- **Must state:** (a) the refund details are the same account that sent both £1,096 payments, and CoP matched \"M KOWALCZYK\" on that account; (b) the refund is £1,096 for the second credit only (22 Sep, 14:20, E2E MER26092214204811); (c) it is not sent until Paul confirms it through secure business banking confirmation.\n- **Must not:** say the refund has been sent, has arrived or has reached Anna or Marek; promise an arrival time; state that the Meridian account is joint or that Anna holds it (Paul's remark that it is \"their joint money\" is his report, not a bank finding); disclose other Meridian or payer account information beyond what Paul supplied; ask for passwords, PINs or one-time codes; refund both credits or any amount other than £1,096.\n",
-    "future_messages": [
-      {
-        "after_steps": [
-          "s2"
-        ],
-        "message": "Paul, the £1,096 refund to M Kowalczyk (SYN-SC-11-2 / SYN-ACCT-11-2, reference 'REFUND DUP INV 2211') is now waiting for your approval in your secure business banking confirmation. It refunds only the second payment (22 Sep, 14:20, end-to-end ID MER26092214204811). It won't be sent until you approve it there, and I can't give you an arrival time. Please don't share any passwords, PINs or codes in this chat."
-      }
-    ]
+    "answer": "# ANSWER — Case 011: Refund of duplicate £1,096.00 credit (Paul Devlin t/a Devlin Plumbing)\n\n## Decision\n\nProceed with the refund as a **return to source**, subject to two gates. The refund details the client supplied (sort code SYN-SC-11-2, account SYN-ACCT-11-2) are identical to the originating account of both £1,096.00 Faster Payment credits, and Confirmation of Payee on those details returned a match to \"M KOWALCZYK\". The \"A KOWALCZYK\" / \"M Kowalczyk\" name difference is unverified by the bank but does not block a return to the originating account. Nothing is to be sent until (1) the bank's records have been checked for an existing Meridian recall on either credit and (2) Paul confirms the payment in the secure business banking channel.\n\n**Disposition:** needs_info (pending the recall check and Paul's secure confirmation).\n\n## Proposed actions (in order — none executed yet)\n\n1. **s1 — Check records (pending).** Check Harrow & Vale Bank's inbound Faster Payment / recall-and-return records for SYN-SC-11-1 / SYN-ACCT-11-1 for any recall, return request or indemnity claim from Meridian Bank relating to end-to-end IDs MER26092109401201 (21 Sep, £1,096.00) or MER26092214204811 (22 Sep, £1,096.00). Record the result on case 011 before any outbound payment is released.\n\n2. **s2 — Set up payment for secure confirmation (pending; depends on s1).** Prepare one outbound Faster Payment of £1,096.00 from SYN-SC-11-1 / SYN-ACCT-11-1 to sort code SYN-SC-11-2, account SYN-ACCT-11-2, payee name \"M Kowalczyk\" (CoP matched \"M KOWALCZYK\" at 2026-09-23T10:05:33Z), reference \"REFUND INV 2211 DUPLICATE\", for Paul Devlin's confirmation in the business banking channel. Note on the case that this returns the second credit (end-to-end ID MER26092214204811) to its originating account. Release only on Paul's confirmation and only if s1 shows no existing Meridian recall for that credit.\n\n3. **s3 — Reply to customer (pending; depends on s1 and s2).** Send the message below in the business banking chat.\n\n## Proposed message to the customer (not yet sent)\n\n> Thanks — that helps. The key point is that the details your client gave (SYN-SC-11-2 / SYN-ACCT-11-2) are the same sort code and account number both £1,096 payments came from, and Confirmation of Payee matches 'M KOWALCZYK' on that account. So this would be a return to the account that paid you, not a payment to a new destination. We can't verify who holds that account or confirm the relationship you've described — the payer name on the credits shows 'A KOWALCZYK' — but because it's the originating account, that doesn't block the refund. Nothing has been sent yet. I'm first checking whether the payer's bank has already asked us to return one of the payments, so you don't end up refunding twice. I'll then send you a £1,096.00 payment to those details with reference 'REFUND INV 2211 DUPLICATE' to confirm securely in your business banking; it only goes once you confirm. I can't promise an arrival time. Please keep your client's text and these payment IDs (MER26092109401201, MER26092214204811) for your records.\n\n## What this does not do\n\n- It does not treat the forwarded text as a verified instruction from the payer, and it does not assert that the Meridian account is joint, is Marek's, or that Anna is authorised on it.\n- It does not state that no Meridian recall exists — only that none is recorded in the supplied snapshot; the s1 check is what establishes this.\n- It does not request any PIN, password or one-time code in chat; confirmation happens in the secure business banking channel.\n",
+    "reasoning": "# REASONING — Case 011: Refund of duplicate £1,096.00 credit\n\nFull input is in the saved `context.md`. All actions below are proposed; none has been executed.\n\n## 1. Situation and history\n\n**Customer:** Paul Devlin t/a Devlin Plumbing, sole-trader business account SYN-SC-11-1 / SYN-ACCT-11-1 at Harrow & Vale Bank plc. Contact is via the bank's business banking chat on 2026-09-23 (individual event times not recorded; events follow conversation order).\n\n**Authenticated bank records (event-001, `attachments/inbound_payments.json`):**\n- 21 Sep 2026 09:40 BST — Faster Payment credit +£1,096.00, payer name text \"A KOWALCZYK\", Meridian Bank SYN-SC-11-2 / SYN-ACCT-11-2, reference \"INV 2211 BOILER\", end-to-end ID MER26092109401201.\n- 22 Sep 2026 14:20 BST — Faster Payment credit +£1,096.00, same payer name text, same payer sort code/account, same reference, end-to-end ID MER26092214204811.\n- Confirmation of Payee (`attachments/cop_result_refund_details.json`) on SYN-SC-11-2 / SYN-ACCT-11-2, name supplied \"M Kowalczyk\", account type personal: `matched: true`, name at bank \"M KOWALCZYK\", checked 2026-09-23T10:05:33Z.\n\n**Customer's report (event-002, event-004, `request.md`):** Paul states his customer paid invoice 2211 twice and has texted him asking for one payment to be returned to \"her husband's account\" SYN-ACCT-11-2 / SYN-SC-11-2, M Kowalczyk, \"that's what I paid from\". When the agent queried the A/M name difference (event-003), Paul said Anna is the client, Marek is her husband, the money is joint, the account is Marek's and she uses it; he wants to refund but not to the wrong place.\n\n**Forwarded third-party message (`attachments/client_text_message.txt`):** text dated Tue 22 Sep 19:02 from a number saved as \"Anna K - boiler job\", attributing the duplicate to an app glitch and asking for one payment back to the same details. This is a forwarded message supplied by Paul, not an instruction verified by the bank.\n\n## 2. Evidence and gaps\n\n**Established from authenticated records:**\n- Two credits of identical amount, reference and source account one day apart, with distinct end-to-end IDs — consistent with a duplicate payment (event-001, `inbound_payments.json`).\n- The refund destination (SYN-SC-11-2 / SYN-ACCT-11-2) is character-for-character the originating sort code and account number of both credits (`inbound_payments.json` vs event-002 and `client_text_message.txt`).\n- CoP matches \"M KOWALCZYK\" on that account (`cop_result_refund_details.json`).\n\n**Observed discrepancy:** the inbound payer name text is \"A KOWALCZYK\" while the account name at the receiving bank is \"M KOWALCZYK\" (event-003). Paul's explanation (event-004) is a customer assertion the bank cannot verify. It is not contradicted by the records, but it is also not corroborated by them: the payer-name text in a Faster Payment message is not a verified account-holder name, and this bank has no view of the Meridian account's holders or mandate.\n\n**Gaps (from the plan's `missing` list):**\n1. Whether Meridian Bank has already lodged a recall or return request for either end-to-end ID. The supplied snapshot records none, but this is an absence of record in the snapshot, not a negative finding — the payer said the app \"glitched\" and may also have contacted her own bank.\n2. Paul's secure confirmation of the outbound £1,096.00 payment — not yet given; the chat exchange is a request, not an authorised payment instruction.\n3. Independent evidence of who holds the Meridian account or of the Anna/Marek relationship — not obtainable by this bank, and per the plan not required, because the payment goes back to the account the funds came from rather than to a new destination.\n\n**Identity:** the plan records identity authority as established (account holder in the bank's business banking chat about his own account). No separate verification record is supplied; this is noted as a limit rather than a contradiction.\n\n## 3. Why this plan\n\n**Core judgement (plan summary):** the risk Paul raised — \"sending it to the wrong place\" — is addressed not by resolving the name difference but by the fact that the destination is the exact originating account, confirmed by CoP. The A/M difference is therefore unverified but immaterial to a return-to-source. Had the client asked for the refund to go to any *different* account, the same evidence would not support proceeding; that alternative is not the case here and is not part of the decision.\n\n**s1 — check recall/return records first.**\n- *Explanation:* if Meridian has already lodged a recall, a customer-initiated refund would return the same £1,096.00 twice.\n- *Evidence:* `inbound_payments.json` (the two end-to-end IDs), `client_text_message.txt` (the \"app glitched\" account that could prompt a recall at the payer's bank), event-001 (snapshot shows no recall recorded).\n- *Criterion:* a named journal lookup is justified only for a material gap; a recall/return request is distinct from a completed return and must not be duplicated.\n- *Source:* skill:payments handling rule (not a supplied bank policy or legal obligation).\n\n**s2 — set up the payment for Paul's secure confirmation (after s1).**\n- *Explanation:* Paul is the account holder instructing a payment from his own account; the destination is the originating account and CoP matches. The payment is state-changing and requires his secure authorisation; it is also gated on s1 showing no existing Meridian recall for the credit being returned (MER26092214204811, the second credit).\n- *Evidence:* event-002 (request), event-004 (confirmation of intent), `inbound_payments.json`, `cop_result_refund_details.json`.\n- *Criterion:* identify the exact transaction by reference, amount, date and parties; a customer-authorised outbound payment requires the customer's secure confirmation before release.\n- *Source:* skill:payments handling rule.\n\n**s3 — reply to the customer (after s1 and s2).**\n- *Explanation:* answers the concern with the evidenced basis (same source account, CoP match), labels the unverified assertions as such, states that nothing has been sent and that release depends on the recall check and his confirmation, and avoids any arrival-time promise.\n- *Evidence:* event-003, event-004, `cop_result_refund_details.json`, `inbound_payments.json`.\n- *Criterion:* state only the stage the supplied record proves; do not promise arrival times absent an applicable commitment.\n- *Source:* skill:payments handling rule.\n\n**Ordering:** s1 precedes s2 because the recall check determines whether the refund should be released at all; s2 precedes s3 so the message accurately describes a payment that is set up and awaiting confirmation rather than one that is still hypothetical. The message text in s3 is nonetheless written so that it remains truthful if read before s2 is complete (\"Nothing has been sent yet… I'll then send you a payment… to confirm\").\n\n**Safety flags:** none raised in the plan. The refund is to the originating account, which removes the main redirection risk; CoP is a match, not a near-match or mismatch.\n\n## 4. Execution boundaries\n\n- **s1** has no dependencies and can proceed immediately. Its result must be recorded on case 011 before anything else is released.\n- **s2** requires s1. Release of the payment is additionally conditional on (a) s1 showing no existing Meridian recall for MER26092214204811 and (b) Paul's secure confirmation in the business banking channel. If s1 shows a recall or return request already lodged, the plan does not authorise release; that would require a fresh decision, not an alternative devised here.\n- **s3** requires s1 and s2 and is the only customer-facing communication in the plan.\n- The plan stops at Paul's confirmation. It does not pre-decide what happens if he declines, if CoP changes, or if Meridian contacts the bank later. No escalation conditions are set (`escalate_if` is empty).\n\n## 5. Expected result and limits\n\n**What the steps could achieve:** confirmation that no double return is in train; a £1,096.00 Faster Payment to SYN-SC-11-2 / SYN-ACCT-11-2 with reference \"REFUND INV 2211 DUPLICATE\" queued for Paul's secure authorisation; and a clear explanation to Paul of why the refund can proceed despite the name difference and what the bank cannot verify.\n\n**What remains unconfirmed:** whether a Meridian recall exists (until s1 is run); whether Paul will confirm; who holds the Meridian account and whether Anna is authorised on it (not verifiable by this bank); arrival timing (no commitment given).\n\n**Constraints preserved in the message (`must_state`):** same source account → return to source; CoP match to \"M KOWALCZYK\"; inbound payer name \"A KOWALCZYK\" and the bank's inability to verify the holder/relationship, with the originating-account basis made explicit; nothing sent yet and release only on secure confirmation; recall check in progress and no arrival-time promise; suggested reference and advice to retain the text and end-to-end IDs.\n\n**Constraints observed (`must_not`):** the message does not say the account is joint, Marek's, or that Anna is authorised; does not say the refund has been sent, credited or will arrive by a time; does not claim the name difference is verified or resolved; discloses nothing about the Meridian account beyond the CoP match already shown; does not treat the forwarded text as a verified payer instruction; does not request a PIN, password or one-time code; and does not state that no recall exists — only that the bank is checking.\n\n**Note on plan sufficiency:** the plan is adequate for the facts supplied. The one point an operator should hold in mind is that the snapshot's silence on recalls is not evidence of their absence, which is exactly why s1 is placed first and gates s2.\n",
+    "future_messages": []
   }
 }

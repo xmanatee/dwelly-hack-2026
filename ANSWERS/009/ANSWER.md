@@ -1,26 +1,31 @@
-## Decision
-**Status: needs info. Nothing has been carried out.** The account has **not** been closed and the £12.40 has **not** been paid out.
+# Decision
 
-Owen Price wants his H&V current account closed today. Policy allows that once he has been warned. But he believes nothing is still set up on the account, and our records show live items. Before anything else:
+**Hold closure today — pending the customer's informed confirmation (disposition: `needs_info`).**
 
-- he must be warned about what will fail if the account closes
-- the request to forward future payments by hand is declined
-- he must choose how to go ahead
+Owen Price (ID&V passed, event-002) has asked for his Harrow & Vale current account to be closed today with the balance sent to his new bank, and for "anything that comes in" to be forwarded (event-004). The account record (event-001, `attachments/account_summary.csv`) does not match his statement that nothing remains: two active Direct Debits, a standing order and recurring employer credits are still attached, and no CASS switch request is on file. The supplied closure policy permits closure on instruction but requires a failure warning first. The request to manually forward future inbound payments is declined as unsupported — no such facility exists in the supplied policy; only a CASS full switch requested via the new bank redirects payments.
 
-## Proposed actions (in order, all pending)
-1. **s1: Confirm identity and authority.** Record that Owen Price passed ID&V on this personal banking call. He can instruct closure of his own account and payout of its balance. No further identity check is needed.
-2. **s2: Hold the closure and decline forwarding.** Don't submit the closure until he has heard the warning and confirmed his choice (s4). Decline the request to forward future incoming payments by hand after closure. The supported way to redirect payments is a full Current Account Switch (CASS) requested by his new bank.
-3. **s3: Warn him on this call.** Use the message below. This depends on s2.
-4. **s4: Ask him to choose and confirm.** This depends on s3.
-   - **(a) Close today.** He accepts that the Meridian and FitLife Direct Debits and the S PRICE standing order will fail, and that future expense payments from his employer won't be redirected. Then read back the new account name, sort code and account number he gave for the £12.40 payout, and get his confirmation.
-   - **(b) Use CASS.** Leave the account open and he asks his new bank to request a full switch.
-   - Record his answer. Don't close the account before he confirms.
+Nothing has been executed. The account is not closed, the £12.40 has not been sent, and no mandates have been cancelled.
 
-## Message to the customer (to be said on the current call)
-> Before I close it, I need to tell you what's still set up on this account. There are two active Direct Debits due on 1 October: Meridian Motor Insurance £68.20 for policy MMI-44-88120, and FitLife Gyms £45.00. There's also a £200 standing order to S PRICE, reference MUM, due on 28 September. Your employer's expense payments from Elmstead Logistics are still coming in here; the last was £83.10 on 14 September.
+# Proposed actions (in order)
+
+1. **s1 — Hold / decline (Servicing agent).** Hold execution of the closure pending the customer's informed confirmation after the mandatory failure warning. Decline the request to manually forward future inbound credits to another bank (no such facility supplied; CASS full switch is the only redirection route).
+2. **s2 — Reply to customer (on the call).** Give the recorded status and the required failure warning (script below). Depends on s1.
+3. **s3 — Ask customer.** Ask for one decision — close today anyway, or keep open until mandates/CASS are arranged — and record the answer verbatim together with the new-bank sort code and account number nominated for the closing balance. Depends on s2. The plan stops here.
+
+# Message to the customer (proposed — to be said on the call, not yet delivered)
+
+> Before I close it, our record shows these are still attached to this account: a Direct Debit to Meridian Motor Insurance for £68.20 due 1 October, a Direct Debit to FitLife Gyms for £45.00 due 1 October, a standing order of £200 to S PRICE due 28 September, and your employer's expense reimbursements still come here (last one £83.10 on 14 September). There is no switch request on file.
 >
-> If I close the account, those Direct Debits and the standing order will fail. Meridian's letter of 15 September says that if a payment stays unpaid for 14 days your policy will be cancelled, and that driving without insurance is a criminal offence.
+> If I close the account today, those Direct Debits and the standing order will fail and any expenses your employer sends here will not reach you — I'm required to warn you of that. The insurer letter you forwarded says a missed payment can lead to your policy being cancelled after 14 days unpaid, so please make sure that Direct Debit is set up at your new bank before 1 October.
 >
-> We can't forward payments to your new bank after the account closes. Your new bank can request a full Current Account Switch, which moves payments in and out and redirects them for 3 years. It can be done within 7 working days of their request. Nothing has been closed yet.
+> I can't set up forwarding of future payments to another bank; the only way to have payments in and out redirected is a full switch through the Current Account Switch Service, which you request from your new bank — it then redirects payments for three years.
 >
-> So how would you like to go ahead? You can close the account today, knowing those Direct Debits and the standing order will fail and the expense payments won't be redirected. If so, I'll read back the new account details you gave me for the £12.40 balance so you can confirm them. Or you can leave this account open for now and ask your new bank to request a full Current Account Switch.
+> Your current balance is £12.40 and it would be paid to the account you nominate when closure is processed. Nothing has been closed yet.
+>
+> Knowing those items will fail, do you want me to close the account today anyway, or keep it open while you set up the insurance and gym Direct Debits, the standing order to your mum and your employer payments at the new bank (or ask the new bank for a full switch), and then close it? And can you give me the sort code and account number you want the closing balance paid to?
+
+# What is still needed before anything is executed
+
+- The customer's informed choice after the warning (close today regardless / hold until re-pointed or CASS requested).
+- The new-bank sort code and account number for the £12.40 closing balance (mentioned on the call, not recorded in evidence).
+- Whether replacement DDs/SO already exist at the new bank (H&V records still show the instructions active).

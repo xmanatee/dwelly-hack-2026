@@ -1,59 +1,62 @@
 {
-  "intent": "The customer, who was lead tenant, wants the bank to send her three flatmates their shares of a returned tenancy deposit today.",
-  "summary": "Send Salvatore's £247.50 for Miya's secure in-app confirmation. His amount matches the agency statement and his Confirmation of Payee (CoP) check matched. Hold the other two payments. Jack's £375.00 conflicts with the agency figure and Miya's own working (both £337.50), and her split adds up to £37.50 more than the £1,260.00 received. Emerald's CoP check came back as no match, with the account name held as \"E CREAGH-DOYLE\". Ask Miya to confirm Jack's amount and to check Emerald's account details with her directly.",
+  "intent": "Customer asks the bank to split a returned tenancy deposit credit (£1,260.00) and send three new-payee payments to flatmates today.",
+  "summary": "£1,260.00 credit is booked and available. Two blockers: Jack Elson's requested £375.00 conflicts with the agency statement and her own CSV note (£337.50), making the split £1,297.50 (£37.50 over the deposit); Emerald Creagh's CoP is no match (name held \"E CREAGH-DOYLE\"). Decision: send Salvatore Russell's £247.50 (CoP match, reconciles) for secure in-app confirmation now; ask the customer to confirm Jack's amount and to verify Emerald's details directly with Emerald before any payment to her; reply with the figures, no same-day promise.",
   "facts": [
     {
-      "claim": "A credit of £1,260.00 from \"OAKFIELD PM CLIENT A/C\", reference \"DEP RETURN 7 ISFIELD RD\", was received on 22 Sep at 10:05. The balance before that day was £412.30.",
+      "claim": "Credit of £1,260.00 from \"OAKFIELD PM CLIENT A/C\" ref \"DEP RETURN 7 ISFIELD RD\" was booked to the customer's personal current account on 22 Sep 10:05; prior balance £412.30.",
       "evidence": [
         "event-001"
       ]
     },
     {
-      "claim": "The agency statement gives per-tenant shares after deductions of: M. Yagisawa £337.50, S. Russell £247.50, J. Elson £337.50 and E. Creagh £337.50. It also says all four tenants agreed the deductions in writing on 18 September 2026.",
-      "evidence": [
-        "attachments/agency_deposit_statement.pdf"
-      ]
-    },
-    {
-      "claim": "The customer asked to pay Jack Elson £375.00. Her own CSV note for Jack works out as 450 - 75 - 37.50, which is £337.50.",
+      "claim": "Customer requests payments of Salvatore £247.50, Jack £375.00, Emerald £337.50, keeping £337.50 herself; she states all tenants agreed deductions in writing and asks for same-day sending.",
       "evidence": [
         "event-002",
+        "event-004",
         "attachments/deposit_split.csv"
       ]
     },
     {
-      "claim": "The amounts the customer listed (£247.50 + £375.00 + £337.50 + £337.50) add up to £1,297.50. That is £37.50 more than the £1,260.00 received. Using £337.50 for Jack gives exactly £1,260.00.",
+      "claim": "Agency statement shows deposit £1,800.00, deductions £540.00 (garden £300 shared, plumbing £90 S. Russell only, cleaning £150 shared), £1,260.00 returned, and per-tenant shares Yagisawa £337.50, Russell £247.50, Elson £337.50, Creagh £337.50, which sum to £1,260.00.",
       "evidence": [
-        "event-002",
-        "event-001",
         "attachments/agency_deposit_statement.pdf"
       ]
     },
     {
-      "claim": "CoP checks matched for Salvatore Russell and Jack Elson. For Emerald Creagh the result was no match (reason code ANNM), and the name held at her bank is \"E CREAGH-DOYLE\".",
+      "claim": "Customer's requested amounts sum to £1,297.50 (£960.00 to send plus £337.50 kept), £37.50 more than the £1,260.00 received; the discrepancy is Jack Elson at £375.00 versus £337.50, and the CSV note for Jack (\"450 - 75 - 37.50\") itself computes to £337.50.",
+      "evidence": [
+        "attachments/deposit_split.csv",
+        "event-002",
+        "attachments/agency_deposit_statement.pdf",
+        "event-001"
+      ]
+    },
+    {
+      "claim": "CoP: Salvatore Russell (SYN-SC-07-2 / SYN-ACCT-07-1) match; Jack Elson (SYN-SC-07-3 / SYN-ACCT-07-3) match; Emerald Creagh (SYN-SC-07-1 / SYN-ACCT-07-2) no match, reason ANNM, name held at bank \"E CREAGH-DOYLE\".",
       "evidence": [
         "attachments/cop_results.json",
         "event-001"
       ]
     },
     {
-      "claim": "The customer is asking from her own authenticated personal banking in-app chat, about payments from her own account.",
+      "claim": "The request is made in the authenticated in-app personal banking chat linked to the customer's account record; no mandate from the flatmates is needed because the payments are from the customer's own account on her instruction.",
       "evidence": [
-        "event-001",
         "event-002",
+        "event-001",
         "request.md"
       ]
     },
     {
-      "claim": "No payment has been sent yet. The agent only said they would check the amounts.",
+      "claim": "The servicing agent has told the customer the amounts will be checked against what came in; no payment has been set up or sent.",
       "evidence": [
         "event-003"
       ]
     }
   ],
   "missing": [
-    "Miya's confirmation that Jack Elson's payment should be £337.50 rather than £375.00",
-    "Miya's confirmation, after checking directly with Emerald through a contact she already knows, that sort code SYN-SC-07-1 and account SYN-ACCT-07-2 belong to Emerald, under the name held at her bank (E CREAGH-DOYLE)"
+    "Customer's confirmation of Jack Elson's amount: £337.50 (agency statement and her own CSV note) or £375.00 (her request).",
+    "Customer's confirmation, obtained directly from Emerald Creagh, that sort code SYN-SC-07-1 / account SYN-ACCT-07-2 is Emerald's account held in the name E Creagh-Doyle, and her explicit decision whether to proceed despite the CoP no-match.",
+    "Customer's secure in-app confirmation of the new payee and £247.50 payment to Salvatore Russell."
   ],
   "identity_authority": "established",
   "safety_flags": [],
@@ -61,21 +64,20 @@
     {
       "id": "s1",
       "kind": "proposed_action",
-      "action": "hold_or_decline",
-      "instruction": "Hold two of the three requested payments. (1) The £375.00 payment to Jack Elson (SYN-SC-07-3 / SYN-ACCT-07-3): reason is that the amount conflicts with the agency statement and the customer's own working (£337.50), and the full split comes to £37.50 more than the £1,260.00 received. (2) The £337.50 payment to Emerald Creagh (SYN-SC-07-1 / SYN-ACCT-07-2): reason is that the CoP check returned no match (ANNM), with the name held as \"E CREAGH-DOYLE\". Hold only these two payments. Do not restrict any other activity on the account.",
+      "action": "request_confirmation",
+      "instruction": "Send to the customer's secure in-app confirmation: new payee Salvatore Russell, sort code SYN-SC-07-2, account SYN-ACCT-07-1 (CoP match), Faster Payment £247.50 from her personal current account, reference 'Deposit 7 Isfield Rd'. Payment is not released until she confirms in the app.",
       "rationale": {
-        "explanation": "Jack's requested amount does not match either the agency's figure or the customer's own calculation. Emerald's account name failed the CoP check. Sending either payment now risks overpaying Jack or sending money to the wrong account.",
+        "explanation": "This payee is CoP matched and the £247.50 reconciles exactly with the agency statement and the customer's CSV, so it can proceed on her secure confirmation without waiting for the other two to be resolved.",
         "evidence": [
           "event-002",
-          "attachments/deposit_split.csv",
-          "attachments/agency_deposit_statement.pdf",
           "attachments/cop_results.json",
+          "attachments/agency_deposit_statement.pdf",
           "event-001"
         ],
-        "criterion": "Identify the exact transaction by amount and parties. Hold a payment whose amount or payee details conflict with the supplied records until the customer resolves the conflict.",
+        "criterion": "Identify the exact transaction by reference, amount and parties; a clean, reconciled instruction from an authenticated customer on her own account may proceed to secure confirmation.",
         "source": "skill:payments"
       },
-      "target": "Miya Yagisawa personal current account – outgoing payments",
+      "target": "In-app secure confirmation (personal banking)",
       "arguments": {},
       "requires": [],
       "condition": null
@@ -83,20 +85,20 @@
     {
       "id": "s2",
       "kind": "proposed_action",
-      "action": "request_confirmation",
-      "instruction": "Send Miya the payment of £247.50 to Salvatore Russell (sort code SYN-SC-07-2, account SYN-ACCT-07-1, CoP matched) for her secure in-app confirmation. Suggested reference: \"7 Isfield Rd deposit share\". This payment has not been sent until she confirms it.",
+      "action": "ask_customer",
+      "instruction": "Ask the customer: 'Your request lists Jack Elson at £375.00, but the agency statement shows his share as £337.50 and your own note for him (450 − 75 − 37.50) also comes to £337.50. With £375.00 the four shares total £1,297.50, £37.50 more than the £1,260.00 returned. Please confirm which amount you want to send Jack: £337.50 or £375.00.'",
       "rationale": {
-        "explanation": "Salvatore's amount is the same in Miya's request, her CSV and the agency statement, and his CoP check matched. There is no conflict holding this payment back, and Miya has authority over her own account.",
+        "explanation": "The customer's figure for Jack is internally inconsistent with her own note and the agency document, and over-allocates the deposit by £37.50; the bank must not guess or alter the amount.",
         "evidence": [
           "event-002",
           "attachments/deposit_split.csv",
           "attachments/agency_deposit_statement.pdf",
-          "attachments/cop_results.json"
+          "event-001"
         ],
-        "criterion": "Use the supplied authoritative records directly. A payment whose amount and payee details are fully consistent can go ahead once the account holder confirms it.",
-        "source": "skill:payments"
+        "criterion": "Name an unresolved conflict and request the specific missing fact rather than guessing; do not change an instructed amount unilaterally.",
+        "source": "general:evidence"
       },
-      "target": "Customer (in-app secure confirmation)",
+      "target": "Customer via in-app chat",
       "arguments": {},
       "requires": [],
       "condition": null
@@ -104,22 +106,42 @@
     {
       "id": "s3",
       "kind": "proposed_action",
-      "action": "reply_to_customer",
-      "instruction": "Send this message: \"Thanks Miya. I've checked your amounts against the deposit return of £1,260.00. Salvatore's £247.50 matches the agency statement and his account name check, so I've sent that payment to your app for you to confirm. It won't go until you approve it. I've held the other two for now. Jack: the agency statement gives his share as £337.50, and your own note (450 - 75 - 37.50) works out the same. £375.00 looks like a typo. With £375.00 your four amounts add up to £1,297.50, which is £37.50 more than came in. Can you confirm Jack's payment should be £337.50? Emerald: the account name check came back as no match. Her bank holds the name as \"E CREAGH-DOYLE\". That doesn't necessarily mean anything is wrong, but please check the sort code and account number with Emerald directly, using a contact you already have for her, before we send it. Let me know once you've done that and whether you'd like to go ahead. I can't promise exactly when payments will arrive.\"",
+      "action": "ask_customer",
+      "instruction": "Ask the customer: 'Confirmation of Payee could not match the name \"Emerald Creagh\" to sort code SYN-SC-07-1 / account SYN-ACCT-07-2 — the bank holding that account has the name as \"E CREAGH-DOYLE\". Please check directly with Emerald (by a contact method you already use with her, not from the details you were sent) that this is her account and that name. Once you have, tell us whether you want to go ahead with the £337.50 to those details. If the details are wrong, a payment may not be recoverable.'",
       "rationale": {
-        "explanation": "Two specific facts from Miya are needed before the held payments can be decided: the correct amount for Jack, and her confirmation of Emerald's account details. The reply also tells her where each payment stands without claiming anything has been sent.",
+        "explanation": "A CoP no-match (ANNM) means the payee name does not match the account; the mismatch may be a hyphenated surname but the bank cannot assume that, so the customer must verify with the payee and explicitly decide before any payment is set up.",
+        "evidence": [
+          "attachments/cop_results.json",
+          "event-001",
+          "event-002"
+        ],
+        "criterion": "Hold the risky action and obtain the customer's informed confirmation when payee verification fails; never assume a name mismatch is benign.",
+        "source": "general:safety"
+      },
+      "target": "Customer via in-app chat",
+      "arguments": {},
+      "requires": [],
+      "condition": null
+    },
+    {
+      "id": "s4",
+      "kind": "proposed_action",
+      "action": "reply_to_customer",
+      "instruction": "Reply in the in-app chat: 'Thanks — the £1,260.00 from Oakfield PM reached your account on 22 September and is available. I've checked your split against the agency statement. Two things before I can send everything: (1) Jack's amount — your request says £375.00 but the agency statement and your own note give £337.50; at £375.00 the four shares come to £1,297.50, £37.50 more than was returned. Please confirm which you want. (2) Emerald — our name check couldn't match \"Emerald Creagh\" to the account details; that bank holds the name as \"E CREAGH-DOYLE\". Please check directly with Emerald that these are her details, then let me know if you want to go ahead; if details are wrong the money may not be recoverable. Salvatore's £247.50 matched correctly and I'm sending it to you now to confirm securely in the app — it isn't sent until you confirm it. Once you confirm Jack's amount and Emerald's details, I'll set those up the same way. I can't promise they will arrive today, but I'll move as quickly as possible. I'm not able to comment on the deductions themselves — these payments go on your instruction from your account.'",
+      "rationale": {
+        "explanation": "Gives the customer the booked credit status, the exact reconciliation discrepancy, the CoP warning and what remains pending, without claiming any payment has been sent or promising same-day arrival.",
         "evidence": [
           "event-001",
           "event-002",
           "event-004",
           "attachments/agency_deposit_statement.pdf",
-          "attachments/deposit_split.csv",
-          "attachments/cop_results.json"
+          "attachments/cop_results.json",
+          "attachments/deposit_split.csv"
         ],
-        "criterion": "State only the payment stage the records support, ask for the specific missing facts, and do not promise arrival times without an applicable commitment.",
+        "criterion": "State only the stage the record proves (credit booked; payments not sent) and do not promise arrival times absent an applicable commitment.",
         "source": "skill:payments"
       },
-      "target": "Miya Yagisawa – in-app chat",
+      "target": "Customer via in-app chat",
       "arguments": {},
       "requires": [],
       "condition": null
@@ -127,18 +149,19 @@
   ],
   "escalate_if": [],
   "must_state": [
-    "No payments have been sent yet. Salvatore's £247.50 is waiting for Miya's in-app confirmation.",
-    "The agency statement and Miya's own working both give Jack's share as £337.50, not £375.00. The four amounts she listed add up to £1,297.50, but £1,260.00 was received.",
-    "Emerald's CoP check returned no match: the name on that account is held as \"E CREAGH-DOYLE\". Miya should check the account details with Emerald directly before that payment is sent.",
-    "Jack's and Emerald's payments are on hold until Miya replies."
+    "£1,260.00 from Oakfield PM was credited to the account on 22 Sep and is available.",
+    "The agency statement's shares (Salvatore £247.50, Jack £337.50, Emerald £337.50, Miya £337.50) total £1,260.00; her request has Jack at £375.00, making the total £1,297.50, £37.50 more than was returned, and her own note for Jack works out to £337.50 — she needs to confirm which figure she wants.",
+    "Confirmation of Payee could not match \"Emerald Creagh\" to the account given; the bank holding it has the name as \"E CREAGH-DOYLE\". She should check directly with Emerald that these details are hers before sending; a payment sent to wrong details may not be recoverable.",
+    "Salvatore's £247.50 payment (CoP matched) is being sent to her for secure confirmation in the app and is not sent until she confirms it.",
+    "Payments to Jack and Emerald will be set up once she confirms the two points above; the bank cannot promise same-day arrival."
   ],
   "must_not": [
-    "Do not say that any payment has been sent, received or confirmed.",
-    "Do not send £375.00 to Jack, or any payment to Emerald, before Miya confirms.",
-    "Do not suggest that Emerald's account is fraudulent or definitely wrong. The CoP result shows only that the name does not match.",
-    "Do not promise that payments will arrive today or at any specific time.",
-    "Do not state Miya's current balance as a recorded figure. Only the balance before that day and the credit are recorded.",
-    "Do not dispute or judge the deductions the tenants agreed. Only the arithmetic for Jack differs from the agency statement."
+    "Do not state that any payment has been sent, scheduled or will arrive today.",
+    "Do not send the Emerald Creagh payment on the current CoP no-match result without the customer's explicit confirmation after checking with Emerald.",
+    "Do not send Jack Elson's payment at £375.00 without the customer confirming that amount despite the discrepancy.",
+    "Do not adjudicate or opine on whether the deposit deductions or the split between flatmates are fair or correct; the bank acts only on the customer's instruction from her own account.",
+    "Do not ask for PINs, passwords or one-time codes in chat.",
+    "Do not change the customer's instructed amounts unilaterally."
   ],
   "expected_disposition": "needs_info"
 }

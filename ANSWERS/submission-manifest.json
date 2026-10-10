@@ -169,9 +169,49 @@
     "029",
     "030"
   ],
-  "implementation_commit": "fea83248f899680941683f063eeb3ae40d677475",
-  "config": "experiments/final-challenges/config.json",
-  "config_sha256": "589e1c292667170c55e6a7f5418ad027b039e8b90e73471358be1c84507b0499",
   "input_projection": "Full history and attachments. Challenge index copied byte-for-byte to request.md. Local Tesseract image transcriptions supplied as .ocr.txt sidecars; original images retained.",
-  "execution": "Plans and replies only; no bank or customer actions executed."
+  "execution": "Plans and replies only; no bank or customer actions executed.",
+  "original_opus_run": {
+    "implementation_commit": "fea83248f899680941683f063eeb3ae40d677475",
+    "config": "experiments/final-challenges/config.json",
+    "config_sha256": "589e1c292667170c55e6a7f5418ad027b039e8b90e73471358be1c84507b0499"
+  },
+  "refresh_run": {
+    "implementation_commit": "789d347",
+    "config": "experiments/final-challenges-fable/config.json",
+    "config_sha256": "48bcd3a154919805d84fb7907140327cdbfee7621b387dd0c440f1f849609960",
+    "user_reported_organizer_extension": "2026-10-10 17:10 Europe/London"
+  },
+  "case_runs": {
+    "001": "fable_refresh",
+    "002": "fable_refresh",
+    "003": "fable_refresh",
+    "004": "fable_refresh",
+    "005": "fable_refresh",
+    "006": "fable_refresh",
+    "007": "fable_refresh",
+    "008": "fable_refresh",
+    "009": "fable_refresh",
+    "010": "fable_refresh",
+    "011": "fable_refresh",
+    "012": "fable_refresh",
+    "013": "fable_refresh",
+    "014": "fable_refresh",
+    "015": "fable_refresh",
+    "016": "fable_refresh",
+    "017": "fable_refresh",
+    "018": "original_opus_run",
+    "019": "fable_refresh",
+    "020": "original_opus_run",
+    "021": "fable_refresh",
+    "022": "fable_refresh",
+    "023": "fable_refresh",
+    "024": "original_opus_run",
+    "025": "original_opus_run",
+    "026": "original_opus_run",
+    "027": "original_opus_run",
+    "028": "original_opus_run",
+    "029": "original_opus_run",
+    "030": "original_opus_run"
+  }
 }

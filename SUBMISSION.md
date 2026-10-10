@@ -8,10 +8,10 @@ accepted freeze commit are not verified by this repository check.
 - Track: Banking & Financial Services
 - Members: Mikhail Nemilov, Vera Shishkina, Egor Pavaliev, Nikita Opletin
 - Public repository: https://github.com/xmanatee/dwelly-hack-2026
-- Run implementation/configuration commit: `fea8324` (recorded by the actual run)
+- Original Opus implementation/configuration commit: `fea8324` (recorded by the actual run)
 - Frozen source commit accepted by organizers: unverified; do not infer from the run receipt
-- Reality Test result commit: `d8c40f9815773ee5360a589ff7f3c4cbc0fe190e`
-- Evaluation candidate: `d8c40f9815773ee5360a589ff7f3c4cbc0fe190e` plus subsequent documentation-only packaging
+- Original Opus result commit: `d8c40f9815773ee5360a589ff7f3c4cbc0fe190e`
+- Evaluation candidate: current published `main`, including the organizer-extension Fable refresh described below
 - Submitted evaluation commit / form receipt: unverified
 - Final results: [ANSWERS/](ANSWERS/README.md), cases `001`–`030`, Banking & Financial Services
 - Main demo: [demo/dashboard.mp4](demo/dashboard.mp4), 65.87 seconds
@@ -53,3 +53,7 @@ results at 16:39. Commit timestamps do not establish what organizers accepted or
 it was submitted. Freeze compliance needs the actual submitted commit/form receipt or
 an organizer clarification; it is not claimed here. This final pass changes documentation
 and presentation only, preserving implementation, videos and generated answers.
+
+## Organizer-extension refresh
+
+The user reported organizer authorization to regenerate answers until **17:10 London**. The refresh uses implementation/config commit `789d347`; the final selected set is **21 Fable 5.1 high / 9 Opus 5.5 high**, all 30 complete. Per-case source models and original evidence hashes are recorded in [the manifest](ANSWERS/submission-manifest.json). The original Opus result remains in Git at `d8c40f9815773ee5360a589ff7f3c4cbc0fe190e`. The earlier check and timing paragraphs above describe the original packaging pass. This refresh replaces only complete successful generated outputs, without manual answer edits or a quality-score claim.

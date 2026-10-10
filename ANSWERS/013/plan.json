@@ -1,65 +1,60 @@
 {
-  "intent": "Customer wants to know why she got an unpaid Direct Debit letter for her £750 rent to Northgate Lettings and a text from the agency asking for a manual payment, when £750 went out on 21 Sep. She wants to avoid both arrears and paying twice.",
-  "summary": "Answer now from the bank's records instead of checking the mandate again. The 18 Sep collection was returned unpaid because funds were short; the 19 Sep letter is about that attempt. On 21 Sep Northgate collected again and the £750 was paid. So the bank shows September's £750 has left her account once, and nothing more is due before 18 Oct. Tell her the bank can't confirm Northgate's own records or arrears status. Before she pays manually, she should contact Northgate using details she already trusts, quoting the 21 Sep payment.",
+  "intent": "Explain the rent Direct Debit sequence (18 Sep return, 19 Sep letter, 21 Sep re-presentation paid) and advise the customer how to avoid paying twice given the agency's \"failed, pay manually today\" text.",
+  "summary": "The internal account view already shows both mandate dates, so no further lookup is needed. Reply now: the 18 Sep £750 collection was returned unpaid (balance £710.40, no fee), the 19 Sep letter relates to that, and the originator re-presented on 21 Sep and £750 was debited from her account. The bank record proves the debit, not that Northgate has reconciled it. Advise her not to make the manual payment until she has confirmed with Northgate via trusted contact details (not the text), using her 21 Sep statement entry as evidence; no bank-side action or duplicate payment is needed.",
   "facts": [
     {
-      "claim": "On 18 Sep the £750 Direct Debit to H&V COLLECT / NORTHGATE LETTINGS was returned unpaid ('refer to payer'). The available balance was £710.40.",
+      "claim": "The £750 NORTHGATE LETTINGS Direct Debit presented on 18 Sep 2026 was returned unpaid 'refer to payer'; available balance was £710.40 and no unpaid-item fee was charged.",
       "evidence": [
         "event-001",
-        "attachments/statement_extract.csv"
+        "attachments/statement_extract.csv",
+        "attachments/unpaid_dd_letter_2026-09-19.pdf"
       ]
     },
     {
-      "claim": "The bank's automated letter dated 19 September 2026 says the £750 Direct Debit presented on 18 September could not be paid. It says no fee was charged and that the organisation may try to collect again.",
+      "claim": "The 19 Sep letter is the automated notice for the 18 Sep returned collection and states the organisation may try to collect again.",
       "evidence": [
         "attachments/unpaid_dd_letter_2026-09-19.pdf",
         "event-001"
       ]
     },
     {
-      "claim": "A £2,145.00 salary was credited on 20 Sep.",
-      "evidence": [
-        "attachments/statement_extract.csv",
-        "event-001"
-      ]
-    },
-    {
-      "claim": "On 21 Sep the originator collected the £750 again and it was paid, leaving a balance of £2,105.40. The payment carries reference NL-9LIME-0442.",
+      "claim": "Salary of £2,145.00 was credited on 20 Sep; the originator re-presented the £750 collection on 21 Sep and it was paid (debited), reference NL-9LIME-0442.",
       "evidence": [
         "event-001",
         "attachments/statement_extract.csv"
       ]
     },
     {
-      "claim": "H&V charged no unpaid-item fee. No further collection is scheduled before 18 Oct.",
+      "claim": "No further collection is scheduled before 18 Oct; the mandate remains active with no change requested.",
       "evidence": [
         "event-001"
       ]
     },
     {
-      "claim": "A machine OCR of the screenshot shows a text from 'Northgate Lettings' timestamped Tue 22 Sep, 16:20. It says the September Direct Debit failed and asks for a manual £750 payment that day to 'our client account', reference NL-9LIME-0442. The original image could not be read directly.",
+      "claim": "A text attributed to Northgate Lettings, timestamped 22 Sep 16:20, says the September Direct Debit FAILED and asks for a manual £750 payment 'today' to their client account, ref NL-9LIME-0442. Its authenticity and whether the agency has reconciled the 21 Sep collection are not established by any supplied record.",
       "evidence": [
         "attachments/agency_text_screenshot.png.ocr.txt",
-        "attachments/agency_text_screenshot.png"
+        "event-002"
       ]
     },
     {
-      "claim": "The customer does not want to be in arrears or to pay twice.",
+      "claim": "The customer has not asked the bank to send any manual payment; she wants to avoid arrears and avoid paying twice.",
       "evidence": [
         "event-002",
-        "request"
+        "request.md"
       ]
     },
     {
-      "claim": "The agent told the customer they would check both dates on the mandate.",
+      "claim": "The agent's last message proposed checking both mandate dates; the internal account view already contains both dates.",
       "evidence": [
-        "event-003"
+        "event-003",
+        "event-001"
       ]
     }
   ],
   "missing": [
-    "Whether Northgate Lettings' own ledger has recorded the 21 Sep re-presented payment, and whether it shows any arrears. Only Northgate can confirm this; the customer should ask them directly.",
-    "Whether the 22 Sep text came from Northgate. The original image is unread and only an OCR transcription is available."
+    "Whether Northgate Lettings has received and reconciled the 21 Sep re-presented collection (bank record shows the debit from the customer's account only, not recipient credit).",
+    "Whether the 22 Sep text genuinely came from Northgate Lettings (the agency's system may not have updated after re-presentation, or the text may not be genuine)."
   ],
   "identity_authority": "established",
   "safety_flags": [],
@@ -68,21 +63,20 @@
       "id": "s1",
       "kind": "proposed_action",
       "action": "reply_to_customer",
-      "instruction": "Reply in the current chat: 'Thanks for waiting, Ms Patel. I've checked both dates. On 18 September Northgate Lettings tried to collect £750 by Direct Debit, but only £710.40 was available, so it was returned unpaid. That's what our letter of 19 September was about, and we didn't charge you a fee. Your salary arrived on 20 September, and on 21 September Northgate collected the £750 again. That payment went through and is on your statement with reference NL-9LIME-0442. So our records show September's £750 rent has been paid once. If you also make the manual £750 payment, Northgate would have £1,500 from you for September. Their text was sent on 22 September, the day after the payment, so their system may not have caught up yet. We can't see Northgate's own records or tell you whether they show you in arrears. Before you pay anything else, please contact Northgate using contact details you already have, such as your tenancy paperwork, and tell them the £750 was collected on 21 September with reference NL-9LIME-0442. If you're ever given new bank details for a payment by text, please check them with Northgate the same way first. There's no further collection from this Direct Debit scheduled before 18 October.'",
+      "instruction": "Reply in the in-app chat to Rina Patel: 'I've checked both dates. On 18 Sep Northgate's £750 collection was presented but your available balance was £710.40, so it was returned unpaid (\"refer to payer\") — that's what the 19 Sep letter is about, and no fee was charged. After your salary arrived on 20 Sep, Northgate re-presented the same collection on 21 Sep and £750 was paid from your account (ref NL-9LIME-0442). So you have not missed September's rent as far as your account is concerned, and no further collection is due before 18 Oct. What I can't see is whether Northgate's system has matched that 21 Sep payment yet — their text on 22 Sep may be based on the 18 Sep failure. Please don't make the manual payment yet. Contact Northgate using the phone number or email you already have from your tenancy agreement or their official website (not by replying to the text) and tell them the re-presented Direct Debit was paid on 21 Sep; you can show them the entry on your statement in the app. If they confirm they've received it, nothing more is needed. If Northgate tell you they did not send that text, please don't pay and let us know so we can look at it as a possible impersonation. Nothing needs changing on your Direct Debit.'",
       "rationale": {
-        "explanation": "The internal account view and the statement already show the 18 Sep return, the 19 Sep letter and the paid 21 Sep re-presentation, so they answer the customer's question without another mandate check. The agency's ledger and the source of the text are not shown in the evidence, so the reply sends her to Northgate through trusted contact details rather than declaring her paid up or the text fake.",
+        "explanation": "The internal account view and statement extract already prove the 18 Sep return and the 21 Sep paid re-presentation, so the customer's question can be answered now without a further lookup. The record proves the debit from her account only, so the reply must not assert the agency has reconciled it, and must steer her away from paying on the strength of an unverified text.",
         "evidence": [
           "event-001",
           "event-002",
-          "event-003",
           "attachments/statement_extract.csv",
           "attachments/unpaid_dd_letter_2026-09-19.pdf",
           "attachments/agency_text_screenshot.png.ocr.txt"
         ],
-        "criterion": "Use the supplied mandate and collection records directly, and separate a returned collection from a later paid re-presentation. Bank records do not show whether the merchant has recorded the payment, so do not claim that.",
+        "criterion": "State only the payment stage the supplied record proves (debit/paid on re-presentation, not recipient credit); a mandate marked active or a letter does not establish the later collection's outcome, and a third party's message is not evidence of a booked or missing payment. Verify unexpected payment requests via a known trusted contact route.",
         "source": "skill:scheduled-payments"
       },
-      "target": "Rina Patel, in-app chat (personal banking)",
+      "target": "Customer (in-app chat)",
       "arguments": {},
       "requires": [],
       "condition": null
@@ -90,20 +84,20 @@
   ],
   "escalate_if": [],
   "must_state": [
-    "The 18 Sep collection of £750 was returned unpaid because the available balance was £710.40. The 19 Sep letter is about that attempt.",
-    "On 21 Sep Northgate collected the £750 again and it was paid from her account. The bank's records show September's £750 has been paid once.",
-    "H&V charged no fee for the unpaid item, and no further collection is scheduled before 18 Oct.",
-    "If she also makes the manual £750 payment, she would have paid Northgate £1,500 for September.",
-    "The bank cannot confirm Northgate's own records or whether they show her in arrears. She should contact Northgate using contact details she already has (for example from her tenancy paperwork), not only by replying to the text, and quote the 21 Sep payment, reference NL-9LIME-0442.",
-    "The text was sent on 22 Sep, after the 21 Sep payment, so Northgate's system may not have been updated yet. This is a possible reason, not a confirmed one."
+    "The 18 Sep collection was returned unpaid because the available balance (£710.40) was below £750; the 19 Sep letter refers to that attempt; no fee was charged.",
+    "The originator re-presented the collection on 21 Sep and £750 was debited from the account (ref NL-9LIME-0442) after the 20 Sep salary credit.",
+    "The bank's record proves the money left her account on 21 Sep; it does not confirm the agency has matched it to her tenancy.",
+    "Do not make the manual payment yet: first confirm with Northgate using contact details she already trusts (tenancy agreement/official website), not by replying to the text, and show them the 21 Sep statement entry.",
+    "No bank action is needed; the mandate is unchanged and the next collection is not due before 18 Oct.",
+    "If Northgate's trusted contact says they did not send the text, do not pay and report it to the bank as a possible impersonation."
   ],
   "must_not": [
-    "Do not say Northgate has received, matched or recorded the 21 Sep payment, or that she is definitely not in arrears.",
-    "Do not say the agency text is a scam or fraudulent. Do not say it is definitely genuine either.",
-    "Do not tell her to make the manual payment, and do not promise a refund if she pays twice.",
-    "Do not say the 21 Sep payment can be reversed or that a Direct Debit Guarantee claim applies.",
-    "Do not tell her the bank will re-check the mandate or come back later, because the dates are already established.",
-    "Do not ask for PINs, passwords or one-time codes."
+    "Do not tell the customer to pay the agency manually.",
+    "Do not claim the agency has received or reconciled the 21 Sep payment.",
+    "Do not state that the text is definitely genuine or definitely a scam.",
+    "Do not promise a refund or Direct Debit Guarantee claim if she pays twice; a double payment to the agency would be a matter to resolve with the agency.",
+    "Do not suggest cancelling or amending the mandate; nothing indicates a mandate error.",
+    "Do not quote the agency's text contact details as a trusted route."
   ],
   "expected_disposition": "completed"
 }

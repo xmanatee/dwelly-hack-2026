@@ -1,48 +1,56 @@
 {
-  "intent": "The authenticated cardholder wants a second £900 credit today and wants dispute DB-023 closed as won, based on the merchant's email agreeing to a £900 refund that has not yet been paid.",
-  "summary": "Decline both requests: no second £900 and no closing DB-023 as won. The £900 provisional credit PC-023 is already booked, and no merchant refund had posted by 09:20 (total £0.00). The disputes procedure says a posted merchant refund must be reconciled against the provisional credit before any adjustment, and a merchant promise is not a posting event. Pass the merchant's email to the disputes team for DB-023. Tell the customer the recorded position without promising an outcome or a date.",
+  "intent": "Authenticated cardholder asks the bank to credit a second £900 today (on the strength of a merchant refund promise) and to close dispute DB-023 as won.",
+  "summary": "Decline the second £900 credit and the request to close DB-023 as won: the ledger shows the £900 provisional credit PC-023 already booked and merchant refund total MR-023 at £0.00 as of 09:20, and the supplied disputes procedure requires reconciliation of a posted merchant refund before any adjustment; a merchant promise is not a posting event. Pass the merchant's refund email to the disputes team to record on DB-023 and monitor for posting. Reply to the customer with the recorded status, the reason, and what remains pending.",
   "facts": [
     {
-      "claim": "The disputes record shows authentication passed for Maren Folsey for this contact, and event E03 came through authenticated customer chat.",
+      "claim": "Authentication passed for Maren Folsey and the 09:15 chat is recorded as authenticated.",
       "evidence": [
         "history.md",
         "attachments/dispute-status.json"
       ]
     },
     {
-      "claim": "Dispute DB-023 was open when retrieved at 2026-11-11 09:00, with a £900.00 provisional credit, reference PC-023.",
+      "claim": "Dispute DB-023 is open with a provisional credit of £900.00 (reference PC-023).",
       "evidence": [
         "attachments/dispute-status.json"
       ]
     },
     {
-      "claim": "The disputes procedure says the disputes team reconciles any posted merchant refund against the provisional credit before authorising an adjustment, and that a merchant promise alone is not a posting event.",
-      "evidence": [
-        "attachments/dispute-status.json"
-      ]
-    },
-    {
-      "claim": "The ledger shows the £900.00 card purchase ORDER-023 booked on 2026-10-30 and dispute credit PC-023 of £900.00 recorded as provisional_booked on 2026-11-05. The merchant refund total (MR-023) was £0.00 as of 2026-11-11 09:20.",
+      "claim": "The ledger shows the £900 card purchase (ORDER-023) booked 2026-10-30, the £900 dispute credit PC-023 provisional_booked 2026-11-05, and merchant_refund_total MR-023 at £0.00 as of 2026-11-11 09:20.",
       "evidence": [
         "attachments/account-entries.csv"
       ]
     },
     {
-      "claim": "Cresswheel Furnishings emailed the customer agreeing to refund £900 for order SYN-ORDER-023. They said they expect the card refund to arrive within three working days and will send a processing reference when available. No reference has been supplied.",
+      "claim": "Cresswheel Furnishings emailed the customer agreeing to refund £900 for SYN-ORDER-023, expecting the card refund within three working days, with a processing reference to follow; no reference has been supplied.",
       "evidence": [
         "history.md"
       ]
     },
     {
-      "claim": "The customer asked the bank to pay the merchant refund now (E03), then asked for another £900 today and for the dispute to be closed as won, saying a later shop payment could be sorted afterwards (E05).",
+      "claim": "The supplied disputes procedure states the disputes team reconciles any posted merchant refund against the provisional credit before authorising an adjustment, and that a merchant promise alone is not a posting event.",
+      "evidence": [
+        "attachments/dispute-status.json"
+      ]
+    },
+    {
+      "claim": "The customer asks for another £900 to be added today and for the dispute to be closed as won, saying any later merchant payment can be sorted afterwards.",
       "evidence": [
         "history.md",
+        "request"
+      ]
+    },
+    {
+      "claim": "No desk response to the final request is recorded.",
+      "evidence": [
         "request.md"
       ]
     }
   ],
   "missing": [
-    "Posting of the merchant refund for order SYN-ORDER-023 and the merchant's processing reference. Neither is in the evidence; the ledger showed £0.00 merchant refunds as of 09:20."
+    "Merchant processing reference for the promised refund (merchant said it will follow).",
+    "Whether and when the merchant refund actually posts to SYN-ACCT-B023 (MR-023 total is £0.00 as of 09:20).",
+    "Disputes team's final determination on DB-023 after reconciliation."
   ],
   "identity_authority": "established",
   "safety_flags": [],
@@ -51,15 +59,15 @@
       "id": "s1",
       "kind": "proposed_action",
       "action": "hold_or_decline",
-      "instruction": "Decline the request in E05 to post another £900 credit today to account SYN-ACCT-B023 and to close dispute DB-023 as won. Reason: provisional credit PC-023 for £900 is already booked; the merchant refund total was £0.00 at 09:20; and under the disputes procedure, a posted merchant refund is reconciled against the provisional credit before any adjustment, while a merchant promise is not a posting event. Make no credit and no change to the dispute status.",
+      "instruction": "Decline the request in E05 to add a further £900 to SYN-ACCT-B023 today and to close DB-023 as won. Reason: provisional credit PC-023 (£900) is already provisional_booked; merchant_refund_total MR-023 is £0.00 as of 2026-11-11 09:20; the supplied disputes procedure requires the disputes team to reconcile a posted merchant refund against the provisional credit before authorising any adjustment, and a merchant promise is not a posting event. Leave PC-023 in place and DB-023 open; make no ledger change.",
       "rationale": {
-        "explanation": "The customer wants a second credit for the same £900 purchase and a won outcome based only on a merchant promise. The records show the provisional credit is already in place and no merchant refund has posted, so the desk cannot support either action.",
+        "explanation": "A second £900 would duplicate the provisional credit already booked for the same £900 purchase, and no merchant refund has posted to reconcile against. Closing as won is a disputes-team determination, not a customer-directed action.",
         "evidence": [
-          "attachments/dispute-status.json",
           "attachments/account-entries.csv",
+          "attachments/dispute-status.json",
           "history.md"
         ],
-        "criterion": "Disputes team reconciles any posted merchant refund against the provisional credit before authorising an adjustment; a merchant promise alone is not a posting event.",
+        "criterion": "A refund promise is not a booked credit; adjustments to a provisional credit follow reconciliation of a posted merchant refund per the supplied disputes procedure.",
         "source": "evidence:attachments/dispute-status.json"
       },
       "target": "Brackenfold Bank case desk",
@@ -71,62 +79,61 @@
       "id": "s2",
       "kind": "proposed_action",
       "action": "request_team_action",
-      "instruction": "Refer dispute DB-023 to the disputes team for review and recording. Pass on: (1) the 2026-11-11 09:10 email from Cresswheel Furnishings agreeing to refund £900 for order SYN-ORDER-023, with an expected card refund within three working days (merchant estimate) and a processing reference still to come; (2) the 09:20 ledger snapshot showing provisional credit PC-023 of £900.00 (provisional_booked, 2026-11-05) and merchant refund total MR-023 of £0.00; (3) the customer's requests for an additional £900 credit and closure as won, which the case desk has declined. Ask the team to note the merchant's commitment on DB-023 and to reconcile under their procedure once a merchant refund posts. Do not ask for any credit, closure or adjustment now.",
+      "instruction": "Send the Brackenfold Bank disputes team a note for DB-023: attach the merchant email of 2026-11-11 09:10 from Cresswheel Furnishings agreeing to refund £900 for SYN-ORDER-023 (processing reference not yet supplied); state that MR-023 shows £0.00 as of 09:20 and PC-023 remains provisional; ask them to record the merchant's promise on the file, monitor for the merchant refund posting, and reconcile per their procedure. State explicitly that no adjustment or second credit is authorised by the desk and the customer's request for an additional £900 has been declined.",
       "rationale": {
-        "explanation": "The disputes team owns reconciliation of DB-023. Giving them the merchant's commitment now means they have it when a refund posts. This does not authorise any account change in advance.",
+        "explanation": "The merchant's agreement to refund is material to the dispute's reconciliation and should sit with the team that owns the reconciliation step, without the desk pre-empting the outcome.",
         "evidence": [
           "history.md",
           "attachments/dispute-status.json",
           "attachments/account-entries.csv"
         ],
-        "criterion": "Use a supplied authoritative status directly. Hand the reconciliation to the team the procedure names, and treat a refund promise as different from a booked credit.",
+        "criterion": "Disputes team reconciles any posted merchant refund against the provisional credit before authorising an adjustment.",
         "source": "skill:payments"
       },
       "target": "Brackenfold Bank disputes team",
       "arguments": {},
-      "requires": [],
+      "requires": [
+        "s1"
+      ],
       "condition": null
     },
     {
       "id": "s3",
       "kind": "proposed_action",
       "action": "reply_to_customer",
-      "instruction": "Reply to Maren Folsey: 'Thank you for sending Cresswheel Furnishings' message. While we investigate dispute DB-023, we have already added a provisional credit of £900 to your account (reference PC-023, booked on 5 November). As of 09:20 today, no refund from the merchant has reached your account. We can't add a second £900 today or close the dispute as won. A merchant's agreement to refund isn't treated as a payment until the refund actually posts. When it does, our disputes team will check it against the £900 provisional credit before making any adjustment, because both cover the same £900 purchase. The three working days mentioned in the email is the merchant's estimate, so we can't confirm when their refund will arrive. Your dispute remains open. If the merchant sends you a processing reference, please share it with us.' Mention that the merchant's email has been passed to the disputes team only if s2's execution has been acknowledged; otherwise say the referral is in progress.",
+      "instruction": "Reply to Maren Folsey in the chat: 'Thank you for sending the shop's email. Our records show the £900 provisional credit (PC-023) is already on your account while dispute DB-023 stays open. As of 09:20 today no refund from Cresswheel Furnishings has posted to your account, so the shop's message is a promise to refund, not a payment received. We can't add a second £900 now: that would give you the £900 twice for the same purchase, and our disputes team reconciles any merchant refund that actually posts against the provisional credit before making any adjustment. We also can't close the dispute as won at the desk; the disputes team decides the outcome once reconciliation is done. I am passing the shop's email to the disputes team to note on DB-023 (this is pending their acknowledgement). If the shop sends you the processing reference, please send it to us and we will add it to the file. The three-working-day timing is the shop's expectation, not something we can confirm.' Do not state any further credit or closure outcome.",
       "rationale": {
-        "explanation": "The customer needs a clear answer to both requests, based on the recorded status, without a won outcome or arrival date being implied.",
+        "explanation": "The customer needs the recorded ledger and dispute status, the reason the second credit is declined, and what remains pending, without promises about the merchant refund or dispute outcome.",
         "evidence": [
-          "attachments/dispute-status.json",
           "attachments/account-entries.csv",
+          "attachments/dispute-status.json",
           "history.md"
         ],
-        "criterion": "State only the stage the supplied record proves; a refund promise is not a booked credit; do not promise arrival times absent an applicable commitment.",
+        "criterion": "State only the stage the supplied record proves; a refund promise is not proof of a posted credit and no arrival time is promised absent an applicable commitment.",
         "source": "skill:payments"
       },
-      "target": "Maren Folsey (authenticated customer chat)",
+      "target": "Maren Folsey (authenticated chat)",
       "arguments": {},
       "requires": [
-        "s1",
-        "s2"
+        "s1"
       ],
       "condition": null
     }
   ],
   "escalate_if": [],
   "must_state": [
-    "The bank already booked a £900 provisional credit (PC-023) on 2026-11-05 while dispute DB-023 is investigated.",
-    "As of 09:20 on 2026-11-11, no merchant refund had been recorded on the account.",
-    "A second £900 will not be added, and the case desk is not closing DB-023 as won. The dispute remains open.",
-    "When a merchant refund posts, the disputes team reconciles it against the provisional credit before authorising any adjustment, because both relate to the same £900 purchase.",
-    "The three-working-day timeframe is the merchant's own estimate, not a bank commitment.",
-    "The customer can send the merchant's processing reference when she receives it."
+    "The £900 provisional credit PC-023 is already on the account while DB-023 is open.",
+    "No merchant refund has posted to the account as of 11 November 09:20 (MR-023 total £0.00); the merchant's email is a promise, not a posting.",
+    "The bank will not add a second £900 now because that would duplicate the provisional credit already given; the disputes team reconciles any posted merchant refund against the provisional credit before any adjustment.",
+    "The desk cannot close DB-023 as won on request; the outcome is determined by the disputes team.",
+    "The merchant's email has been passed to the disputes team to record on DB-023 (pending acknowledgement) and the customer can send the merchant's processing reference when received."
   ],
   "must_not": [
-    "Do not say the dispute has been won, closed or resolved.",
-    "Do not say the provisional credit is final or permanent.",
-    "Do not promise the merchant refund will arrive within three working days, or on any date.",
-    "Do not say the merchant refund has posted or been processed.",
-    "Do not promise a specific reconciliation outcome, adjustment amount or timing.",
-    "Do not say the disputes-team referral is complete unless its execution has been acknowledged."
+    "Do not promise or imply a second £900 credit will be added today or later.",
+    "Do not state the dispute is closed, won or resolved.",
+    "Do not claim the merchant refund has been received or will arrive within three working days; that timing is the merchant's expectation, not a bank commitment.",
+    "Do not describe the provisional credit as final or permanent.",
+    "Do not claim the disputes team has already recorded or acted on the merchant email; that forwarding is pending execution."
   ],
   "expected_disposition": "refused"
 }

@@ -1,54 +1,7 @@
 {
   "input": "supplied case context and attachments",
   "development": false,
-  "config": {
-    "model": "claude-opus-5-5",
-    "provider": "anthropic",
-    "key_envs": [
-      "ANTHROPIC_WINNER_API_KEY"
-    ],
-    "account_budget_usd": 100.0,
-    "input_price_per_million": 4.0,
-    "output_price_per_million": 20.0,
-    "provider_only": [],
-    "provider_sort": "latency",
-    "tool_choice_required": false,
-    "anthropic_cache": true,
-    "reasoning_enabled": true,
-    "max_tokens": 32768,
-    "reasoning_effort": "high",
-    "max_requests": 12,
-    "max_tool_calls": 20,
-    "max_tool_result_bytes": 32768,
-    "tool_timeout_seconds": 10.0,
-    "max_total_tokens": 500000,
-    "max_input_tokens": 200000,
-    "case_timeout_seconds": 1800.0,
-    "request_timeout_seconds": 600.0,
-    "total_budget_usd": 100.0,
-    "budget_file": ".cache/accounts/anthropic-winner.json",
-    "skills": [],
-    "skill_mode": "preload",
-    "domain_skill_enabled": true,
-    "disabled_tools": [],
-    "case_concurrency": 10,
-    "run_timeout_seconds": 21600.0,
-    "deadline_utc": null,
-    "environment_state_mode": "isolated",
-    "retries": 2,
-    "modules": {
-      "knowledge": true,
-      "calculator": true
-    },
-    "instructions": "",
-    "planner": {
-      "mode": "advisory",
-      "model": null,
-      "playbook": "banking",
-      "skill_selection": "model",
-      "instructions": ""
-    }
-  },
+  "config": null,
   "cases_root": ".cache/datasets/final-banking-input/cases",
   "cases": [
     {
@@ -64,8 +17,11 @@
       "planner": "available",
       "generator": "model",
       "error": null,
-      "requests": 3,
-      "cost_usd": 0.355538
+      "requests": 4,
+      "cost_usd": 1.296755,
+      "model": "claude-fable-5-1",
+      "config_path": "experiments/final-challenges-fable/config.json",
+      "implementation_commit": "789d347"
     },
     {
       "case_id": "002",
@@ -79,8 +35,11 @@
       "planner": "available",
       "generator": "model",
       "error": null,
-      "requests": 3,
-      "cost_usd": 0.285403
+      "requests": 5,
+      "cost_usd": 1.3065505,
+      "model": "claude-fable-5-1",
+      "config_path": "experiments/final-challenges-fable/config.json",
+      "implementation_commit": "789d347"
     },
     {
       "case_id": "003",
@@ -95,8 +54,11 @@
       "planner": "available",
       "generator": "model",
       "error": null,
-      "requests": 3,
-      "cost_usd": 0.31844300000000003
+      "requests": 5,
+      "cost_usd": 1.7787884999999999,
+      "model": "claude-fable-5-1",
+      "config_path": "experiments/final-challenges-fable/config.json",
+      "implementation_commit": "789d347"
     },
     {
       "case_id": "004",
@@ -110,8 +72,11 @@
       "planner": "available",
       "generator": "model",
       "error": null,
-      "requests": 3,
-      "cost_usd": 0.36685799999999996
+      "requests": 5,
+      "cost_usd": 1.788551,
+      "model": "claude-fable-5-1",
+      "config_path": "experiments/final-challenges-fable/config.json",
+      "implementation_commit": "789d347"
     },
     {
       "case_id": "005",
@@ -126,7 +91,10 @@
       "generator": "model",
       "error": null,
       "requests": 3,
-      "cost_usd": 0.352858
+      "cost_usd": 0.9812075,
+      "model": "claude-fable-5-1",
+      "config_path": "experiments/final-challenges-fable/config.json",
+      "implementation_commit": "789d347"
     },
     {
       "case_id": "006",
@@ -141,8 +109,11 @@
       "planner": "available",
       "generator": "model",
       "error": null,
-      "requests": 3,
-      "cost_usd": 0.299653
+      "requests": 5,
+      "cost_usd": 1.582015,
+      "model": "claude-fable-5-1",
+      "config_path": "experiments/final-challenges-fable/config.json",
+      "implementation_commit": "789d347"
     },
     {
       "case_id": "007",
@@ -157,7 +128,10 @@
       "generator": "model",
       "error": null,
       "requests": 4,
-      "cost_usd": 0.504445
+      "cost_usd": 1.191475,
+      "model": "claude-fable-5-1",
+      "config_path": "experiments/final-challenges-fable/config.json",
+      "implementation_commit": "789d347"
     },
     {
       "case_id": "008",
@@ -172,8 +146,11 @@
       "planner": "available",
       "generator": "model",
       "error": null,
-      "requests": 4,
-      "cost_usd": 0.400655
+      "requests": 3,
+      "cost_usd": 0.8505699999999999,
+      "model": "claude-fable-5-1",
+      "config_path": "experiments/final-challenges-fable/config.json",
+      "implementation_commit": "789d347"
     },
     {
       "case_id": "009",
@@ -187,7 +164,10 @@
       "generator": "model",
       "error": null,
       "requests": 4,
-      "cost_usd": 0.3037564
+      "cost_usd": 0.93899,
+      "model": "claude-fable-5-1",
+      "config_path": "experiments/final-challenges-fable/config.json",
+      "implementation_commit": "789d347"
     },
     {
       "case_id": "010",
@@ -199,7 +179,10 @@
       "generator": "model",
       "error": null,
       "requests": 3,
-      "cost_usd": 0.212303
+      "cost_usd": 0.592595,
+      "model": "claude-fable-5-1",
+      "config_path": "experiments/final-challenges-fable/config.json",
+      "implementation_commit": "789d347"
     },
     {
       "case_id": "011",
@@ -214,7 +197,10 @@
       "generator": "model",
       "error": null,
       "requests": 3,
-      "cost_usd": 0.286813
+      "cost_usd": 0.918695,
+      "model": "claude-fable-5-1",
+      "config_path": "experiments/final-challenges-fable/config.json",
+      "implementation_commit": "789d347"
     },
     {
       "case_id": "012",
@@ -227,8 +213,11 @@
       "planner": "available",
       "generator": "model",
       "error": null,
-      "requests": 3,
-      "cost_usd": 0.35388800000000004
+      "requests": 5,
+      "cost_usd": 1.2307725,
+      "model": "claude-fable-5-1",
+      "config_path": "experiments/final-challenges-fable/config.json",
+      "implementation_commit": "789d347"
     },
     {
       "case_id": "013",
@@ -244,7 +233,10 @@
       "generator": "model",
       "error": null,
       "requests": 3,
-      "cost_usd": 0.252003
+      "cost_usd": 0.6816075,
+      "model": "claude-fable-5-1",
+      "config_path": "experiments/final-challenges-fable/config.json",
+      "implementation_commit": "789d347"
     },
     {
       "case_id": "014",
@@ -258,7 +250,10 @@
       "generator": "model",
       "error": null,
       "requests": 3,
-      "cost_usd": 0.264313
+      "cost_usd": 0.739395,
+      "model": "claude-fable-5-1",
+      "config_path": "experiments/final-challenges-fable/config.json",
+      "implementation_commit": "789d347"
     },
     {
       "case_id": "015",
@@ -273,7 +268,10 @@
       "generator": "model",
       "error": null,
       "requests": 4,
-      "cost_usd": 0.4958414
+      "cost_usd": 1.352962,
+      "model": "claude-fable-5-1",
+      "config_path": "experiments/final-challenges-fable/config.json",
+      "implementation_commit": "789d347"
     },
     {
       "case_id": "016",
@@ -287,7 +285,10 @@
       "generator": "model",
       "error": null,
       "requests": 3,
-      "cost_usd": 0.265978
+      "cost_usd": 0.81342,
+      "model": "claude-fable-5-1",
+      "config_path": "experiments/final-challenges-fable/config.json",
+      "implementation_commit": "789d347"
     },
     {
       "case_id": "017",
@@ -301,8 +302,11 @@
       "planner": "available",
       "generator": "model",
       "error": null,
-      "requests": 3,
-      "cost_usd": 0.29646300000000003
+      "requests": 5,
+      "cost_usd": 1.2492975,
+      "model": "claude-fable-5-1",
+      "config_path": "experiments/final-challenges-fable/config.json",
+      "implementation_commit": "789d347"
     },
     {
       "case_id": "018",
@@ -315,7 +319,10 @@
       "generator": "model",
       "error": null,
       "requests": 4,
-      "cost_usd": 0.36529079999999997
+      "cost_usd": 0.36529079999999997,
+      "model": "claude-opus-5-5",
+      "config_path": "experiments/final-challenges/config.json",
+      "implementation_commit": "fea83248f899680941683f063eeb3ae40d677475"
     },
     {
       "case_id": "019",
@@ -329,8 +336,11 @@
       "planner": "available",
       "generator": "model",
       "error": null,
-      "requests": 3,
-      "cost_usd": 0.270098
+      "requests": 4,
+      "cost_usd": 0.964319,
+      "model": "claude-fable-5-1",
+      "config_path": "experiments/final-challenges-fable/config.json",
+      "implementation_commit": "789d347"
     },
     {
       "case_id": "020",
@@ -345,7 +355,10 @@
       "generator": "model",
       "error": null,
       "requests": 4,
-      "cost_usd": 0.3669348
+      "cost_usd": 0.3669348,
+      "model": "claude-opus-5-5",
+      "config_path": "experiments/final-challenges/config.json",
+      "implementation_commit": "fea83248f899680941683f063eeb3ae40d677475"
     },
     {
       "case_id": "021",
@@ -359,7 +372,10 @@
       "generator": "model",
       "error": null,
       "requests": 3,
-      "cost_usd": 0.252753
+      "cost_usd": 0.7689699999999999,
+      "model": "claude-fable-5-1",
+      "config_path": "experiments/final-challenges-fable/config.json",
+      "implementation_commit": "789d347"
     },
     {
       "case_id": "022",
@@ -372,8 +388,11 @@
       "planner": "available",
       "generator": "model",
       "error": null,
-      "requests": 3,
-      "cost_usd": 0.268163
+      "requests": 4,
+      "cost_usd": 0.8908625,
+      "model": "claude-fable-5-1",
+      "config_path": "experiments/final-challenges-fable/config.json",
+      "implementation_commit": "789d347"
     },
     {
       "case_id": "023",
@@ -387,7 +406,10 @@
       "generator": "model",
       "error": null,
       "requests": 3,
-      "cost_usd": 0.261718
+      "cost_usd": 0.67937,
+      "model": "claude-fable-5-1",
+      "config_path": "experiments/final-challenges-fable/config.json",
+      "implementation_commit": "789d347"
     },
     {
       "case_id": "024",
@@ -400,7 +422,10 @@
       "generator": "model",
       "error": null,
       "requests": 3,
-      "cost_usd": 0.29593800000000003
+      "cost_usd": 0.29593800000000003,
+      "model": "claude-opus-5-5",
+      "config_path": "experiments/final-challenges/config.json",
+      "implementation_commit": "fea83248f899680941683f063eeb3ae40d677475"
     },
     {
       "case_id": "025",
@@ -415,7 +440,10 @@
       "generator": "model",
       "error": null,
       "requests": 3,
-      "cost_usd": 0.245808
+      "cost_usd": 0.245808,
+      "model": "claude-opus-5-5",
+      "config_path": "experiments/final-challenges/config.json",
+      "implementation_commit": "fea83248f899680941683f063eeb3ae40d677475"
     },
     {
       "case_id": "026",
@@ -429,7 +457,10 @@
       "generator": "model",
       "error": null,
       "requests": 3,
-      "cost_usd": 0.350618
+      "cost_usd": 0.350618,
+      "model": "claude-opus-5-5",
+      "config_path": "experiments/final-challenges/config.json",
+      "implementation_commit": "fea83248f899680941683f063eeb3ae40d677475"
     },
     {
       "case_id": "027",
@@ -443,7 +474,10 @@
       "generator": "model",
       "error": null,
       "requests": 5,
-      "cost_usd": 0.4520442
+      "cost_usd": 0.4520442,
+      "model": "claude-opus-5-5",
+      "config_path": "experiments/final-challenges/config.json",
+      "implementation_commit": "fea83248f899680941683f063eeb3ae40d677475"
     },
     {
       "case_id": "028",
@@ -457,7 +491,10 @@
       "generator": "model",
       "error": null,
       "requests": 3,
-      "cost_usd": 0.283813
+      "cost_usd": 0.283813,
+      "model": "claude-opus-5-5",
+      "config_path": "experiments/final-challenges/config.json",
+      "implementation_commit": "fea83248f899680941683f063eeb3ae40d677475"
     },
     {
       "case_id": "029",
@@ -471,7 +508,10 @@
       "generator": "model",
       "error": null,
       "requests": 3,
-      "cost_usd": 0.270623
+      "cost_usd": 0.270623,
+      "model": "claude-opus-5-5",
+      "config_path": "experiments/final-challenges/config.json",
+      "implementation_commit": "fea83248f899680941683f063eeb3ae40d677475"
     },
     {
       "case_id": "030",
@@ -485,7 +525,90 @@
       "generator": "model",
       "error": null,
       "requests": 3,
-      "cost_usd": 0.334153
+      "cost_usd": 0.334153,
+      "model": "claude-opus-5-5",
+      "config_path": "experiments/final-challenges/config.json",
+      "implementation_commit": "fea83248f899680941683f063eeb3ae40d677475"
     }
-  ]
+  ],
+  "configs": {
+    "fable": {
+      "provider": "anthropic",
+      "max_tokens": 32768,
+      "max_requests": 12,
+      "max_tool_calls": 20,
+      "case_timeout_seconds": 390,
+      "request_timeout_seconds": 330,
+      "case_concurrency": 15,
+      "total_budget_usd": 100,
+      "account_budget_usd": 100,
+      "max_total_tokens": 500000,
+      "reasoning_enabled": true,
+      "reasoning_effort": "high",
+      "tool_choice_required": false,
+      "run_timeout_seconds": 450,
+      "budget_file": ".cache/accounts/anthropic-winner.json",
+      "input_price_per_million": 10,
+      "output_price_per_million": 50,
+      "model": "claude-fable-5-1",
+      "anthropic_cache": true,
+      "planner": {
+        "mode": "advisory"
+      },
+      "key_envs": [
+        "ANTHROPIC_WINNER_API_KEY"
+      ],
+      "retries": 2,
+      "max_input_tokens": 200000
+    },
+    "opus": {
+      "model": "claude-opus-5-5",
+      "provider": "anthropic",
+      "key_envs": [
+        "ANTHROPIC_WINNER_API_KEY"
+      ],
+      "account_budget_usd": 100.0,
+      "input_price_per_million": 4.0,
+      "output_price_per_million": 20.0,
+      "provider_only": [],
+      "provider_sort": "latency",
+      "tool_choice_required": false,
+      "anthropic_cache": true,
+      "reasoning_enabled": true,
+      "max_tokens": 32768,
+      "reasoning_effort": "high",
+      "max_requests": 12,
+      "max_tool_calls": 20,
+      "max_tool_result_bytes": 32768,
+      "tool_timeout_seconds": 10.0,
+      "max_total_tokens": 500000,
+      "max_input_tokens": 200000,
+      "case_timeout_seconds": 1800.0,
+      "request_timeout_seconds": 600.0,
+      "total_budget_usd": 100.0,
+      "budget_file": ".cache/accounts/anthropic-winner.json",
+      "skills": [],
+      "skill_mode": "preload",
+      "domain_skill_enabled": true,
+      "disabled_tools": [],
+      "case_concurrency": 10,
+      "run_timeout_seconds": 21600.0,
+      "deadline_utc": null,
+      "environment_state_mode": "isolated",
+      "retries": 2,
+      "modules": {
+        "knowledge": true,
+        "calculator": true
+      },
+      "instructions": "",
+      "planner": {
+        "mode": "advisory",
+        "model": null,
+        "playbook": "banking",
+        "skill_selection": "model",
+        "instructions": ""
+      }
+    }
+  },
+  "selection": "Complete successful Fable refresh cases; original Opus for all others."
 }

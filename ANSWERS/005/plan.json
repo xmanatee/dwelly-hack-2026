@@ -1,74 +1,77 @@
 {
-  "intent": "The verified customer wants the 28 Sep £2,525 Oakfield Direct Debit stopped, refunds of the 24 Aug and 23 Sep £875 collections, and a refund of the 24 Sep £6.50 unarranged overdraft fee.",
-  "summary": "ID&V passed. At the customer's request, ask Direct Debit operations to cancel the Oakfield mandate OPM-78COOMBE-3312 and stop the £2,525 collection due 28 Sep if it can still be stopped. Log a Direct Debit Guarantee claim for both £875 collections so they can be assessed. Register a complaint about the £6.50 fee. Ask whether Oakfield sent advance notices. Tell the customer all of this is pending: there is no promise that Monday's collection will be stopped or that any refund will be paid.",
+  "intent": "Customer (ID&V passed) wants the Oakfield PM Direct Debit stopped before Monday's £2,525 collection, refunds of the 24 Aug and 23 Sep £875 collections, and the £6.50 unarranged overdraft fee reversed.",
+  "summary": "Cancel mandate OPM-78COOMBE-3312 now on the customer's instruction and ask the payments team to stop/return the scheduled 28 Sep £2,525 collection (received 24 Sep; stop not guaranteed). Raise a Direct Debit Guarantee indemnity claim for the 23 Sep £875 collected after the 31 Aug tenancy end; decline to raise one for 24 Aug (collected during active tenancy, no error identified). Register a complaint covering the fee and collections. Ask the customer whether she received advance notices for the 23 and 28 Sep collections. No refund, stop or fee reversal is confirmed.",
   "facts": [
     {
-      "claim": "The customer passed ID&V on the personal banking phone line.",
+      "claim": "Customer passed ID&V on the personal banking phone call and is the account holder of the payer account.",
       "evidence": [
-        "event-002"
+        "event-002",
+        "event-001"
       ]
     },
     {
-      "claim": "The account is a personal current account with no arranged overdraft. The active monthly Direct Debit mandate is H&V COLLECT / OAKFIELD PM (since Feb 2025), ref OPM-78COOMBE-3312, SUN H&V COLLECT 771902.",
-      "evidence": [
-        "event-001",
-        "attachments/incoming_dd_instruction.json"
-      ]
-    },
-    {
-      "claim": "£875.00 was collected on 24 Aug 2026 and £875.00 on 23 Sep 2026 under mandate OPM-78COOMBE-3312.",
+      "claim": "Direct Debit mandate H&V COLLECT / OAKFIELD PM (ref OPM-78COOMBE-3312) has been active since Feb 2025, monthly £875; the account has no arranged overdraft.",
       "evidence": [
         "event-001",
         "attachments/statement_extract.csv"
       ]
     },
     {
-      "claim": "The 23 Sep collection took the balance to -£412.90. A £6.50 unarranged overdraft daily fee was applied on 24 Sep, taking the balance to -£419.40.",
+      "claim": "£875 was collected on 24 Aug 2026 and £875 on 23 Sep 2026; the 23 Sep collection took the balance to −£412.90 and a £6.50 unarranged overdraft daily fee was applied on 24 Sep.",
       "evidence": [
         "attachments/statement_extract.csv",
         "event-001"
       ]
     },
     {
-      "claim": "A £2,525.00 collection with narrative 'FINAL ACCOUNT 78 COOMBE RD' is scheduled for 28 Sep 2026. The bank received the instruction on 24 Sep 2026 at 02:10:44Z and its status is 'scheduled'.",
+      "claim": "A £2,525.00 collection narrated 'FINAL ACCOUNT 78 COOMBE RD' is scheduled for 28 Sep 2026; the instruction was received by the bank 2026-09-24T02:10:44Z and is in status 'scheduled'.",
       "evidence": [
         "attachments/incoming_dd_instruction.json",
         "event-001"
       ]
     },
     {
-      "claim": "A £1,019.40 transfer from savings posted on 25 Sep and the available balance is now £600.00.",
-      "evidence": [
-        "event-001",
-        "attachments/statement_extract.csv"
-      ]
-    },
-    {
-      "claim": "In an email dated 1 Sep 2026, Oakfield confirmed that the tenancy at 78 Coombe Road ended on 31 Aug 2026. It said the check-out report would follow and the deposit would be dealt with after that.",
+      "claim": "The agency's own email dated 1 Sep 2026 confirms the tenancy at 78 Coombe Road ended on 31 Aug 2026, with the check-out report and deposit still to follow.",
       "evidence": [
         "attachments/agency_move_out_confirmation.eml"
       ]
     },
     {
-      "claim": "The bank cannot see whether Oakfield sent advance notices for the September collections.",
+      "claim": "The bank cannot see whether advance notices were sent for the September collections; the customer has not yet said whether she received any.",
       "evidence": [
-        "event-001"
+        "event-001",
+        "event-002",
+        "event-004"
       ]
     },
     {
-      "claim": "The customer says the agency told her the collection was 'already submitted' and could not be cancelled on their side. She wants both £875 collections refunded, Monday's collection stopped and the fee refunded.",
+      "claim": "After a £1,019.40 transfer from savings on 25 Sep the available balance is £600.00, less than the £2,525 scheduled collection.",
       "evidence": [
-        "event-002",
-        "event-004"
+        "attachments/statement_extract.csv",
+        "event-001",
+        "event-002"
+      ]
+    },
+    {
+      "claim": "The customer states the agency told her the collection is 'already submitted' and cannot be cancelled on their side; this is a customer-reported statement, not a bank record.",
+      "evidence": [
+        "event-002"
+      ]
+    },
+    {
+      "claim": "The customer requests refunds of the August and September collections, stopping Monday's collection and reversal of the overdraft fee, stating the fee is not her fault.",
+      "evidence": [
+        "event-004",
+        "request"
       ]
     }
   ],
   "missing": [
-    "Whether the 28 Sep £2,525 collection can still be stopped once the mandate is cancelled (the instruction is already with the bank)",
-    "Whether Oakfield sent advance notices for the 23 Sep and 28 Sep collections, and when",
-    "Which rent period each £875 collection covered (the 24 Aug collection fell before the 31 Aug tenancy end)",
-    "What the £2,525 'final account' is made up of (the check-out report and deposit were still pending at 1 Sep)",
-    "The outcome of the Guarantee claim assessment and of the fee complaint"
+    "Whether the customer received advance notice from Oakfield PM for the 23 Sep £875 and 28 Sep £2,525 collections (bank cannot see originator notices)",
+    "Whether the 28 Sep collection can still be stopped/returned by the bank or is already in flight (payments team outcome)",
+    "Any specific error the customer alleges in the 24 Aug £875 collection (it fell within the active tenancy)",
+    "Outcome of the Direct Debit indemnity claim for the 23 Sep collection and of the complaint review, including any fee decision",
+    "What the agency's £2,525 'final account' comprises (a matter between customer and agency, not visible to the bank)"
   ],
   "identity_authority": "established",
   "safety_flags": [
@@ -79,19 +82,19 @@
       "id": "s1",
       "kind": "proposed_action",
       "action": "request_team_action",
-      "instruction": "At the verified customer's request, cancel Direct Debit mandate OPM-78COOMBE-3312 (originator Oakfield Property Management Ltd, SUN H&V COLLECT 771902, payer account SYN-SC-05-1 / SYN-ACCT-05-1). Stop the scheduled £2,525.00 collection dated 28 Sep 2026 ('FINAL ACCOUNT 78 COOMBE RD', instruction received 24 Sep 2026 02:10:44Z) if it can still be stopped. Report back whether the mandate is cancelled and whether the 28 Sep collection was stopped or remains in process.",
+      "instruction": "On the ID&V-passed instruction of account holder Gabriela Petrova (phone, 25 Sep 2026), cancel Direct Debit mandate OPM-78COOMBE-3312 (originator OAKFIELD PROPERTY MANAGEMENT LTD, SUN H&V COLLECT 771902) effective immediately, and stop/return unpaid the scheduled collection of £2,525.00 dated 2026-09-28 (received 2026-09-24T02:10:44Z, status 'scheduled'). Report back whether the collection was stopped before processing or is already in flight and will debit.",
       "rationale": {
-        "explanation": "The customer, who passed ID&V, asked for Monday's collection to be stopped after her tenancy ended on 31 Aug. The instruction is already with the bank and marked scheduled, so whether it can be stopped has to be confirmed rather than assumed.",
+        "explanation": "The customer has explicitly instructed that Monday's collection be stopped; she is verified and is the payer. The instruction was received 24 Sep, so a stop is possible but not certain and must be reported, not assumed.",
         "evidence": [
           "event-002",
           "event-004",
           "attachments/incoming_dd_instruction.json",
-          "attachments/agency_move_out_confirmation.eml"
+          "event-001"
         ],
-        "criterion": "A verified payer may cancel a Direct Debit at the bank. Collections already in process may not be stoppable, so cancellation must not be promised.",
+        "criterion": "A payer can cancel a Direct Debit with their bank; an already-received collection may be in flight, so cancellation must not be promised as certain.",
         "source": "skill:scheduled-payments"
       },
-      "target": "Direct Debit operations (Harrow & Vale Bank plc)",
+      "target": "Payments / Direct Debit operations team (Harrow & Vale Bank plc)",
       "arguments": {},
       "requires": [],
       "condition": null
@@ -99,20 +102,18 @@
     {
       "id": "s2",
       "kind": "proposed_action",
-      "action": "request_team_action",
-      "instruction": "Log a Direct Debit Guarantee claim for Gabriela Petrova on mandate OPM-78COOMBE-3312 covering: (a) £875.00 collected 23 Sep 2026, after Oakfield's written confirmation (email of 1 Sep 2026) that the tenancy ended on 31 Aug 2026, with advance notice status unknown to the bank; and (b) £875.00 collected 24 Aug 2026, which the customer also disputes and which was collected before the tenancy end date. Attach the agency email, the statement extract and the 24 Sep instruction record. Ask the team to assess both items under the Guarantee's error criteria, including advance notice and whether each collection was properly due, and to record the outcome.",
+      "action": "ask_customer",
+      "instruction": "Ask: 'Did Oakfield PM send you any advance notice (letter or email) before the £875 taken on 23 September or the £2,525 due on Monday 28 September? If so, when, and what amount and date did it state?'",
       "rationale": {
-        "explanation": "The customer asks for refunds of both collections. The 23 Sep one came after the confirmed tenancy end and advance notice is unknown. The 24 Aug one came during the tenancy, and no error is evident from the records so far. Both should be assessed rather than decided here.",
+        "explanation": "The bank cannot see originator advance notices; whether notice was given and matched the collection is the key fact for the Guarantee error basis on both September collections.",
         "evidence": [
           "event-001",
-          "event-004",
-          "attachments/statement_extract.csv",
-          "attachments/agency_move_out_confirmation.eml"
+          "event-002"
         ],
-        "criterion": "The Guarantee covers errors in Direct Debit set-up or collection. It must be kept separate from cancelling future collections, and a refund must not be promised for every dispute with a supplier.",
+        "criterion": "A Guarantee claim should identify the error (e.g. no/incorrect advance notice, wrong amount or date) rather than treat every supplier dispute as a refundable error.",
         "source": "skill:scheduled-payments"
       },
-      "target": "Direct Debit Guarantee / indemnity claims team",
+      "target": "Customer (current phone call)",
       "arguments": {},
       "requires": [],
       "condition": null
@@ -121,18 +122,19 @@
       "id": "s3",
       "kind": "proposed_action",
       "action": "request_team_action",
-      "instruction": "Register a complaint from Gabriela Petrova about the £6.50 unarranged overdraft fee applied on 24 Sep 2026. The fee followed the 23 Sep £875 Oakfield collection, which took the balance to -£412.90 on an account with no arranged overdraft. The customer says it was not her fault and wants the fee refunded. Note the related Guarantee claim (s2) and the request to stop the 28 Sep collection (s1). Record her wider dissatisfaction that she wants all the Oakfield collections refunded.",
+      "instruction": "Raise a Direct Debit Guarantee indemnity claim for the collection of £875.00 on 2026-09-23 under mandate OPM-78COOMBE-3312 (OAKFIELD PROPERTY MANAGEMENT LTD). Basis: the customer disputes the collection as not due; the originator's own email of 1 Sep 2026 confirms the tenancy at 78 Coombe Road ended 31 Aug 2026; the bank cannot see whether advance notice was sent. Attach agency_move_out_confirmation.eml and statement_extract.csv; add the customer's answer on advance notice when received. Also note the £2,525 collection due 28 Sep so a further claim can be raised if it debits despite s1. Record the outcome; no refund is confirmed.",
       "rationale": {
-        "explanation": "The customer is unhappy with a bank fee and wants it refunded, which is a complaint seeking redress. It should be handled separately from the Direct Debit work.",
+        "explanation": "The 23 Sep collection post-dates the tenancy end confirmed by the originator, giving a specific, evidenced basis for a claim; the claims team assesses it rather than the planner deciding eligibility.",
         "evidence": [
-          "event-004",
           "attachments/statement_extract.csv",
-          "event-001"
+          "attachments/agency_move_out_confirmation.eml",
+          "event-001",
+          "event-004"
         ],
-        "criterion": "Register the complaint as its own piece of work alongside the operational query. Do not promise redress before review.",
-        "source": "skill:complaints-rights"
+        "criterion": "Keep the Guarantee claim for a collected payment separate from cancelling future instructions; identify the error and route without promising a refund.",
+        "source": "skill:scheduled-payments"
       },
-      "target": "Complaints team (Harrow & Vale Bank plc)",
+      "target": "Direct Debit indemnity claims team (Harrow & Vale Bank plc)",
       "arguments": {},
       "requires": [],
       "condition": null
@@ -140,15 +142,18 @@
     {
       "id": "s4",
       "kind": "proposed_action",
-      "action": "ask_customer",
-      "instruction": "Ask: 'Did Oakfield send you any advance notice of the £875 taken on 23 September or the £2,525 due on 28 September? If so, when did you get it, and could you send us a copy?'",
+      "action": "hold_or_decline",
+      "instruction": "Decline, on current evidence, to raise a Guarantee claim for the £875.00 collected on 2026-08-24. Reason: it was taken under the regular monthly mandate active since Feb 2025 while the tenancy was still running (ended 31 Aug), and no error in amount, date or notice has been identified. Tell the customer that if she believes a specific error occurred with that collection (e.g. amount differed from notice, or rent already paid), she can tell us and it will be reviewed.",
       "rationale": {
-        "explanation": "The bank cannot see whether advance notices were sent. This fact matters for assessing the Guarantee claim.",
+        "explanation": "The August collection falls within the tenancy period confirmed by the agency and matches the established monthly pattern; refund demands for amounts that appear contractually due are a matter with the supplier, not a scheme error.",
         "evidence": [
-          "event-001"
+          "attachments/statement_extract.csv",
+          "attachments/agency_move_out_confirmation.eml",
+          "event-001",
+          "event-004"
         ],
-        "criterion": "Ask the customer for the specific missing fact that affects the decision.",
-        "source": "general:evidence"
+        "criterion": "The Direct Debit Guarantee addresses errors in setup/collection; it is not a universal refund rule for disputes with a supplier.",
+        "source": "skill:scheduled-payments"
       },
       "target": "Customer (current phone call)",
       "arguments": {},
@@ -158,40 +163,66 @@
     {
       "id": "s5",
       "kind": "proposed_action",
-      "action": "reply_to_customer",
-      "instruction": "Say: 'I'm asking our Direct Debit team to cancel the Oakfield Direct Debit and to stop Monday's £2,525 payment if it can still be stopped. The instruction reached us on 24 September, so I can't promise it will be stopped yet, and we'll confirm what happens. If it does go out, it would be more than the £600 you have available. Cancelling the Direct Debit doesn't settle whatever Oakfield says is owed on the final account, so any disagreement about that amount is with Oakfield. I'm logging both £875 payments for review under the Direct Debit Guarantee. That covers mistakes in a collection, like a wrong amount or date or no advance notice. The September one came after your tenancy ended, and the August one came before it ended. I can't tell you yet whether either will be refunded. I'm also registering a complaint about the £6.50 overdraft fee. Its outcome isn't decided yet, and we'll update you.'",
+      "action": "request_team_action",
+      "instruction": "Register a complaint for Gabriela Petrova (personal current account) with scope: (a) £875 Direct Debit collected 23 Sep 2026 after her tenancy ended 31 Aug 2026, taking the account £412.90 overdrawn; (b) £6.50 unarranged overdraft daily fee applied 24 Sep which she says is not her fault; (c) £2,525 'final account' collection scheduled 28 Sep. Remedy sought: refund of the Aug and Sep collections, stop of the 28 Sep collection, reversal of the £6.50 fee. Include chronology from statement_extract.csv, the agency email and the incoming instruction, and cross-reference the s1 cancellation request and s3 indemnity claim. Provide the complaint reference and acknowledgement to the customer when issued; the fee decision is for this review.",
       "rationale": {
-        "explanation": "The customer needs to know what is being done for each of her four requests and that none of the outcomes is confirmed yet.",
+        "explanation": "The customer expresses dissatisfaction and demands redress including a fee reversal; this must be registered as a complaint and reviewed separately from the operational cancellation and claim, with no outcome promised.",
         "evidence": [
-          "event-001",
-          "event-002",
           "event-004",
-          "attachments/incoming_dd_instruction.json"
+          "attachments/statement_extract.csv",
+          "event-001"
         ],
-        "criterion": "Reply with the current status and say clearly what it does not confirm. Do not promise completion or outcomes.",
+        "criterion": "Handle the complaint and the operational query as separate work; a review request does not establish a fee reversal or compensation.",
+        "source": "skill:complaints-rights"
+      },
+      "target": "Complaints team (Harrow & Vale Bank plc)",
+      "arguments": {},
+      "requires": [],
+      "condition": null
+    },
+    {
+      "id": "s6",
+      "kind": "proposed_action",
+      "action": "reply_to_customer",
+      "instruction": "Tell her: 'I've requested cancellation of the Oakfield PM Direct Debit and asked our payments team to stop Monday's £2,525 collection. Because the agency's instruction reached us on 24 September it may already be in process, so I can't promise it won't debit; if it does, we can raise a Direct Debit Guarantee claim for it. For the £875 taken on 23 September, I've asked our claims team to raise a Guarantee claim because the agency's own email confirms your tenancy ended on 31 August — the outcome is pending, not confirmed. The £875 on 24 August was taken while your tenancy was still running under the usual monthly arrangement, so I can't see an error to claim on — if you think something specific was wrong with it, tell me and we'll look at it. I've asked for a complaint to be registered about the September collection and the £6.50 fee; the fee will be considered in that review and you'll get a reference once it's logged. If you're unhappy with our final answer you can take it to the Financial Ombudsman Service. Stopping the Direct Debit doesn't settle whatever the agency says you owe on their final account — that's between you and them. Finally, did you receive any advance notice from Oakfield for the 23 or 28 September collections?' Do not state any action as completed.",
+      "rationale": {
+        "explanation": "The customer needs the recorded position on each of her four requests, what remains unconfirmed, and the one missing fact we need from her.",
+        "evidence": [
+          "event-004",
+          "event-001",
+          "attachments/incoming_dd_instruction.json",
+          "attachments/agency_move_out_confirmation.eml"
+        ],
+        "criterion": "Reply with the recorded status and what it does not confirm; do not promise outcomes without evidence.",
         "source": "general:planner"
       },
       "target": "Customer (current phone call)",
       "arguments": {},
-      "requires": [],
+      "requires": [
+        "s1",
+        "s3",
+        "s5"
+      ],
       "condition": null
     }
   ],
   "escalate_if": [],
   "must_state": [
-    "The mandate cancellation and the attempt to stop Monday's £2,525 collection have been requested but are not yet confirmed. The instruction was received on 24 Sep and stopping it is not guaranteed.",
-    "Cancelling the Direct Debit does not settle or cancel any amount Oakfield says she owes. Any dispute about the 'final account' is between her and Oakfield.",
-    "Both £875 collections are being logged as a Direct Debit Guarantee claim for assessment. The Guarantee covers errors in a collection, such as a wrong amount, wrong date or missing advance notice. A refund depends on that assessment.",
-    "Her complaint about the £6.50 overdraft fee is being registered and its outcome is not yet known.",
-    "If the £2,525 collection does go out, it would be more than her £600 available balance."
+    "Cancellation of the Oakfield PM Direct Debit and a stop/return of Monday's £2,525 collection have been requested; because the instruction reached the bank on 24 Sep it may still be collected, and if it is, a Guarantee claim can be raised for it",
+    "A Direct Debit Guarantee indemnity claim for the 23 Sep £875 has been requested on the basis that the tenancy ended 31 Aug per the agency's own email; the outcome is pending",
+    "The 24 Aug £875 was collected while the tenancy was still running under the normal monthly mandate, so no error is identified for a Guarantee claim; she can tell us if she believes a specific error occurred",
+    "A complaint about the 23 Sep collection and the £6.50 fee has been requested for registration; the fee decision follows the complaint review; if unresolved she can take it to the Financial Ombudsman Service",
+    "Whether any money is actually owed to Oakfield PM (e.g. the 'final account') remains between her and the agency; stopping the Direct Debit does not settle that",
+    "We need to know whether she received advance notices for the 23 Sep and 28 Sep collections"
   ],
   "must_not": [
-    "Do not promise that the 28 Sep collection will be stopped",
-    "Do not promise or confirm a refund of either £875 collection or of the £6.50 fee",
-    "Do not state that Oakfield failed to send advance notice; the bank cannot see this",
-    "Do not state that cancelling the mandate ends any debt to Oakfield",
-    "Do not say any requested team action has been completed",
-    "Do not give a fixed response deadline or promise a callback time"
+    "Promise that the 28 Sep £2,525 collection will definitely be stopped — the instruction was received 24 Sep and may already be in flight",
+    "Promise or imply that the September or August £875 will be refunded, or that the £6.50 fee will be reversed, before the indemnity claim and complaint outcomes are recorded",
+    "State that August's collection was an error or has been refunded — it was collected on 24 Aug during the active tenancy and no error is identified",
+    "Claim that cancelling the mandate reverses collected payments, clears any sum the agency claims, or ends the tenancy/final-account dispute",
+    "State that advance notices were or were not sent — the bank cannot see this",
+    "Quote a fixed complaint response deadline or predict an Ombudsman outcome",
+    "Describe any team action as executed — all are proposals pending execution"
   ],
-  "expected_disposition": "escalated"
+  "expected_disposition": "needs_info"
 }

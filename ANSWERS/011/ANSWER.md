@@ -1,35 +1,25 @@
-# Decision: refund one duplicate £1,096 credit to the account that sent it (pending Paul's secure confirmation)
+# ANSWER — Case 011: Refund of duplicate £1,096.00 credit (Paul Devlin t/a Devlin Plumbing)
 
-**Case:** Paul Devlin t/a Devlin Plumbing, sole-trader business account SYN-SC-11-1 / SYN-ACCT-11-1, business banking chat.
+## Decision
 
-The refund details Paul's client gave (SYN-SC-11-2 / SYN-ACCT-11-2, M Kowalczyk) are the same Meridian Bank account that sent both £1,096 credits. Confirmation of Payee (CoP) on those details returned a match for "M KOWALCZYK". The plan is to explain this to Paul and set up **one** £1,096 Faster Payment back to that account. This refunds only the second credit (22 Sep 2026, 14:20, end-to-end ID MER26092214204811). **Nothing has been sent yet.** The payment will not be released until Paul confirms it through his secure business banking confirmation.
+Proceed with the refund as a **return to source**, subject to two gates. The refund details the client supplied (sort code SYN-SC-11-2, account SYN-ACCT-11-2) are identical to the originating account of both £1,096.00 Faster Payment credits, and Confirmation of Payee on those details returned a match to "M KOWALCZYK". The "A KOWALCZYK" / "M Kowalczyk" name difference is unverified by the bank but does not block a return to the originating account. Nothing is to be sent until (1) the bank's records have been checked for an existing Meridian recall on either credit and (2) Paul confirms the payment in the secure business banking channel.
 
-## Proposed actions (in order, none done yet)
+**Disposition:** needs_info (pending the recall check and Paul's secure confirmation).
 
-1. **s1: Reply to Paul** in business banking chat with the message below.
-2. **s2: Set up the refund and ask Paul to confirm it** (depends on s1):
-   - Faster Payment of **£1,096.00**
-   - From: SYN-SC-11-1 / SYN-ACCT-11-1 (Paul Devlin t/a Devlin Plumbing)
-   - To: SYN-SC-11-2 / SYN-ACCT-11-2, payee name **M Kowalczyk** (CoP matched 2026-09-23T10:05:33Z)
-   - Reference: **REFUND DUP INV 2211**
-   - Internal note: refunds the duplicate credit received 2026-09-22 14:20:48, E2E MER26092214204811
-   - Send it to Paul for secure confirmation. **Do not release it without his confirmation.**
+## Proposed actions (in order — none executed yet)
 
-## Proposed message to Paul (not yet sent)
+1. **s1 — Check records (pending).** Check Harrow & Vale Bank's inbound Faster Payment / recall-and-return records for SYN-SC-11-1 / SYN-ACCT-11-1 for any recall, return request or indemnity claim from Meridian Bank relating to end-to-end IDs MER26092109401201 (21 Sep, £1,096.00) or MER26092214204811 (22 Sep, £1,096.00). Record the result on case 011 before any outbound payment is released.
 
-> Thanks, Paul, that helps. The details Anna gave you (SYN-SC-11-2 / SYN-ACCT-11-2) are the same account both £1,096 payments came from. The Confirmation of Payee check on those details matched the name M KOWALCZYK. So the refund would go back to the account the money came from, not to a new account. The different first initial (A on the payments, M on the account) fits what she has told you.
->
-> I'm setting up one refund of £1,096 for the second payment only (received 22 Sep at 14:20, end-to-end ID MER26092214204811). It goes to M Kowalczyk, SYN-SC-11-2 / SYN-ACCT-11-2, with reference 'REFUND DUP INV 2211'. It won't be sent until you approve it in your secure business banking confirmation, and I can't give you an arrival time.
+2. **s2 — Set up payment for secure confirmation (pending; depends on s1).** Prepare one outbound Faster Payment of £1,096.00 from SYN-SC-11-1 / SYN-ACCT-11-1 to sort code SYN-SC-11-2, account SYN-ACCT-11-2, payee name "M Kowalczyk" (CoP matched "M KOWALCZYK" at 2026-09-23T10:05:33Z), reference "REFUND INV 2211 DUPLICATE", for Paul Devlin's confirmation in the business banking channel. Note on the case that this returns the second credit (end-to-end ID MER26092214204811) to its originating account. Release only on Paul's confirmation and only if s1 shows no existing Meridian recall for that credit.
 
-## Guardrails for this case
-- Do not say the refund has been sent or has arrived, or that it has reached Anna or Marek. Do not promise an arrival time.
-- Do not say the Meridian account is joint or that Anna holds it. The bank has not verified this.
-- Do not share any other Meridian or payer account details beyond what Paul already gave.
-- Refund one credit only, for £1,096. Do not ask for passwords, PINs or one-time codes in chat.
+3. **s3 — Reply to customer (pending; depends on s1 and s2).** Send the message below in the business banking chat.
 
+## Proposed message to the customer (not yet sent)
 
-## Future message draft — NOT SENT
+> Thanks — that helps. The key point is that the details your client gave (SYN-SC-11-2 / SYN-ACCT-11-2) are the same sort code and account number both £1,096 payments came from, and Confirmation of Payee matches 'M KOWALCZYK' on that account. So this would be a return to the account that paid you, not a payment to a new destination. We can't verify who holds that account or confirm the relationship you've described — the payer name on the credits shows 'A KOWALCZYK' — but because it's the originating account, that doesn't block the refund. Nothing has been sent yet. I'm first checking whether the payer's bank has already asked us to return one of the payments, so you don't end up refunding twice. I'll then send you a £1,096.00 payment to those details with reference 'REFUND INV 2211 DUPLICATE' to confirm securely in your business banking; it only goes once you confirm. I can't promise an arrival time. Please keep your client's text and these payment IDs (MER26092109401201, MER26092214204811) for your records.
 
-Use only after confirmed execution of: s2.
+## What this does not do
 
-> Paul, the £1,096 refund to M Kowalczyk (SYN-SC-11-2 / SYN-ACCT-11-2, reference 'REFUND DUP INV 2211') is now waiting for your approval in your secure business banking confirmation. It refunds only the second payment (22 Sep, 14:20, end-to-end ID MER26092214204811). It won't be sent until you approve it there, and I can't give you an arrival time. Please don't share any passwords, PINs or codes in this chat.
+- It does not treat the forwarded text as a verified instruction from the payer, and it does not assert that the Meridian account is joint, is Marek's, or that Anna is authorised on it.
+- It does not state that no Meridian recall exists — only that none is recorded in the supplied snapshot; the s1 check is what establishes this.
+- It does not request any PIN, password or one-time code in chat; confirmation happens in the secure business banking channel.

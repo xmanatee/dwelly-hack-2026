@@ -1,88 +1,117 @@
 {
-  "intent": "Customer wants the bank to recall her completed £651 Faster Payment of 12 Aug to Co-Clean Services Ltd. She says the letting agency paid the same invoice on 15 Aug, and Co-Clean has agreed to refund her.",
-  "summary": "Reply in chat to explain what a recall would and wouldn't do. The 12 Aug payment completed and the beneficiary bank received it. Her account shows one £651 debit to Co-Clean. The second payment was the agency's 15 Aug payment from her rental funds. A recall is only a request to Co-Clean's bank and still needs Co-Clean to agree. Co-Clean already agreed in writing on 17 Sep, so a recall is unlikely to be faster. Suggest she ask Co-Clean for the refund date and details. Don't promise a refund date or outcome.",
+  "intent": "Customer asks the bank to recall a completed £651 Faster Payment to Co-Clean because the same invoice was also paid by her letting agent, and challenges why a recall is not the right tool for a duplicate.",
+  "summary": "Decline to initiate a recall now and explain why: the 12 Aug payment was customer-authorised, sent to the intended payee (CoP match) and recorded Completed/received by the beneficiary bank. The duplicate was a separate 15 Aug payment by Oakfield PM, not a bank-side error. A recall is only a request to the recipient's bank and, for a correctly made payment, depends on the recipient agreeing, so it cannot be promised to be faster or successful. Co-Clean has already agreed a direct refund; advise the customer to get the payment-run date from Co-Clean and return to us if it does not arrive.",
   "facts": [
     {
-      "claim": "On 12 Aug 2026 at 10:14, £651.00 was sent by Faster Payment HV26081210144802 to CO-CLEAN SERVICES LTD, ref INV 4471 53 WINCHESTER. Its status is Completed, and the confirmation says the beneficiary bank received it.",
+      "claim": "On 12 Aug 2026 10:14 a Faster Payment of £651.00 (HV26081210144802) was sent from the customer's account to CO-CLEAN SERVICES LTD, ref 'INV 4471 53 WINCHESTER', status Completed, confirmed received by the beneficiary bank; it was a new payee with a CoP match at the time.",
       "evidence": [
         "attachments/payment_confirmation_2026-08-12.pdf",
         "event-001"
       ]
     },
     {
-      "claim": "The payee was new and was a Confirmation of Payee match at the time of payment.",
-      "evidence": [
-        "event-001"
-      ]
-    },
-    {
-      "claim": "The customer-supplied Oakfield PM statement extract shows a £651.00 contractor payment to Co-Clean for invoice 4471 on 15/08/2026, made from the agency's landlord funds and not from her account with us.",
+      "claim": "The customer-supplied agency statement extract shows Oakfield PM paid Co-Clean £651.00 for inv 4471 on 15/08/2026 from the landlord's rental funds; this is a customer-supplied document, not a bank record.",
       "evidence": [
         "attachments/agency_statement_extract.txt",
         "event-001"
       ]
     },
     {
-      "claim": "Co-Clean's email of 17 Sep 2026 acknowledges receiving both payments and says they will refund £651 to Linda on their next payment run. It gives no date.",
+      "claim": "Co-Clean emailed on 17 Sep 2026 acknowledging receipt of both £651 payments against invoice 4471 and agreeing to refund £651 to the customer 'on our next payment run'; no date for that run is given.",
       "evidence": [
         "attachments/coclean_refund_agreement.eml"
       ]
     },
     {
-      "claim": "The customer asked the bank to recall the payment so she gets the money back faster, and she believes the duplicate is exactly what recalls are for.",
+      "claim": "The customer asks the bank to recall the 12 Aug payment to get the money back faster, and asserts a duplicate is exactly what recalls are for.",
       "evidence": [
         "event-002",
         "event-004",
         "request"
       ]
+    },
+    {
+      "claim": "The internal account view at 23 Sep lists only the 12 Aug debit; whether a refund credit has since arrived is not recorded in the supplied snapshot (absence is not a negative finding).",
+      "evidence": [
+        "event-001"
+      ]
+    },
+    {
+      "claim": "The agent has already told the customer they will explain what a recall would and wouldn't do.",
+      "evidence": [
+        "event-003"
+      ]
     }
   ],
   "missing": [
-    "The date of Co-Clean's next payment run, and whether the refund has been sent (neither is in the evidence)",
-    "No bank recall procedure or eligibility criteria were supplied"
+    "Bank procedure/policy for funds-return requests on authorised, correctly-addressed Faster Payments (not supplied; cannot be assumed)",
+    "Date of Co-Clean's 'next payment run' and whether the £651 refund has already been credited to the customer's account",
+    "Confirmation that invoice 4471 was for the same service and amount in both payments beyond the customer-supplied extract and Co-Clean's email"
   ],
-  "identity_authority": "not_needed",
+  "identity_authority": "established",
   "safety_flags": [],
   "steps": [
     {
       "id": "s1",
       "kind": "proposed_action",
-      "action": "reply_to_customer",
-      "instruction": "Send this reply: \"Thanks, Linda. I've looked at your 12 August payment of £651 to CO-CLEAN SERVICES LTD (Faster Payment HV26081210144802, ref INV 4471 53 WINCHESTER). Our record shows it completed and the receiving bank got it. It's the only £651 payment to Co-Clean from your account with us. The second payment was the one Oakfield PM made from your rental funds on 15 August, according to the agency statement you sent. That's why a recall doesn't really fit here. We can't reverse a completed Faster Payment ourselves. A recall only asks Co-Clean's bank to contact Co-Clean, and the money comes back only if Co-Clean agrees to return it. They've already agreed in writing (their email of 17 September says they'll refund £651 to you on their next payment run), so a recall would go through the same people who have already said yes. It's unlikely to get your money back any faster. I can't see that the refund has been sent yet, and Co-Clean didn't give a date. The quickest step is probably to ask Co-Clean for the date of their next payment run and check they have the right account details for the refund. You may also want to tell Oakfield PM that Co-Clean is refunding you directly, so the agency doesn't chase the same refund.\"",
+      "action": "hold_or_decline",
+      "instruction": "Do not initiate a Faster Payment recall/funds-return request for payment HV26081210144802 (£651.00, 12 Aug 2026, CO-CLEAN SERVICES LTD) at this point. Reason to record: the payment was customer-authorised, addressed to the intended payee (CoP match), completed and received by the beneficiary bank; the duplication is a separate third-party payment by Oakfield PM on 15 Aug; the recipient has acknowledged both payments and agreed a direct refund, so a recall request would depend on the same recipient's consent and offers no evidenced speed advantage.",
       "rationale": {
-        "explanation": "The payment confirmation shows a completed payment that the beneficiary bank received. The account view shows a single debit from her account. The second payment came from the agency, according to the customer-supplied statement. Co-Clean has acknowledged the double payment in writing and agreed to refund £651, with no date given. The evidence therefore answers her question: a recall is only a request that depends on the recipient's consent, which Co-Clean has already given.",
+        "explanation": "The supplied confirmation proves a completed, correctly-addressed, authorised payment; nothing in the evidence shows a bank-side duplicate or misdirection that a recall would address, and the payee has already agreed to refund directly.",
         "evidence": [
-          "event-001",
-          "event-002",
-          "event-004",
           "attachments/payment_confirmation_2026-08-12.pdf",
-          "attachments/agency_statement_extract.txt",
-          "attachments/coclean_refund_agreement.eml"
+          "attachments/coclean_refund_agreement.eml",
+          "event-001",
+          "event-004"
         ],
-        "criterion": "State only the payment stage the record proves. A recall request is not a completed return. Do not promise arrival times or outcomes without an applicable commitment. Similar payments are not automatically duplicates on the same account.",
+        "criterion": "Use the supplied authoritative status directly; a recall/return request is not a completed return and similar transfers are not automatically bank duplicates.",
         "source": "skill:payments"
       },
-      "target": "Linda Ferris, in-app chat (personal banking)",
+      "target": "Servicing agent (Harrow & Vale Bank plc) / case record",
       "arguments": {},
       "requires": [],
+      "condition": null
+    },
+    {
+      "id": "s2",
+      "kind": "proposed_action",
+      "action": "reply_to_customer",
+      "instruction": "Reply in the in-app chat: \"I understand why it feels like a recall should fix this. Looking at the record, your £651 to Co-Clean on 12 August (ref HV26081210144802) was a payment you authorised, it went to the payee you intended (the name check matched), and it shows as Completed and received by Co-Clean's bank. The duplicate wasn't a second payment from your account here – it was Oakfield PM paying the same invoice from your rental funds on 15 August. A recall isn't a reversal we can do from our side: it's a request to Co-Clean's bank to return the money, and because the payment went correctly to the intended recipient, it would depend on Co-Clean agreeing to it. That's the same company that has already agreed in writing on 17 September to refund you on their next payment run, so I can't promise a recall would be faster or that it would succeed, and I'm not raising one at this stage. Their email doesn't give a date for the payment run, and I can't see from here whether the refund has arrived yet. The quickest route is to ask Co-Clean for the date of that run and a payment reference. If it doesn't arrive, please come back to us and we'll look at what else can be done.\"",
+      "rationale": {
+        "explanation": "Answers the customer's direct question about recalls with only the stages the record proves, keeps the agency payment and Co-Clean's refund agreement as third-party facts, and avoids promising speed or outcome.",
+        "evidence": [
+          "event-004",
+          "attachments/payment_confirmation_2026-08-12.pdf",
+          "attachments/coclean_refund_agreement.eml",
+          "attachments/agency_statement_extract.txt",
+          "event-003"
+        ],
+        "criterion": "State only the payment stage the supplied record proves; do not promise arrival times or treat a refund agreement as a booked credit.",
+        "source": "skill:payments"
+      },
+      "target": "Customer (in-app chat)",
+      "arguments": {},
+      "requires": [
+        "s1"
+      ],
       "condition": null
     }
   ],
   "escalate_if": [],
   "must_state": [
-    "The 12 Aug payment shows as completed and received by the beneficiary bank",
-    "Her account shows only one £651 payment to Co-Clean; the second payment was made by Oakfield PM on 15 Aug, according to the statement she supplied",
-    "A recall is a request to the receiving bank, not a reversal, and only works if the recipient agrees to return the money",
-    "Co-Clean has already agreed in writing to refund £651, so a recall is unlikely to be faster",
-    "We can't confirm the refund has been sent or when it will arrive"
+    "The 12 Aug £651 payment (ref HV26081210144802) was authorised by her, sent to the intended payee with a CoP match, and the bank record shows it Completed and received by Co-Clean's bank.",
+    "A recall is a request sent to the recipient's bank, not an automatic reversal; where a payment was correctly sent to the intended recipient, returning it depends on that recipient agreeing, so the bank cannot promise it would succeed or be faster than Co-Clean's own refund.",
+    "The duplicate arose from a second payment made by Oakfield PM on 15 Aug from rental funds, not from a bank error on the 12 Aug payment.",
+    "Co-Clean's 17 Sep email acknowledges both payments and agrees to refund £651 on their next payment run, but gives no date; the bank has not confirmed whether that refund has arrived yet.",
+    "Suggested next step: ask Co-Clean for the payment-run date and a reference, and contact the bank again if the refund does not arrive."
   ],
   "must_not": [
-    "Claim the bank can reverse or pull back the completed payment by itself",
-    "Promise that a recall would succeed or be faster",
-    "State or imply that Co-Clean's refund has been sent or will arrive by a particular date",
-    "Describe the payment as fraud, a scam or a bank error",
-    "Cite an invented bank policy as the reason a recall can't be raised",
-    "Describe the agency's 15 Aug payment as a debit from her account with us"
+    "Do not claim a recall has been submitted or that it would recover the £651 or do so faster.",
+    "Do not state the refund has been received, or give a date for Co-Clean's payment run.",
+    "Do not describe the 12 Aug payment as a bank error, misdirected payment or bank-side duplicate.",
+    "Do not cite a specific bank policy clause or scheme rule that is not in the supplied documents.",
+    "Do not suggest the agency's 15 Aug payment came from her Harrow & Vale account or is disputable through this bank.",
+    "Do not promise any outcome, redress or timescale."
   ],
   "expected_disposition": "completed"
 }

@@ -1,98 +1,71 @@
-# Decision memo: case 017, 29 Sep reconciliation gap
+# REASONING — Case 017: Statement balance query (Bright Sparks Electrical Ltd)
 
-The full input is in the saved `context.md`. Below, event IDs (`event-00x`) and attachment filenames refer to that file.
+Full input is in the saved `context.md`.
 
 ## 1. Situation and history
 
-**Customer report (unverified claims):**
-- **event-002 / request (30 Sep 2026, Business banking chat):** The bookkeeper, Violetta, says Bright Sparks Electrical Ltd is "£1,750 out" on its 29 Sep reconciliation. Her download shows £30,078.94 of credits, but her closing figure only works if credits were £31,828.94. She suspects a payment "has been lost" and asks for an investigation.
-- **event-003:** The agent said they would compare the export with the account's full-day activity.
-- **event-004:** Violetta passes on her director's wish to log a formal missing-funds complaint "if it isn't found today".
-- **`attachments/bookkeeper_reconciliation_2026-09-29.csv`:** Her working:
-  - Opening balance: £32,113.84
-  - Plus credits: £30,078.94
-  - Less supplier batch: £8,415.30
-  - Expected closing: £53,777.48
-  - Closing on screen: £55,527.48
-  - Difference: £1,750.00
-  - Her note says: "Export taken 13:15; balance noted from Business Online dashboard later that afternoon."
+- **event-001 (2026-09-30, internal account view, Harrow & Vale Bank plc):** Authenticated case record for business current account SYN-SC-17-1 / SYN-ACCT-17-1. It records that the CSV export was requested by user `violetta.k` at **13:15:02** on 29 Sep; that two credits booked after that time (+£1,750.00 at 14:02, K WHITTLE, ref "INV 4471"; +£120.00 at 16:41, A ROSS, ref "INV 4480 PART"); that the customer's quoted closing balance matches the running balance between 14:02 and 16:41; and that the same pattern occurred on 28 Sep (+£1,900.00 at 18:10, after a 13:20 export).
+- **event-002 (2026-09-30, business banking chat, Violetta — bookkeeper):** Customer report: £1,750 out on 29 Sep balancing; download shows £30,078.94 credits but the closing only works with £31,828.94; asks for a missing-payment investigation and suggests "something's been lost".
+- **event-003 (2026-09-30, chat, servicing agent):** Agent states they will compare the export with full-day activity. No results are recorded beyond the attachments.
+- **event-004 (2026-09-30, chat, Violetta):** The director wants a formal missing-funds complaint logged **if it isn't found today**.
+- **Attachments:** `attachments/bookkeeper_reconciliation_2026-09-29.csv` (customer's working), `attachments/export_2026-09-29_1315.csv` (customer's download), `attachments/full_day_2026-09-29.csv` (bank's end-of-day view).
 
-**Bank records:**
-- **event-001 (internal account view):**
-  - The CSV export was requested by user violetta.k at 13:15:02 on 29 Sep.
-  - Two credits arrived after 13:15: £1,750.00 at 14:02 (K WHITTLE, INV 4471) and £120.00 at 16:41 (A ROSS, INV 4480 PART).
-  - The quoted closing figure matches the running balance between 14:02 and 16:41.
-  - The same pattern happened on 28 Sep: £1,900.00 arrived at 18:10, after a 13:20 export.
-- **`attachments/export_2026-09-29_1315.csv`:**
-  - Exported at 2026-09-29T13:15:02.
-  - Four credits: £875.00, £1,200.00, £27,343.94 and £660.00.
-  - Supplier batch debit of £8,415.30 at 11:05:12.
-  - Running balance afterwards: £53,777.48.
-- **`attachments/full_day_2026-09-29.csv` (bank's end-of-day view):** The same entries, plus:
-  - P LEWIS £1,900.00 at 2026-09-28T18:10:22 (running balance £32,113.84)
-  - K WHITTLE £1,750.00 at 14:02:47 (running balance £55,527.48)
-  - A ROSS £120.00 at 16:41:09 (running balance £55,647.48)
+Contact started 09:40 local UK time on 30 Sep; individual message times are not recorded (request.md).
+
+**Customer report vs authenticated record:** The claim that a credit is "missing" or "lost" (event-002) is a customer assertion. The authenticated records (event-001 and `full_day_2026-09-29.csv`) show every credit booked.
 
 ## 2. Evidence and gaps
 
-**Arithmetic check (from the attachments):**
-- Credits in the export: 875.00 + 1,200.00 + 27,343.94 + 660.00 = **£30,078.94**. This matches the bookkeeper's line 2.
-- Opening balance: £32,113.84 + £30,078.94 − £8,415.30 = **£53,777.48**. This matches the export's last running balance and her expected closing.
-- Adding the £1,750.00 credit gives **£55,527.48**, the figure she read from the screen. Credits would then be £31,828.94, exactly the total she said was needed (event-002).
-- Adding the £120.00 credit gives a full-day closing of **£55,647.48** and full-day credits of **£31,948.94**.
+**Reconciliation of the figures (all from supplied files):**
 
-**What this shows:** The "missing" £1,750.00 is booked on the account (`full_day_2026-09-29.csv`, event-001). It was booked after the export's timestamp, which is why it is not in the export.
+- `export_2026-09-29_1315.csv` is stamped `exported_at 2026-09-29T13:15:02` and lists four credits (£875.00 J MORGAN INV 4462; £1,200.00 CARDNET SETTLEMENT 2809; £27,343.94 HALDANE HOMES LTD INV 4455 STAGE 2; £660.00 S AHMED INV 4470) totalling **£30,078.94**, and the supplier batch debit of −£8,415.30 at 11:05:12, leaving a running balance of **£53,777.48**. This matches line 4 of the bookkeeper's reconciliation exactly.
+- `bookkeeper_reconciliation_2026-09-29.csv` uses a closing balance of **£55,527.48** (line 5) with the note "Export taken 13:15; balance noted from Business Online dashboard later that afternoon". Line 6 difference: £1,750.00.
+- `full_day_2026-09-29.csv` shows the same five items as the export, then **£1,750.00 credit, K WHITTLE, INV 4471, 14:02:47, running balance £55,527.48**, then **£120.00 credit, A ROSS, INV 4480 PART, 16:41:09, running balance £55,647.48**.
+- The £1,750.00 difference therefore equals, to the penny, the K WHITTLE credit booked 47 minutes after the export; the dashboard balance the bookkeeper used is the running balance between 14:02:47 and 16:41:09. The customer's implied credit figure of £31,828.94 (event-002) = £30,078.94 + £1,750.00, consistent with this.
+- The customer's 29 Sep opening balance of £32,113.84 matches the running balance after the £1,900.00 P LEWIS credit (INV 4461) at 18:10:22 on 28 Sep in `full_day_2026-09-29.csv` — the same post-export timing pattern noted in event-001.
 
-**Gaps and uncertainties:**
-- **Exact time of the screen reading.** It isn't recorded. "Between 14:02 and 16:41" is worked out from the balance match and her "later that afternoon" note. It is a strong inference, not a logged time.
-- **28 Sep export.** The 13:20 export time comes only from event-001. No 28 Sep export file was supplied. The bank file does confirm that the P LEWIS £1,900.00 credit at 18:10:22 is included in her £32,113.84 opening figure. Whether that credit is in her ledger is for her to check, which is why the reply asks her to.
-- **Director's wishes.** The plan records as missing whether the director still wants a complaint now that the funds are located. This is unresolved.
-- **Payer's side.** No information was supplied about the payers beyond the booked credits.
+**Contradictions:** None between the authenticated records. The only discrepancy is between the customer's inference ("something's been lost") and the records, and it is fully explained by the cut-off timing.
+
+**Gaps (per the plan's `missing`):**
+- Whether the director still wants a formal complaint after the explanation — the request in event-004 was conditional on the funds not being found, and that condition is not met on the records. This cannot be assumed either way.
+- Exact 30 Sep chat message times are not recorded (only the 09:40 contact start).
+- Event-003 records an intention to compare; no execution or output beyond the supplied attachments is recorded. The plan's conclusion rests on the attachments and event-001, not on any recorded agent investigation.
+
+**Identity/authority:** The plan records identity authority as established — Violetta is the bookkeeper, the export was requested under `violetta.k` on the same account (event-001), and the request is for information she already has access to with no account change requested. No safety flags were raised.
 
 ## 3. Why this plan
 
-**Step s1 (reply to customer)** is the only action.
-- **Explanation:** The full-day record shows the £1,750.00 booked at 14:02:47, after the 13:15:02 export. The screen balance equals the running balance after that credit. So the gap is a timing mismatch, not a missing payment. The complaint request depended on the funds not being found. The reply therefore explains that no complaint has been logged, and still leaves the complaint open to the customer without conditions.
-- **Evidence cited by the plan:** event-001, event-002, event-004, `export_2026-09-29_1315.csv`, `full_day_2026-09-29.csv` and `bookkeeper_reconciliation_2026-09-29.csv`.
-- **Decision criterion:**
-  - Use the authoritative supplied status directly.
-  - Identify the exact transaction by amount, time, counterparty and reference.
-  - State only what the record proves.
-  - Do not make registering a complaint depend on the customer giving up the query.
-- **Rule source:** `skill:payments`. This is a skill handling rule. No bank complaint-handling policy or legal obligation was supplied, and none is relied on here.
+**Step s1 — reply_to_customer (reconciliation explanation).**
+- *Explanation (from the plan):* The export, reconciliation and full-day record identify the exact transaction (£1,750.00 K WHITTLE INV 4471 at 14:02:47) and show the difference is a cut-off timing mismatch, not a missing credit; the record also shows a second post-export credit (£120.00 A ROSS) that the customer has not yet accounted for, which is why the true end-of-day close (£55,647.48) is also stated.
+- *Evidence cited:* `attachments/export_2026-09-29_1315.csv`, `attachments/bookkeeper_reconciliation_2026-09-29.csv`, `attachments/full_day_2026-09-29.csv`, event-001, event-002.
+- *Criterion:* Identify the exact transaction by reference, amount, date and parties and use the supplied authoritative record directly; state only what the record proves.
+- *Source:* `skill:payments` — this is a skill handling rule, not a supplied bank policy document or a legal obligation.
+- The 28 Sep pattern and the export-after-end-of-day suggestion are included because event-001 records the same pattern and the practical advice follows directly from the evidence; it is advice on the customer's own process, not a promise of any system change.
 
-**Why no other actions:**
-- No investigation, trace or complaint registration is proposed, because the record already accounts for the credit.
-- Identity and authority are marked as established, and there are no safety flags.
-- Registering a complaint without the director's renewed instruction would go against the conditional request in event-004. Refusing one would breach the criterion above. Offering to register it on request avoids both.
+**Step s2 — ask_customer (complaint confirmation).**
+- *Explanation (from the plan):* The complaint request in event-004 was conditional on the funds not being found; the records show them found, so the customer's current wish must be confirmed rather than assumed, while preserving the unconditional right to complain.
+- *Evidence cited:* event-004, request.
+- *Criterion:* Recognise and route a complaint separately from the operational query; do not make registration conditional on abandoning the dispute; include only acknowledgements actually available.
+- *Source:* `skill:complaints-rights` — a skill handling rule. No bank complaints policy or regulatory text was supplied in this case, so no clause is cited.
+- No complaint flag is raised at this snapshot because the stated condition ("if it isn't found today") is not met on the records; the plan still offers registration unconditionally and forbids refusing or delaying it on the basis that the explanation resolves the query.
 
-**Why include the extra details:** The reply also mentions the later £120.00 credit and the 28 Sep pattern. This lets the bookkeeper reconcile the full day correctly and check her opening figure, not just explain the £1,750.00.
+**Order:** s1 precedes s2 so that the customer has the located transaction before being asked whether the conditional complaint request still stands. Neither step has a `requires` dependency or condition; both are messages in the same chat.
+
+**Alternatives considered only as supported by the plan:** Logging the complaint immediately was not selected because the request was expressly conditional and the condition is not met; refusing/closing the complaint route was not selected because the right to complain is unconditional. The plan does not propose any payment trace, recall or investigation because the records show nothing is missing.
 
 ## 4. Execution boundaries
 
-- Nothing has been executed. Step s1 is a proposed reply only. It has no dependencies or conditions (`requires: []`, `condition: null`) and no escalation triggers.
-- The plan ends with this reply. If the director asks for a complaint afterwards, that is a new request needing a fresh decision. This plan does not set up that branch or any other.
+- Both actions are **proposed and not executed**. No message has been sent, no complaint has been registered, and no account operation is involved.
+- s2 explicitly stops the plan pending the customer's answer: no complaint is to be logged until Violetta confirms the director's wish. If she confirms, registration is the next decision to be taken on that confirmation; the plan does not pre-decide its content or outcome.
+- No escalation conditions (`escalate_if` is empty) and no safety flags.
+- The plan does not propose any change to Business Online export behaviour, and none should be implied.
 
 ## 5. Expected result and limits
 
-**What s1 can achieve:** If sent, it should let the bookkeeper close the 29 Sep reconciliation at £55,647.48 and check the 28 Sep P LEWIS credit. It also tells the director, without conditions, that a complaint can still be made.
+**What the steps could achieve:** A complete, evidence-based explanation of the £1,750.00 difference, identification of the second post-export £120.00 credit and the correct end-of-day close (£55,647.48), a practical way to avoid the recurring cut-off mismatch, and a clear, unconditional invitation to confirm whether a formal complaint is still wanted.
 
-**What remains unconfirmed:**
-- Whether the director wants a complaint.
-- Whether the 28 Sep credit is in the customer's ledger.
-- The exact time of the screen reading.
+**What remains unconfirmed:** Whether the director still wants a complaint registered; whether the customer accepts the explanation. Expected disposition is `completed` for the operational query, subject to the complaint question.
 
-**The message must state:**
-- The £1,750.00 is from K WHITTLE (INV 4471), booked at 14:02:47 on 29 Sep, after the 13:15:02 export.
-- The export's four credits total £30,078.94 and match the bank's records. £55,527.48 is the balance after the 14:02 credit.
-- A further £120.00 from A ROSS (INV 4480 PART) was booked at 16:41:09. The full-day closing is £55,647.48 and full-day credits total £31,948.94.
-- The 28 Sep £1,900.00 credit from P LEWIS (INV 4461) landed at 18:10:22, after the 13:20 export, and should be checked in the ledger.
-- No complaint has been logged because the funds were found. One will be registered if the director wants it.
+**Constraints preserved (`must_state`):** K WHITTLE £1,750.00 INV 4471 booked 14:02:47 on 29 Sep, not missing; export at 13:15:02 vs dashboard read after 14:02 — different cut-offs; true close £55,647.48 after A ROSS £120.00 INV 4480 PART at 16:41:09; same pattern on 28 Sep (P LEWIS £1,900.00 at 18:10 after 13:20 export) and export-after-end-of-day advice; right to complain available regardless and not conditional on accepting the explanation; no complaint registered yet.
 
-**The message must not:**
-- Say a payment is missing, lost or under investigation.
-- Suggest a bank or statement error.
-- Claim a complaint was registered or give a complaint reference.
-- Make a complaint depend on the customer accepting the explanation.
-- Assert anything about the payers beyond the booked credits.
-- Promise any outcome, timescale or compensation.
+**Constraints preserved (`must_not`):** No statement that funds were lost, misposted or recovered; no claim that a complaint is logged and no promised outcome, redress or timescale; no disclosure beyond Bright Sparks Electrical Ltd's own 28–29 Sep activity; no promise of a Business Online change or system fix; no refusal or delay of complaint registration because the query is resolved.

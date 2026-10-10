@@ -1,88 +1,66 @@
-# Decision memo: Case 021, salary payment P-A after a connection timeout
+# REASONING — Case 021: Salary payment P-A after a status-lookup timeout
 
-The full input is saved in `context.md`. All the plan's operations are **proposed and pending**. Nothing has been submitted, held, requested or sent yet.
+Full input is in the saved `context.md`. Nothing in this memo has been executed; all actions are proposed.
 
 ## 1. Situation and history
-All times are on 2026-11-09, +00:00.
 
-**Authenticated bank records**
-- **E01 (09:00):** The identity/session check passed. Dara Pennick approved GBP 2,400 salary instruction **P-A**, client reference **SAL-021-A**, to destination **SYN-ACCT-EMP021**. The same record says the case desk has *enquiry access only* and that Payment operations keeps execution records indexed by payment ID. `request.md` also says case-desk access is read-only.
-- **E02 (09:00:05):** The gateway packet `attachments/gateway-log.json` shows two entries:
-  - a `submission` with status **accepted** at 09:00:01
-  - a `status_lookup` with status **timeout** at 09:00:05
-  - `terminal_execution_status` is **null**.
-- **E04 (09:06):** The account snapshot `attachments/balance-view.csv` for **SYN-ACCT-B021** shows:
-  - ledger balance GBP 5,000.00
-  - reservation P-A of GBP 2,400.00
-  - available balance GBP 2,600.00
-  - reconciliation state for P-A: **Pending**
+Chronology on 2026-11-09 (all UTC):
 
-**Customer statements (authenticated chat)**
-- **E03 (09:05):** The customer quotes the app message: "Connection timed out while retrieving payment status." They say the employee needs the salary today and ask whether the payment failed.
-- **E05 (09:07):** The customer asks us to "send £2,400 again now" to the same destination, under the new reference **SAL-021-B**.
+- **E01, 09:00 — Authenticated bank app record.** Identity/session check passed. Dara Pennick (sole trader, Pennick Loomworks) approved a GBP 2,400 salary instruction, payment ID **P-A**, client reference **SAL-021-A**, destination **SYN-ACCT-EMP021**, from business account **SYN-ACCT-B021** (account per `request.md`). The same record states the service access model: the case desk has enquiry (read-only) access; **payment operations maintains execution records indexed by payment ID**.
+- **E02, 09:00:05 — Internal gateway record**, attachment `attachments/gateway-log.json`. Events: `submission` → `accepted` at 09:00:01; `status_lookup` → `timeout` at 09:00:05. `terminal_execution_status` is `null`.
+- **E03, 09:05 — Authenticated customer chat.** Customer copies the app wording "Connection timed out while retrieving payment status", says the employee needs the salary today, and asks whether it failed.
+- **E04, 09:06 — Internal account view**, attachment `attachments/balance-view.csv`. Snapshot at 09:06:00: ledger GBP 5,000.00, reservation **P-A** GBP 2,400.00, available GBP 2,600.00. Reconciliation state for P-A: **Pending**.
+- **E05, 09:07 — Customer chat.** Customer asks to send GBP 2,400 again now under fresh reference **SAL-021-B** to the same destination. This is also the "initial request" in `request.md`. No desk response is recorded.
 
-The deadline ("needed today") is the customer's statement. No record confirms it.
+Distinguishing sources: E01, E02 and E04 are authenticated/internal bank records. E03 and E05 are the customer's own report and request. The customer's reading of the timeout as a possible failure is not corroborated by any bank record; the bank records show acceptance plus an unresolved status.
 
 ## 2. Evidence and gaps
-**What the records show**
-- The submission was accepted (gateway-log.json, E02).
-- The only failure-like event is a timeout on the status lookup, not on the payment itself. The app message the customer quoted says the same thing (E03).
-- Funds are still reserved and reconciliation is Pending (balance-view.csv, E04). This fits a payment that is still being processed, not one that was rejected.
 
-**What cannot be established**
-- P-A's final execution status (executed/sent, rejected or failed). This sits in the Payment operations execution record, which the case desk cannot see.
-- Whether the funds have been credited to SYN-ACCT-EMP021. There is no record either way.
+**What the records prove**
+- P-A was **authorised** by the customer in an authenticated session (E01).
+- P-A was **accepted for submission** by the gateway at 09:00:01 (`gateway-log.json`).
+- The only recorded "failure" is of the **status lookup**, not of the payment (`gateway-log.json`, E02).
+- Funds are **reserved** (GBP 2,400 against P-A) and reconciliation is **Pending** as of 09:06 (`balance-view.csv`, E04). Available balance is GBP 2,600, which is consistent with the reservation still being held.
 
-**Contradictions**
-- None. The customer's concern comes from reading a status-lookup timeout as a payment failure, and the records do not support that reading.
+**What the records do not prove**
+- Whether P-A was released/sent to the recipient bank, settled, failed, or returned — `terminal_execution_status` is `null` and no later gateway event is supplied.
+- Whether SYN-ACCT-EMP021 has been credited.
+- Whether or when the P-A reservation would be released if P-A is confirmed failed.
+
+**Gaps and minor uncertainties (from the plan's `missing` list)**
+- Terminal execution status of P-A is the single material gap; it is held by payment operations (E01).
+- No `decision_time` is supplied; the latest observation is the 09:06 snapshot, so the state may have moved since.
+- E05 is labelled "Customer chat" without the explicit "Authenticated" marker used on E03. It continues the chat opened at 09:05 and the plan treats identity as established; this is noted but does not change the decision, since the plan declines the requested action rather than acting on it.
+- No supplied bank policy or payment-scheme commitment specifies arrival times, resend rules or reservation-release timing; the memo cites none.
+
+No contradictions exist between the records. The customer's framing ("so it goes through cleanly") assumes the first payment did not go through, which the records neither confirm nor deny.
 
 ## 3. Why this plan
-All three handling rules below come from **skill:payments**, which is a skill's handling rule. No bank policy document or legal obligation was supplied, and none is relied on here.
 
-**s1: Hold SAL-021-B**
-- **Why:** The timeout happened while looking up the status, after the submission had been accepted. It is not a recorded failure. The open reservation and Pending reconciliation show P-A may still execute. A new reference would not stop a duplicate payment to the same destination.
-- **Evidence:** gateway-log.json, balance-view.csv, history.md.
-- **Rule:** Only state the payment stage the record proves. A status timeout is not a failure. A second similar transfer must not be created while the first has no final status.
-- The desk's enquiry-only access (E01) separately means it cannot submit the payment.
-- The GBP 2,600 available balance does not change this. The reason for the hold is duplicate risk, not lack of funds.
+**s1 — hold/decline the resend (case desk).**
+Explanation: the payment lifecycle must be read stage by stage — authorisation (proven, E01), submission accepted (proven, gateway log), release/sent and settlement (not proven, terminal status null, reconciliation Pending). An unresolved status is not a failure. Because the original instruction may still execute and the GBP 2,400 remains reserved, a second GBP 2,400 instruction to the same destination risks a duplicate salary. Evidence: `gateway-log.json`, `balance-view.csv`, `history.md`. Criterion: state only the stage the record proves; do not treat an unresolved status as a failure or a resend as safe. Source: the payments handling skill (a desk handling rule, not a supplied bank policy or legal obligation). The case desk's read-only access (E01, `request.md`) also means it could not itself submit a payment, which reinforces that the correct desk action is a hold rather than execution.
 
-**s2: Ask Payment operations**
-- **Why:** P-A's final status is the gap that decides the case. Payment operations holds execution records indexed by payment ID, and the case desk cannot see them.
-- **Evidence:** history.md (E01), gateway-log.json, balance-view.csv.
-- **Rule:** Request a named record lookup from the responsible team only where there is a material status gap. That condition is met here.
+**s2 — request team action from payment operations (requires s1).**
+Explanation: the null terminal status cannot be resolved with the case desk's enquiry access; E01 names payment operations as the holder of execution records indexed by payment ID. One targeted lookup on P-A closes the material gap, and the request includes the identifiers needed (payment ID, client reference, amount, accounts, gateway timestamps) plus the two questions whose answers determine any later step: terminal status with timestamp, and reservation release if failed/returned. The time-sensitivity is flagged as context, not as a deadline the plan commits to. Evidence: `history.md`, `gateway-log.json`, `balance-view.csv`. Criterion: request a named record lookup only for a material gap, from the team named in the context. Source: payments skill. Ordering: s2 follows s1 so that the hold is in place before any upstream enquiry, ensuring no payment is submitted while the lookup is pending.
 
-**s3: Reply to the customer**
-- **Why:** The customer asked whether the payment failed and wants a resend. The reply gives the recorded stage, says what it does not confirm and explains the hold.
-- **Evidence:** history.md, gateway-log.json, balance-view.csv.
-- **Rule:** Reply with the recorded status and what it does not confirm. Do not promise arrival times without a commitment that applies.
+**s3 — reply to the customer in the authenticated chat (requires s1 and s2).**
+Explanation: the customer asked a direct question ("Did it fail?") and made a direct request (resend). The reply answers with the proven stage (accepted 09:00:01; GBP 2,400 reserved; reconciliation Pending; no final status), explains the duplicate risk as the reason for the hold, and reports the payment-operations lookup as pending. It expressly does not promise an arrival time, because no applicable commitment is in the supplied evidence. Evidence: `history.md`, both attachments, the request. Criterion: reply with the recorded status and what it does not confirm; no arrival-time promises absent an applicable commitment. Source: payments skill. Ordering: s3 follows s2 because the message tells the customer the lookup is under way; the plan's verbatim wording ("We have asked…") is therefore supplied as a NOT SENT draft gated on s1 and s2, and the answer carries a present-state equivalent.
 
-**Why this order:** The hold (s1) and the request to Payment operations (s2) come before the reply (s3 requires s1 and s2). This way the message describes the actual state of handling.
+**Alternatives considered within the plan's grounds.** Submitting SAL-021-B as asked would be supported only by a record proving P-A failed or was returned; no such record exists, so it is not supported. Telling the customer the payment succeeded is equally unsupported. The plan's hold-and-verify course is the only one consistent with the evidence. No additional strategy is added here.
 
 ## 4. Execution boundaries
-- **Dependencies:** s1 and s2 are independent of each other. s3 depends on both.
-- **Message wording:** The draft in ANSWER.md says the Payment operations request is "being" raised. The "we have asked" wording may be used only once s2 is acknowledged, as the plan requires. That version is held as a future message.
-- **Where the plan stops:** It stops once the hold is in place and the request is waiting for Payment operations. The hold stays until they report P-A's final status.
-- **What the plan does not cover:** It does not decide what happens after that status is known. That needs a fresh decision. The plan has no `escalate_if` conditions, and no further branches are added here.
+
+- **s1** has no dependencies and is the immediate safeguard: no new payment instruction is to be created.
+- **s2** depends on s1 and is a request to payment operations; its result is unknown until they respond. The plan sets no response deadline and the customer must not be given one.
+- **s3** depends on s1 and s2. If s2 cannot be actioned (e.g., the request is blocked), s3's wording about the lookup would be inaccurate and a fresh decision is needed rather than an improvised message.
+- The plan **stops after s3**. It deliberately does not pre-decide what happens when payment operations responds: whether to resend if P-A is confirmed failed, whether the reservation is released, or how to confirm credit if P-A is settled. Each of those requires the new information and a new decision. No `escalate_if` conditions and no safety flags are set; identity authority is established.
 
 ## 5. Expected result and limits
-**What the steps can achieve**
-- Prevent a possible duplicate GBP 2,400 salary payment.
-- Get the record that settles the question routed to the team that holds it.
-- Give the customer an accurate account of where the payment stands.
 
-**What they cannot achieve**
-- Confirm whether P-A will execute or when the funds will arrive. Both stay unconfirmed until Payment operations reports back.
+**What the proposed steps could achieve:** prevent a duplicate GBP 2,400 salary payment; obtain the authoritative terminal status of P-A from the team that holds it; give the customer an accurate account of the recorded stage and the reason for the hold, with a commitment to update in the same chat.
 
-**What the customer message must say**
-- The records do not show that P-A failed. The gateway accepted the submission, and the timeout was only on the status lookup.
-- GBP 2,400 is reserved against P-A and reconciliation is Pending. No final execution status has been recorded yet.
-- We are not sending a second GBP 2,400 under SAL-021-B now, because the employee could be paid twice.
-- We have asked Payment operations to confirm the final status, and that result is pending. Before s2 is acknowledged, this becomes "we are asking".
+**What remains unconfirmed:** whether P-A has been sent, settled, failed or returned; whether the employee has been or will be credited today; whether and when the GBP 2,400 reservation will be released. The customer's need for same-day payment is acknowledged but cannot be guaranteed from current records.
 
-**What the customer message must not do**
-- Say P-A failed, was rejected or was cancelled.
-- Say P-A was sent, settled or credited.
-- Submit or approve SAL-021-B, or say it has been submitted.
-- Promise arrival today or give any arrival time.
-- Say Payment operations has already completed its check.
-- Ask for PINs, passwords or one-time codes.
+**Constraints carried into the message (plan `must_state` / `must_not`):** the reply must say that a status-lookup timeout is not a failure record, that P-A was accepted at 09:00:01 with no final status yet, that GBP 2,400 is reserved with reconciliation Pending, that the resend is held because of duplicate risk, that payment operations is being asked to confirm, and that credit/arrival today cannot be confirmed. It must not say P-A failed, was returned or was delivered; must not submit or promise SAL-021-B; must not promise an arrival time or same-day receipt; must not give a response time for payment operations; and must not describe the lookup as completed or its result as known.
+
+**Confidence:** high that the hold is correct on the current evidence; the outcome for the employee's salary is genuinely undetermined until payment operations confirms.

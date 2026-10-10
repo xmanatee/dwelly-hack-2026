@@ -1,91 +1,74 @@
+# REASONING — Case 022 (Available balance after a card purchase)
+
+Full input is saved in `context.md`. This memo sets out the public grounds for the plan of record; nothing below has been executed.
+
 ## 1. Situation and history
 
-All events are on 2026-11-10, case 022, account SYN-ACCT-B022. The full input is in the saved `context.md`.
+- **E01 (2026-11-10 09:00, internal card view):** Card ledger entries retrieved for account SYN-ACCT-B022 (`attachments/card-entries.csv`). Account holder Rois Fenwick; current contact authentication recorded as passed.
+- **E02 (09:10, authenticated chat):** Customer reports "the hotel took £600 and £520, so that is £1,120"; available balance only £380; expected the stay to cost £520. This is the customer's interpretation, not a ledger fact.
+- **E03 (09:15, merchant email, bank copied):** Alderclock Hotel sends the final stay receipt (`attachments/hotel-receipt.pdf`, SYN-HOTEL-022): stay 2026-11-07 to 2026-11-10, final amount paid by card £520.00, payment reference FINAL-022, authorisation reference AUTH-022.
+- **E04 (09:20, internal procedure view from card operations):** Card servicing procedure — card operations can investigate a lingering linked authorisation following a completed purchase and release an eligible stale hold after checking linkage and current network state; the case desk may request investigation but cannot release a hold; release timing depends on those checks.
+- **E05 (09:25, chat):** Customer asks for the £600 to be returned to available money today, needs groceries, and does not want "a generic answer about the hotel". No desk response is recorded (request.md).
 
-- **E01 (09:00), internal card view:** The card ledger entries were retrieved, with attachment `attachments/card-entries.csv`. The account holder is Rois Fenwick, and current contact authentication is recorded as passed.
-- **E02 (09:10), authenticated chat:** The customer says the hotel took £600 and £520 (£1,120), that her available balance is only £380, and that she thought the stay cost £520. **This is the customer's own account of events.**
-- **E03 (09:15), merchant email with bank support copied:** Alderclock Hotel sends the final receipt `attachments/hotel-receipt.pdf` and says the final card amount is £520.
-- **E04 (09:20), internal procedure view from card operations:**
-  - Card operations can investigate a lingering linked authorisation after a completed purchase.
-  - They can release an eligible stale hold after checking linkage and current network state.
-  - The case desk may request an investigation but cannot release a hold itself.
-  - Release timing depends on those checks.
-- **E05 (09:25), customer chat:** She asks for the £600 to be back in her available money today because she needs groceries, and she does not want a generic answer.
-- `request.md` records that the desk has not yet responded to the final request.
+**Authenticated records vs. customer report:** The ledger (E01) and merchant receipt (E03) are authenticated records. The claim that £1,120 was taken (E02) is the customer's reading of the available-balance figure and is contradicted by the ledger.
 
 ## 2. Evidence and gaps
 
-**What the authenticated bank records show (`card-entries.csv`):**
-- Opening ledger balance: £1,500.00.
-- One booked `card_debit`: FINAL-022, −£520.00, at 08:30, linked to AUTH-022.
-- One `authorisation_reservation`: AUTH-022, £600.00, status **active**, recorded at 09:00.
-- Snapshot at 09:00: ledger balance £980.00 and available balance £380.00.
-- The figures reconcile: £1,500 − £520 = £980, and £980 − £600 = £380. So the £600 lowers the available balance but is **not** a booked debit.
+**What the ledger proves (`card-entries.csv`):**
+- Opening ledger £1,500.00 (booked).
+- One card debit: FINAL-022, −£520.00, linked authorisation AUTH-022, **booked** 2026-11-10T08:30.
+- One authorisation_reservation: AUTH-022, £600.00, status **active**, recorded 2026-11-10T09:00. This is a reservation entry, not a debit.
+- Ledger balance snapshot £980.00 (1,500 − 520). Available balance snapshot £380.00 (980 − 600 reservation).
 
-**What the merchant document shows (`hotel-receipt.pdf`, SYN-HOTEL-022):**
-- Stay from 2026-11-07 to 2026-11-10, issued at 09:10.
-- Final amount paid by card: GBP 520.00.
-- Payment reference FINAL-022 and authorisation reference AUTH-022.
-- This matches the ledger and supports the view that the £600 is a hold linked to the completed £520 purchase.
+**What the receipt proves (`hotel-receipt.pdf`):** The merchant's final charge is £520.00 under the same payment reference (FINAL-022) and authorisation reference (AUTH-022) that appear in the ledger. The stay ended on 2026-11-10. This links the active hold and the booked debit to a single completed purchase.
 
-**The contradiction:** The customer says she was charged twice (E02). The ledger and receipt show one debit and one reservation. The plan relies on the records.
+**Reconciliation of the customer's claim:** £980 + £600 reservation = £1,580 would not match any ledger figure; the actual arithmetic is £1,500 − £520 = £980 ledger, less £600 hold = £380 available. Only £520 has left the account. The £600 is a hold, not a second charge.
 
-**Gaps that cannot be resolved from the supplied material:**
-- Whether AUTH-022 is actually eligible for release. That depends on card operations checking the linkage and the current network state (E04), and no result has been supplied.
-- When any release would take effect. No timing commitment was supplied.
-- Any balance data after the 09:00 snapshot. The reservation may have changed since then, but we cannot tell.
-- The reservation row is timestamped 09:00, which is after the 08:30 debit. This may simply be the snapshot time. It does not change the plan, but it is a reason not to call the hold "stale" before card operations checks it.
+**Gaps (cannot be established from the desk):**
+- The current card-network state of AUTH-022 — whether the merchant has released, or will release, the authorisation. Only card operations can check this (E04).
+- Card operations' eligibility determination and release timing. The ledger says "active" as of 09:00; nothing later is recorded.
+- Why the hold is still active (merchant timing, network lag, etc.) is not in evidence and the plan correctly refrains from speculating.
+
+No contradictions exist between the authenticated sources; the only discrepancy is the customer's interpretation.
 
 ## 3. Why this plan
 
-**s1: Request card operations action**
-- **Explanation:** The £600 reservation shares its authorisation reference with a completed £520 purchase and with the hotel's final receipt. That matches the "lingering linked authorisation" described in E04. The case desk can ask for an investigation but cannot release the hold.
-- **Evidence:** `card-entries.csv`, `hotel-receipt.pdf`, `history.md` (E04).
-- **Criterion:** The case desk may request investigation of a lingering linked authorisation after a completed purchase. Only card operations can release an eligible stale hold, after checking linkage and network state.
-- **Rule source:** `evidence:history.md`. This is the card servicing procedure supplied in E04. It is a bank procedure shown in the case evidence, not a legal obligation.
-- **Why it comes first:** It is the only route in the supplied material that could lead to the £600 being released. The same-day grocery need (E05) is passed on as a priority request, conditional on card operations' procedure, and not as a commitment.
+**Step s1 — request card operations investigation.**
+- *Explanation:* The ledger and receipt together show one completed £520 purchase with a still-active £600 authorisation under the same reference. This is exactly the "lingering linked authorisation following a completed purchase" that the E04 procedure addresses.
+- *Evidence:* `card-entries.csv` (FINAL-022 booked, AUTH-022 active, same linkage), `hotel-receipt.pdf` (final £520, references FINAL-022/AUTH-022), `history.md` E04.
+- *Decision criterion:* The case desk may request investigation; only card operations can release an eligible stale hold after linkage and network-state checks.
+- *Rule source:* This is a supplied bank procedure (E04, Brackenfold Bank card operations), not a skill heuristic and not a legal obligation. It defines both the available route and the limit of desk authority.
+- *Why time-sensitive:* The customer states (E05) they need the funds today for groceries. Flagging urgency is within the request; it does not change the eligibility test or timing, which remain with card operations.
+- *Why pass the receipt:* It is the merchant's own confirmation of the final amount and references, which is the linkage evidence card operations need.
 
-**s2: Reply to the customer**
-- **Explanation:** The customer believes she was charged £1,120. The ledger and receipt directly show one £520 debit and one £600 reservation. She needs a specific, accurate answer about the hold and how release works, not a generic answer or a promised time.
-- **Evidence:** `card-entries.csv`, `hotel-receipt.pdf`, `history.md`.
-- **Criterion:** State only the stage the records prove, keep the reservation separate from the booked debit, and do not promise a release time without an applicable commitment.
-- **Rule source:** `skill:payments`. This is a handling rule from the payments skill, not a bank policy or legal requirement supplied in the case.
-- **Why it depends on s1:** The message refers to the card operations request. It may only say the request "has been sent" once card operations acknowledges s1. Before that, it must say the request is being raised. The pre-acknowledgement version is in ANSWER.md, and the post-acknowledgement version is drafted separately as NOT SENT.
+**Step s2 — reply to the customer.**
+- *Explanation:* The customer's misunderstanding is directly answerable from the ledger and receipt. The reply must state only what the record proves (debit booked, hold active), that a release request is pending with card operations, and that same-day timing cannot be promised.
+- *Evidence:* `card-entries.csv`, `hotel-receipt.pdf`, E04, E05.
+- *Decision criterion:* Distinguish authorisation from debit; state only the proven stage; a release request is not a completed release; do not promise timing absent an applicable commitment.
+- *Rule source:* Payments-handling skill rule (`skill:payments`) for how to describe holds versus debits and how to word pending requests. No supplied bank policy sets a release SLA, so no timing commitment can be made.
+- *Ordering:* s2 requires s1 so the customer is told accurately whether the request has been raised. Because s1 has not yet been acknowledged, the draft in ANSWER.md says "I am raising"; the plan itself directs this fallback wording. A "has been raised" variant is provided in `future_messages`, conditional on s1 acknowledgement.
+- *Financial support mention:* The plan includes a pointer to the bank's financial support team as a hardship route; it is an offer, not an operation, and no new product or promise is added.
 
-**Alternatives:** A desk-side release is not available, because E04 says the case desk cannot release a hold. A refund or merchant dispute is not supported, because the hotel's figures match the ledger and there is no evidence of a merchant error.
+**Alternatives considered and why not taken:**
+- *Releasing the hold from the desk:* Not permitted under E04.
+- *Telling the customer to contact the hotel:* The customer explicitly rejects a "generic answer about the hotel" (E05), and the supplied procedure gives the bank an internal route, so the plan uses it. The plan does not forbid the hotel route but does not adopt it.
+- *Treating this as a dispute or fraud:* Nothing supports it — the merchant's own receipt matches the ledger debit. Speculating about merchant error or fraud is prohibited by `must_not`.
 
 ## 4. Execution boundaries
 
-- **s1** has no preconditions. Identity authority is established through the passed authentication (E01) and the authenticated chat (E02).
-- **s2** depends on s1 being raised, and its wording depends on whether card operations has acknowledged s1.
-- The plan stops after these two steps. Whether the hold is released, and when, is up to card operations. Their outcome needs a fresh decision on the case and is not decided here.
-- The plan has no `escalate_if` conditions and no safety flags.
+- **s1** has no prerequisites; it is a request to card operations, not a release. It stops at "request submitted"; the desk does not determine eligibility or timing.
+- **s2** depends on s1 being acknowledged as sent. If s1 is not acknowledged, the present-tense draft ("I am raising") is used; if acknowledged, the `future_messages` draft ("I have raised") may be used. No other branch is created.
+- The plan ends pending card operations' response. Whether AUTH-022 is released, when, and what the customer is told afterwards require a fresh decision once card operations report back. The plan does not pre-commit to any follow-up outcome.
+- No escalation triggers (`escalate_if`) and no safety flags are set; identity authority is established via the recorded passed authentication (E01).
 
 ## 5. Expected result and limits
 
-**What the proposed steps could achieve:**
-- The customer gets an accurate explanation: one £520 payment, plus a £600 hold with the same reference AUTH-022 as the payment and the receipt.
-- She sees her balances as of 09:00 (£980 ledger, £380 available) and knows the £380 can be used now.
-- She knows a check by card operations has been requested.
+**What the steps could achieve:** Card operations receive a complete, evidence-backed request with the receipt attached and the urgency flagged; the customer receives an accurate explanation (£520 debited, £980 ledger, £600 active hold, £380 available), knows a request is being raised, knows the desk cannot release the hold and that same-day return is not guaranteed, and is offered the financial support route if hardship results.
 
-**What remains unconfirmed:**
-- Whether the hold is eligible for release.
-- When any release would happen.
-- Any balance after 09:00.
+**What remains unconfirmed:** Whether AUTH-022 is eligible for release; its current network state; when any release would reach the available balance. The customer's request for the money "today" cannot be satisfied or refused by the desk — it can only be forwarded and flagged.
 
-**The customer message must state:**
-- There was one £520 payment (FINAL-022), and the £600 is a pending hold, not a second charge.
-- The 09:00 balances were £980 ledger and £380 available, because of the hold.
-- The hold has the same reference AUTH-022 as the payment and the receipt.
-- The case desk cannot release the hold, card operations must check it, and the timing depends on those checks.
-- We cannot promise the money will be available today.
-- The £380 can still be used.
+**Constraint check:**
+- `must_state` items are all covered in the draft message (only £520 taken / £980 ledger; £600 is a linked hold not a second charge / no £1,120; hold reduces available to £380; request to card operations raised or being raised and marked time-sensitive; desk cannot release and timing not guaranteed; customer will be updated; financial support available).
+- `must_not` items are respected: no double-charge or £1,120 statement; no promise of same-day availability; no claim the hold is released or that card operations have acted; no credential requests; no speculation about merchant error or fraud.
 
-**The customer message must not:**
-- Say the £600 was charged or debited, or that it was a second payment.
-- Promise a release today or by any specific time.
-- Say the hold has been released or that the investigation is finished.
-- Call the hold stale or eligible before card operations has checked it.
-- Say the request has been sent before card operations acknowledges it.
-- Say the hotel made an error or that a refund is due.
-- Ask for a PIN, password or one-time code.
+**Confidence:** High on the factual reconciliation (two independent authenticated sources agree). Moderate-to-low on outcome timing, which is entirely outside the desk's control and evidence.

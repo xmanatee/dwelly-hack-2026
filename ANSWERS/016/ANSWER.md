@@ -1,33 +1,30 @@
-## Decision
+# Decision
 
-This is a partial release, and it has not been executed yet. Expected disposition: **completed**.
+**Release only what the recorded authority covers.** Authority TPA-2024-00931 (Form TPA-2, signed by Christine H. 12 March 2024, processed 14 March 2024) permits Dawes & Co, contact Michael Dawes, to receive statements and balance information for the **sole account SYN-ACCT-16-1 only**. The requester's email address matches the contact recorded on that authority.
 
-- **Sole "Rental income" account (SYN-ACCT-16-1):** we propose releasing statements for **6 Apr 2025 to 5 Apr 2026** to Dawes & Co Chartered Accountants (contact Michael Dawes, m.dawes@dawesandco.example). The legal basis is third-party authority **TPA-2024-00931**.
-- **Joint account with David H.:** decline. The authority on file excludes joint accounts. No authority exists on the joint account, and David H. has never signed one.
-- **Property-by-property rental statements:** the bank does not hold or produce these. We will tell the accountant where to get them.
+- **Sole account SYN-ACCT-16-1, 6 April 2025 – 5 April 2026:** propose generation and delivery to Dawes & Co via the bank's supported third-party delivery route (pending; nothing has been generated or sent).
+- **Joint account SYN-ACCT-16-2:** **decline.** The authority expressly excludes any joint account; a TPA-2 on a joint account requires all holders to sign and David H. has never signed one.
+- **Per-property rental statements:** **decline.** The bank does not hold or produce these.
+- Inform Christine H. through her registered secure channel so she and David can decide whether to sign a new TPA-2 for the joint account.
 
-## Proposed actions (in order, all pending)
+Expected disposition: completed (no escalation conditions).
 
-1. **s1 – Ask the statements team to act** (Statements / third-party requests servicing team, Harrow & Vale Bank plc):
-   - Produce statements for SYN-ACCT-16-1 only, covering 6 Apr 2025 to 5 Apr 2026.
-   - Release them to Dawes & Co / Michael Dawes under TPA-2024-00931, using the bank's supported delivery route for TPA-2 releases.
-   - Include nothing about joint account SYN-ACCT-16-2, and mask any identifiers that aren't needed.
-   - Confirm when the release is complete.
-2. **s2 – Decline:** do not release any statements or information for the joint account Christine H. holds with David H. The reasons are that TPA-2024-00931 excludes other accounts, including joint accounts, and Form TPA-2 needs every account holder to sign for a joint account.
-3. **s3 – Reply to Michael Dawes** at m.dawes@dawesandco.example, only after s1 has been requested and s2 recorded. The text is below.
+# Proposed actions (in order; none executed)
 
-## Message to the accountant (draft for s3, not sent)
+1. **s1 – Confirm identity and authority (case record).** Record that the requester (Michael Dawes, m.dawes@dawesandco.example) matches the named contact and email on TPA-2024-00931; that the authority covers statements and balance information for SYN-ACCT-16-1 only; that no authority exists for SYN-ACCT-16-2; and that the authority does not extend to any other information about Christine H.
+2. **s2 – Hold/decline (case record).** Decline the joint account SYN-ACCT-16-2 statements (no third-party authority; all holders must sign; David H. has never signed) and the per-property rental statements (not bank records). Do not release any joint account information or the identity of the managing agent.
+3. **s3 – Request team action (statements / third-party requests team)** — requires s1. Ask the team to generate statements for sole account SYN-SC-16-1 / SYN-ACCT-16-1 covering 6 April 2025 to 5 April 2026 and deliver them to Dawes & Co (Michael Dawes, m.dawes@dawesandco.example) under TPA-2024-00931, using the bank's supported delivery route for TPA-2 third-party statement releases. Scope strictly to SYN-ACCT-16-1.
+4. **s4 – Reply to the accountant (email)** — requires s2 and s3. Send the message below.
+5. **s5 – Notify the account holder (Christine H., registered secure channel)** — requires s2. Tell her that Dawes & Co requested statements for her joint account and per-property rental statements; that only the sole account statements are being provided under TPA-2024-00931; that a joint account authority requires a new TPA-2 signed by both her and David H. via the bank's branch/authority process; and that per-property rental statements are not held by the bank.
 
-> Thank you for your request. Under the authority Christine has on file with us, we can provide statements for her sole rental income account. We've asked for statements covering 6 April 2025 to 5 April 2026 to be prepared, and they'll be sent to you through our secure route. We'll let you know once they've been issued.
->
-> We can't provide any information about the joint account. The authority on file covers only Christine's sole account, and a joint account needs an authority signed by all account holders. Alternatively, the account holders can obtain those statements themselves and share them with you.
->
-> We also don't hold or produce property-by-property rental statements. These come from Christine's letting or managing agent, or Christine can supply them.
+# Proposed message to Michael Dawes, Dawes & Co (not yet sent)
 
-Say the statements have been issued only after the team confirms s1 is complete. Until then, describe them as requested and pending.
+> Thank you for your request. Under the authority Christine holds with us (ref TPA-2024-00931), we are arranging statements for her sole account ending 16-1 for 6 April 2025 to 5 April 2026; these will follow via our standard third-party delivery route and have not yet been sent. We are unable to provide any statements for the joint account: the authority on file covers only the sole account, and a third-party authority on a joint account must be signed by all account holders. If Christine and David wish Dawes & Co to receive joint account statements, they would both need to complete a new TPA-2 form for that account through the bank. We also do not hold or produce property-by-property rental statements; Christine would need to obtain those from whoever manages her lettings.
 
-## Future message draft — NOT SENT
+# Not included / not permitted
 
-Use only after confirmed execution of: s1.
-
-> Further to our earlier message, the statements for Christine's sole rental income account covering 6 April 2025 to 5 April 2026 have now been issued to you through our secure route. As before, we can't provide information about the joint account, and property-by-property rental statements come from Christine's letting or managing agent, or Christine can supply them.
+- No statement, balance or transaction information for joint account SYN-ACCT-16-2.
+- No disclosure of the property management agency's name or any other details beyond SYN-ACCT-16-1 statements.
+- No claim that statements have been sent or delivered.
+- The accountant's "as usual" remark is not treated as a verified record of prior releases.
+- No joint authority is set up on the account holders' behalf at the accountant's request.

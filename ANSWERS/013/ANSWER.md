@@ -1,18 +1,17 @@
-# Decision: answer Ms Patel now from the bank's records
+# Decision
 
-**Expected disposition:** completed, once the reply below has been sent. Nothing has been sent yet.
+Explain the Direct Debit sequence to the customer and advise her not to make the manual payment until she has confirmed with Northgate Lettings through a trusted contact route. No bank-side operation is needed; the mandate stays unchanged. Expected disposition: **completed** once the reply is sent.
 
-The bank's records already show what happened, so we don't need to check the mandate again:
-- **18 Sep:** the £750 Direct Debit was returned unpaid. Only £710.40 was available.
-- **19 Sep:** our letter was about that failed attempt.
-- **21 Sep:** Northgate collected the £750 again and it was paid.
+# Proposed actions (in order)
 
-Our records show September's rent has left her account once. We can't see Northgate's own records, so she should check with them before paying anything else.
+1. **s1 — Reply to customer (in-app chat)** — *pending, not yet sent.* Deliver the message below to Rina Patel.
 
-## Proposed actions (pending)
+No other actions are proposed. No mandate change, no payment, no case escalation.
 
-1. **s1: reply to the customer.** Send the message below to Rina Patel in the current in-app chat (personal banking). This is the only proposed action.
+# Proposed message to the customer (in-app chat)
 
-## Message to the customer (proposed, not yet sent)
-
-> Thanks for waiting, Ms Patel. I've checked both dates. On 18 September Northgate Lettings tried to collect £750 by Direct Debit, but only £710.40 was available, so it was returned unpaid. That's what our letter of 19 September was about, and we didn't charge you a fee. Your salary arrived on 20 September, and on 21 September Northgate collected the £750 again. That payment went through and is on your statement with reference NL-9LIME-0442. So our records show September's £750 rent has been paid once. If you also make the manual £750 payment, Northgate would have £1,500 from you for September. Their text was sent on 22 September, the day after the payment, so their system may not have caught up yet. We can't see Northgate's own records or tell you whether they show you in arrears. Before you pay anything else, please contact Northgate using contact details you already have, such as your tenancy paperwork, and tell them the £750 was collected on 21 September with reference NL-9LIME-0442. If you're ever given new bank details for a payment by text, please check them with Northgate the same way first. There's no further collection from this Direct Debit scheduled before 18 October.
+> I've checked both dates. On 18 Sep Northgate's £750 collection was presented but your available balance was £710.40, so it was returned unpaid ("refer to payer") — that's what the 19 Sep letter is about, and no fee was charged. After your salary arrived on 20 Sep, Northgate re-presented the same collection on 21 Sep and £750 was paid from your account (ref NL-9LIME-0442). So you have not missed September's rent as far as your account is concerned, and no further collection is due before 18 Oct.
+>
+> What I can't see is whether Northgate's system has matched that 21 Sep payment yet — their text on 22 Sep may be based on the 18 Sep failure. Please don't make the manual payment yet. Contact Northgate using the phone number or email you already have from your tenancy agreement or their official website (not by replying to the text) and tell them the re-presented Direct Debit was paid on 21 Sep; you can show them the entry on your statement in the app. If they confirm they've received it, nothing more is needed.
+>
+> If Northgate tell you they did not send that text, please don't pay and let us know so we can look at it as a possible impersonation. Nothing needs changing on your Direct Debit.

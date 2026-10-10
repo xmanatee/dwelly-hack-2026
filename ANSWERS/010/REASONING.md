@@ -1,70 +1,48 @@
+# Decision memo — Case 010: Question about a payment reference
+
 ## 1. Situation and history
 
-The full input is in the saved `context.md`. Everything below happened on 2026-09-22, with no individual times recorded.
+All four events are dated 2026-09-22 on the business banking phone line; no individual times are recorded. There are no attachments (see `context.md`, `request.md`).
 
-- **request.md:** Case opened on the business banking phone line. Source role is **Third party**. There are **no attachments**.
-- **event-002 (caller's report):** The caller says he is a subcontractor for Haldane Homes. He makes three requests:
-  - which invoice a £90 payment received "on the 1st" relates to
-  - whether Haldane Homes has the money to pay his overdue £1,400 invoice
-  - a direct number for whoever looks after their account at the bank
-- **event-003:** The agent asks whether he holds an account with Harrow & Vale.
-- **event-004 (caller's report):** He says no, he banks with Meridian, and adds: "it's your customer that paid me, so you must be able to see it."
-- **event-001 (internal case record, a snapshot for the agent):** Records what the caller said: he identifies as Dave Tilley of Tilley's Maintenance, not an H&V customer, and says he received £90.00 on 1 Sep from "HALDANE HOMES LTD" with a numeric reference. It also records internal account information:
-  - Haldane Homes Ltd is an H&V business customer.
-  - Its account shows a £90.00 Faster Payment to payee "TILLEYS MAINTENANCE" on 1 Sep, plus other payments to that payee in Aug/Sep.
+- **event-001 (internal account view, bank case record):** The caller identifies himself as Dave Tilley, Tilley's Maintenance, not an H&V customer. He reports receiving £90.00 on 1 Sep from "HALDANE HOMES LTD" with reference `HALDANE 281475554136064010F274262443HS9608382 01SEP26`. The note also records that Haldane Homes Ltd is an H&V business customer and that the agent can see, in Haldane Homes's business account, a £90.00 Faster Payment to payee "TILLEYS MAINTENANCE" on 1 Sep plus other payments to the same payee in Aug/Sep.
+- **event-002 (caller, phone):** Three requests: (a) which invoice the £90 payment relates to; (b) whether Haldane Homes has the money in the account to pay his overdue £1,400 invoice; (c) a direct number for whoever looks after Haldane Homes's account at the bank.
+- **event-003 (agent, phone):** Asks whether the caller holds an H&V account.
+- **event-004 (caller, phone):** Confirms he does not; he banks with Meridian, and argues the bank "must be able to see it" because its customer paid him.
 
-**What the caller said vs what the bank's records show:** The caller's name, business, subcontractor relationship and the £1,400 overdue invoice all come only from what he said (event-001, event-002, event-004). None of it is verified. The facts about Haldane Homes's account come from the bank's own internal view (event-001). These are confidential to the account holder and are not available for disclosure to him.
+**Distinction of sources.** The caller's identity, his subcontractor relationship with Haldane Homes, the £90 receipt and the £1,400 overdue invoice are the caller's own report (event-002, event-004). The authenticated bank record is the internal view in event-001: Haldane Homes Ltd's customer status and the outgoing payments to "TILLEYS MAINTENANCE". That internal view is bank-held information about Haldane Homes, not information the caller is entitled to receive.
 
 ## 2. Evidence and gaps
 
-- **Authority is not established.** The caller confirms he is not a customer (event-004). There is no authority document from Haldane Homes Ltd (request.md: no attachments). The plan lists this authority as missing and deliberately does not ask for it, because the caller can get what he needs from Haldane Homes directly.
-- **Identity is unverified.** "Dave Tilley, Tilley's Maintenance" is self-declared. Even if it were verified, being the payee would not give him rights over the payer's account information.
-- **The £1,400 invoice** is only the caller's claim (event-002). Nothing in the context corroborates it, and the plan does not need it to.
-- **The caller's argument at event-004** — that the bank can see the payment — is correct (event-001). But being able to see it does not make it permissible to disclose it.
-- **What cannot be established from this case:** which invoice the £90 relates to (only the payer can say, through a remittance advice), and anything about Haldane Homes's ability to pay. The reference string is not interpreted.
+- **No authority to receive Haldane Homes's information.** Nothing in event-001, event-002 or event-004 records a mandate, authorisation or consent from Haldane Homes Ltd permitting disclosure to Tilley's Maintenance. The plan's `missing` entry records this explicitly; the supported route is Haldane Homes contacting the bank itself. This is the controlling gap and it cannot be closed by anything the caller could say or supply on this call.
+- **The invoice allocation cannot be established from bank records.** The payment reference was keyed by the payer. Even setting privacy aside, the bank's record (event-001) does not show which invoice the £90 relates to; only Haldane Homes's accounts payable can say.
+- **Affordability ("have they got the money?") is a direct balance enquiry** on another customer's account (event-002). There is no basis on which this could be answered to a third party.
+- **Contact details for the bank's handling of Haldane Homes's account** would expose the customer's relationship contact to an unauthorised party (event-002).
+- **The caller's argument in event-004** ("it's your customer that paid me, so you must be able to see it") is accurate as to visibility but not as to entitlement: the agent can see the payment, which is precisely why the plan's step s2 notes it must not be shared.
+- No indication of fraud or wrongdoing by the caller exists in the record; the request appears to be an ordinary payee trying to reconcile a payment. The plan's `must_not` forbids implying otherwise.
 
 ## 3. Why this plan
 
-**Step s1 – hold / decline the disclosure**
-- *Explanation:* The caller has confirmed he is not a customer, and nothing shows he has authority from the account holder. All three requests would disclose another customer's confidential account information or staff contact details.
-- *Evidence:* event-001, event-002, event-004, request.md.
-- *Criterion:* Hold the unsafe disclosure where privacy or authority is not established, and limit any disclosure to established authority.
-- *Rule source:* `skill:privacy-documents`. This is a skill handling rule. It is not a bank policy document supplied in the context, and the plan cites no specific legal clause, so none is claimed here.
-- *Scope:* The refusal also covers whether Haldane Homes banks with H&V at all. Confirming that would itself disclose a customer relationship.
+**s1 — confirm_identity_authority (record only).** *Explanation:* the caller has confirmed he banks with Meridian and is asking about a different customer's account; nothing gives him authority over that account, and no supported check could create it. *Evidence:* event-001, event-004. *Criterion:* disclosure of account information requires the account holder's established identity or an authorised third-party mandate; a payee relationship is not authority. *Source:* the `privacy-documents` skill handling rule (not a supplied bank policy document or cited statute). The practical consequence is that no ID verification is attempted for the purpose of releasing Haldane Homes's data — doing so would wrongly imply verification could unlock it, which `must_not` prohibits.
 
-**Step s2 – reply to the caller (requires s1)**
-- *Explanation:* The caller should get a clear, polite answer that refuses the disclosure and points him to the right people: the payer for invoice matching and the overdue invoice, and his own bank for how the payment was credited.
-- *Evidence:* event-002, event-004.
-- *Criterion:* When declining a privacy-restricted disclosure, still provide useful general information and a supported route.
-- *Rule source:* `general:safety`.
+**s2 — hold_or_decline.** *Explanation:* each of the three requests would reveal a customer's private financial information or expose the customer's bank contact to an unauthorised party; the bank's internal view cannot be shared merely because the agent can see it. *Evidence:* event-001, event-002, event-004. *Criterion:* hold the unsafe disclosure where there is a privacy/authority gap; limit disclosure to the request and established authority. *Source:* `privacy-documents` skill handling rule. The plan's `identity_authority: not_established` and safety flags `privacy` and `identity_authority` drive this step.
 
-**Order:** The decision to decline (s1) fixes the limits on what the reply (s2) may say, so s2 depends on s1.
+**s3 — reply_to_customer (requires s2).** *Explanation:* gives the caller the useful general information that is available — the reference is payer-set; Haldane Homes's accounts payable is the right contact for a remittance advice on the £90 of 1 Sep and an update on the £1,400 invoice; his own bank (Meridian) can show the full details of the credit he received; Haldane Homes can contact H&V itself through its business banking channels — while stating clearly what cannot be disclosed and why. *Evidence:* event-002, event-004, `request.md`. *Criterion:* hold only the unsafe disclosure, identify the supported route and still provide useful general information. *Source:* general safety handling (`general:safety`), not a supplied bank policy. The message wording is lifted from the plan and contains no confirmation or denial of any account detail. Note that the message's references to "£90 payment of 1 September" and "£1,400 invoice" are the caller's own figures from event-002, not bank data.
 
-**Safety flags:** privacy and identity_authority. No escalation triggers are defined (`escalate_if` is empty).
+**Ordering.** s1 and s2 have no dependencies; s3 depends on s2 so that the refusal position is fixed before anything is said to the caller. Nothing is dependent on any bank-system operation.
+
+**Alternatives considered within the plan's scope.** The only supported alternative route is Haldane Homes Ltd contacting H&V directly, which the message points to. Escalation is not proposed (`escalate_if` is empty) because there is no fraud indicator, no dispute on an H&V account, and no system action requested. Partial disclosure (e.g. "yes, we can see that payment") is excluded by `must_not` — confirming visibility would itself confirm Haldane Homes's account activity.
 
 ## 4. Execution boundaries
 
-Both steps are proposed. Neither has been carried out. The plan ends with the declined disclosure and the reply. It does not request authority from Haldane Homes, open any further case, refer the matter internally or follow up. Anything beyond these two steps would need a fresh decision.
+- No action has been taken. s1 is an internal record of the authority position; s2 is the decision to decline; s3 is the spoken reply, pending delivery.
+- No bank-system operation, case registration, callback, escalation or handoff is proposed.
+- The plan stops at the reply. If Haldane Homes Ltd itself contacts the bank with its own authentication, that would be a new contact requiring its own decision; the plan does not pre-decide it, and the caller must not be told that any future disclosure will be made.
+- If the caller presses with further details (invoice numbers, company registration, etc.), the refusal stands — the gap is authority, not information, and the plan does not include any route for the caller to cure it.
 
 ## 5. Expected result and limits
 
-**Expected disposition:** refused.
+**Achievable:** the caller leaves with a clear, non-accusatory explanation of why the bank cannot help with Haldane Homes's account, and with practical next steps (Haldane Homes accounts payable for remittance advice and invoice status; Meridian for his own credit details; Haldane Homes contacting H&V if it needs bank help with the reference). All four `must_state` points are covered in the s3 message.
 
-**What the steps could achieve:** If carried out, the caller gets a polite refusal and three routes:
-- Haldane Homes' accounts team, for a remittance advice and the overdue invoice
-- Haldane Homes, for where the £1,400 invoice stands
-- Meridian, for how the payment appears on his own account
+**Not achieved / unconfirmed:** the caller will not learn which invoice the £90 payment covers, whether Haldane Homes can pay the £1,400 invoice, or who handles Haldane Homes's account at H&V — by design. The bank cannot resolve his reconciliation or credit-control problem; only Haldane Homes can. Whether Haldane Homes will provide a remittance advice or settle the £1,400 invoice is outside the bank's control and not promised.
 
-**What stays unconfirmed:** which invoice the £90 covers, and whether the £1,400 invoice will be paid. The bank will not and cannot answer either.
-
-**The reply must state:**
-- H&V cannot discuss or confirm any details of another party's account, payments, balance or bank relationship with someone not authorised on that account.
-- He should ask Haldane Homes directly for a remittance advice and take up the overdue invoice with them.
-- Meridian can help with how the incoming payment appears on his account.
-
-**The reply must not:**
-- confirm or deny that Haldane Homes Ltd is an H&V customer
-- confirm, describe or match to an invoice any payment in its account, including the £90.00 payment or the other Aug/Sep payments to TILLEYS MAINTENANCE
-- indicate its balance, available funds or ability to pay
-- give any staff name, number or contact details
-- interpret or decode the payment reference
+**Constraints preserved:** no confirmation or denial of balance, funds, ability to pay, or account activity; no invoice allocation or account details beyond what the caller holds from his own credit; no relationship manager or team contact details; no suggestion that further details would unlock disclosure; no implication of wrongdoing or fraud. Expected disposition: **refused**.

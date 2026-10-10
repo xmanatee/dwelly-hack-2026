@@ -1,26 +1,26 @@
 # Decision
-**Status: needs more information (`needs_info`).** Nothing has been sent or held yet. Every step below is proposed and pending.
 
-- **Salvatore Russell, £247.50:** proposed to go to Miya for secure in-app confirmation. The amount matches the agency statement and her split file, and the account name check (Confirmation of Payee, or CoP) matched.
-- **Jack Elson, £375.00:** proposed to hold. The agency statement and Miya's own working both give £337.50.
-- **Emerald Creagh, £337.50:** proposed to hold. The CoP check found no match. Her bank holds the name as "E CREAGH-DOYLE".
+**Disposition: needs_info.** The £1,260.00 deposit return is booked and available, but only one of the three requested payments can proceed to secure confirmation now. The other two are held pending the customer's answers.
 
-# Proposed actions (in order)
-1. **s1: Hold two payments (pending).** Hold only the £375.00 payment to Jack Elson (SYN-SC-07-3 / SYN-ACCT-07-3) and the £337.50 payment to Emerald Creagh (SYN-SC-07-1 / SYN-ACCT-07-2). Don't restrict anything else on the account.
-2. **s2: Ask Miya to confirm one payment (pending).** Send her the £247.50 payment to Salvatore Russell (SYN-SC-07-2 / SYN-ACCT-07-1) to confirm in the app. Suggested reference: "7 Isfield Rd deposit share". The payment only goes once she confirms it.
-3. **s3: Reply to Miya in the app chat (pending).** Use the plan's exact wording. That wording describes s1 and s2 as already carried out, so it's kept as a separate NOT SENT draft. It should only be used once s1 and s2 are confirmed as done.
+- **Salvatore Russell — £247.50:** Confirmation of Payee matched and the amount reconciles with the agency statement and the customer's own CSV. Proposed to go to the customer for secure in-app confirmation. Not released until she confirms.
+- **Jack Elson — amount unresolved:** Customer requested £375.00; the agency statement and her own CSV note ("450 − 75 − 37.50") both give £337.50. At £375.00 the four shares total £1,297.50, £37.50 more than the £1,260.00 received. Held until she confirms the amount.
+- **Emerald Creagh — £337.50, CoP no match:** The receiving bank holds the name as "E CREAGH-DOYLE" (reason ANNM). Held until the customer verifies the details directly with Emerald and explicitly decides whether to proceed.
 
-# Message to the customer (summary of the pending s3 reply)
-The reply should tell Miya:
-- **No payments have been sent yet.** Salvatore's £247.50 is waiting for her to confirm it in the app.
-- **Jack:** the agency statement and her own note (450 - 75 - 37.50) both give £337.50, not £375.00. With £375.00, her four amounts add up to £1,297.50, but only £1,260.00 came in. She needs to confirm Jack's payment should be £337.50.
-- **Emerald:** the account name check came back as no match. Her bank holds the name as "E CREAGH-DOYLE". That doesn't necessarily mean anything is wrong. Miya should check the sort code and account number with Emerald directly, using a contact she already has, before the payment is sent.
-- **Jack's and Emerald's payments are on hold until Miya replies.**
-- No arrival time is promised. Not even "today".
+No payment has been set up or sent. No same-day arrival is promised. The bank takes no view on whether the deductions or the split are fair; it acts only on the customer's instruction from her own account.
 
+# Proposed actions (in order, none executed)
 
-## Future message draft — NOT SENT
+1. **s1 — Request secure in-app confirmation (Salvatore Russell).** Submit to the customer's secure in-app confirmation: new payee Salvatore Russell, sort code SYN-SC-07-2, account SYN-ACCT-07-1 (CoP match), Faster Payment £247.50 from her personal current account, reference "Deposit 7 Isfield Rd". Payment is not released until she confirms in the app.
+2. **s2 — Ask the customer to confirm Jack Elson's amount.** £337.50 (agency statement and her own note) or £375.00 (her request); explain the £37.50 over-allocation. Do not alter the amount unilaterally.
+3. **s3 — Ask the customer to verify Emerald Creagh's details.** Explain the CoP no match and the name held ("E CREAGH-DOYLE"); ask her to check directly with Emerald via a contact method she already uses, then tell us whether she wants to proceed with £337.50 to those details; warn that a payment to wrong details may not be recoverable.
+4. **s4 — Reply to the customer in the in-app chat** with the message below.
 
-Use only after confirmed execution of: s1, s2.
+# Proposed message to the customer (in-app chat, pending)
 
-> Thanks Miya. I've checked your amounts against the deposit return of £1,260.00. Salvatore's £247.50 matches the agency statement and his account name check, so I've sent that payment to your app for you to confirm. It won't go until you approve it. I've held the other two for now. Jack: the agency statement gives his share as £337.50, and your own note (450 - 75 - 37.50) works out the same. £375.00 looks like a typo. With £375.00 your four amounts add up to £1,297.50, which is £37.50 more than came in. Can you confirm Jack's payment should be £337.50? Emerald: the account name check came back as no match. Her bank holds the name as "E CREAGH-DOYLE". That doesn't necessarily mean anything is wrong, but please check the sort code and account number with Emerald directly, using a contact you already have for her, before we send it. Let me know once you've done that and whether you'd like to go ahead. I can't promise exactly when payments will arrive.
+> Thanks — the £1,260.00 from Oakfield PM reached your account on 22 September and is available. I've checked your split against the agency statement. Two things before I can send everything: (1) Jack's amount — your request says £375.00 but the agency statement and your own note give £337.50; at £375.00 the four shares come to £1,297.50, £37.50 more than was returned. Please confirm which you want. (2) Emerald — our name check couldn't match "Emerald Creagh" to the account details; that bank holds the name as "E CREAGH-DOYLE". Please check directly with Emerald that these are her details, then let me know if you want to go ahead; if details are wrong the money may not be recoverable. Salvatore's £247.50 matched correctly and I'm sending it to you now to confirm securely in the app — it isn't sent until you confirm it. Once you confirm Jack's amount and Emerald's details, I'll set those up the same way. I can't promise they will arrive today, but I'll move as quickly as possible. I'm not able to comment on the deductions themselves — these payments go on your instruction from your account.
+
+# What remains open
+
+- Customer's confirmation of Jack Elson's amount (£337.50 or £375.00).
+- Customer's confirmation, obtained directly from Emerald Creagh, that SYN-SC-07-1 / SYN-ACCT-07-2 is her account held as "E Creagh-Doyle", and her explicit decision whether to proceed despite the CoP no match.
+- Customer's secure in-app confirmation of the Salvatore Russell payee and £247.50 payment.

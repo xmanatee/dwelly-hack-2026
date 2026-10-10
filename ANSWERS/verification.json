@@ -1,18 +1,61 @@
 {
   "cases": 30,
-  "terminal_errors": 0,
-  "model_requests": 98,
-  "run_cost_usd_estimate": 9.6331666,
-  "cumulative_settled_usd_estimate": 10.1483502,
-  "budget_usd": 100,
-  "remaining_local_guard_usd": 89.8516498,
+  "terminal_errors_in_selected_answers": 0,
+  "fable_cases": 21,
+  "opus_cases": 9,
+  "model_requests_in_selected_answers": 112,
+  "selected_answers_cost_usd_estimate": 25.5623913,
+  "refresh_run": {
+    "packaged_at": "2026-10-10T16:09:05.099194+00:00",
+    "fable_cases": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "008",
+      "009",
+      "010",
+      "011",
+      "012",
+      "013",
+      "014",
+      "015",
+      "016",
+      "017",
+      "019",
+      "021",
+      "022",
+      "023"
+    ],
+    "retained_opus_cases": [
+      "018",
+      "020",
+      "024",
+      "025",
+      "026",
+      "027",
+      "028",
+      "029",
+      "030"
+    ],
+    "failed_refresh_cases": [],
+    "refresh_request_statuses": {
+      "settled": 102,
+      "uncertain": 9
+    },
+    "refresh_settled_cost_usd_estimate": 27.2647475,
+    "refresh_nonsettled_exposure_usd": 19.86225
+  },
   "checks": [
-    "30 unique organizer case folders",
-    "nonempty answer/reasoning/plan/context/generation and journal per case",
-    "all planner and generator stages succeeded",
-    "input hashes match prepared evidence",
-    "no configured credentials in exported files",
-    "no pending budget reservations"
+    "30 complete answer/reasoning pairs",
+    "Fable output matches generation receipt",
+    "Fable Plan and Generated schemas validated",
+    "Fable context exactly matches original Opus context",
+    "all prepared input hashes verified",
+    "configured credentials absent from exported files"
   ],
-  "note": "Costs are configured-price estimates, not provider invoices. No paid judge run and no claim of perfect decision accuracy."
+  "note": "Generation completion, not a correctness score. Incomplete/failed refresh attempts are archived; their original Opus answers are retained. Costs are configured-price estimates."
 }

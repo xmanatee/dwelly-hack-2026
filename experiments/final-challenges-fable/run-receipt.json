@@ -1,0 +1,53 @@
+{
+  "implementation_commit": "789d347",
+  "started_at": "2026-10-10T16:03:47.745268+00:00",
+  "cutoff": "2026-10-10T16:09:00+00:00",
+  "config": {
+    "model": "claude-fable-5-1",
+    "provider": "anthropic",
+    "key_envs": [
+      "ANTHROPIC_WINNER_API_KEY"
+    ],
+    "account_budget_usd": 100.0,
+    "input_price_per_million": 10.0,
+    "output_price_per_million": 50.0,
+    "provider_only": [],
+    "provider_sort": "latency",
+    "tool_choice_required": false,
+    "anthropic_cache": true,
+    "reasoning_enabled": true,
+    "max_tokens": 32768,
+    "reasoning_effort": "high",
+    "max_requests": 12,
+    "max_tool_calls": 20,
+    "max_tool_result_bytes": 32768,
+    "tool_timeout_seconds": 10.0,
+    "max_total_tokens": 500000,
+    "max_input_tokens": 200000,
+    "case_timeout_seconds": 390.0,
+    "request_timeout_seconds": 330.0,
+    "total_budget_usd": 100.0,
+    "budget_file": ".cache/accounts/anthropic-winner.json",
+    "skills": [],
+    "skill_mode": "preload",
+    "domain_skill_enabled": true,
+    "disabled_tools": [],
+    "case_concurrency": 15,
+    "run_timeout_seconds": 450.0,
+    "deadline_utc": null,
+    "environment_state_mode": "isolated",
+    "retries": 2,
+    "modules": {
+      "knowledge": true,
+      "calculator": true
+    },
+    "instructions": "",
+    "planner": {
+      "mode": "advisory",
+      "model": null,
+      "playbook": "banking",
+      "skill_selection": "model",
+      "instructions": ""
+    }
+  }
+}

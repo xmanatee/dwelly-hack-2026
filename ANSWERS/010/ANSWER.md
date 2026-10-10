@@ -1,26 +1,21 @@
-## Decision
+# Decision
 
-**Refuse (proposed).** The caller says he is Dave Tilley of Tilley's Maintenance. All three of his requests would be declined:
+**Refused (proposed disposition).** The caller, Dave Tilley of Tilley's Maintenance, is not a Harrow & Vale customer and holds no recorded mandate or authorisation from Haldane Homes Ltd. All three requests — which invoice the £90 payment relates to, whether Haldane Homes has funds to pay his £1,400 invoice, and a direct number for whoever looks after Haldane Homes's account — would disclose another customer's account information to an unauthorised third party and are to be declined. No bank-system action or escalation is proposed; the caller is to be given general information only.
 
-- which invoice the £90 payment covers
-- whether Haldane Homes can pay the overdue £1,400 invoice
-- a direct number for whoever looks after their account
+# Proposed actions (in order, none executed)
 
-He has said he is not a Harrow & Vale customer, and nothing shows he is authorised to receive information about Haldane Homes Ltd's account. Nothing about that account would be confirmed or denied.
+1. **s1 — Confirm identity/authority (record only).** Record that the caller is a non-customer (banks with Meridian) with no recorded mandate or authorisation from Haldane Homes Ltd. No identification check is to be attempted for the purpose of releasing Haldane Homes's information, because no supported check could establish that authority.
+2. **s2 — Hold / decline disclosure.** Decline to disclose any Haldane Homes Ltd account information: the invoice allocation of the £90 payment, balance or ability to pay the £1,400 invoice, payment history, and any direct contact for the bank's handling of Haldane Homes's account. Reason: third party without the customer's authority.
+3. **s3 — Reply to the caller (after s2).** Deliver the message below. Do not confirm or deny any account details.
 
-## Proposed actions (in order, none carried out yet)
+# Proposed message to the caller
 
-1. **Hold / decline the disclosure (s1).** Share nothing from or about Haldane Homes Ltd's account. That means no matching of the 1 Sep £90 payment to an invoice, no mention of any other payments to that payee, no balance or ability-to-pay information, and no staff names or direct numbers. Do not confirm whether Haldane Homes banks with Harrow & Vale.
-2. **Reply to the caller (s2), after step 1.** Give him a clear, polite refusal and tell him where to go instead, using the message below.
+> I understand the reference isn't helpful, but I'm not able to discuss another customer's account with anyone other than that customer or someone they've authorised — that includes what a payment relates to, whether there are funds to pay an invoice, or who looks after their account here. The reference on a payment is typed in by the payer, so the best route is Haldane Homes's accounts payable team: ask them for a remittance advice for the £90 payment of 1 September and for an update on your £1,400 invoice. Your own bank, Meridian, can show you the full details of the credit you received. If Haldane Homes needs our help with the payment, they can contact us directly through their business banking channels.
 
-## Proposed message to the caller (not yet given)
+# Boundaries
 
-> Thanks for explaining, Mr Tilley. I understand the reference isn't helpful. Because you don't hold an account with us, I'm not able to discuss or confirm anything about another business's account. That includes whether they bank with us, any payments they've made, which invoice a payment covers, their balance or ability to pay, or who looks after their account here. The quickest way to find out which invoice the £90 was for is to ask Haldane Homes' accounts team for a remittance advice. They can also tell you where your overdue £1,400 invoice stands. If you have questions about how the payment shows on your own account, Meridian can help with that. I'm sorry I can't help further with this one.
-
-## Agent reminders (must not)
-
-- Don't confirm or deny that Haldane Homes Ltd is a Harrow & Vale customer.
-- Don't confirm, describe or match to an invoice any payment in Haldane Homes's account. This includes the £90.00 payment and the other Aug/Sep payments to TILLEYS MAINTENANCE.
-- Don't hint at Haldane Homes's balance, available funds or ability to pay the £1,400 invoice.
-- Don't give any staff name, direct number or contact details for whoever manages that account.
-- Don't interpret or decode the payment reference for him.
+- Do not confirm or deny Haldane Homes's balance, available funds, ability to pay, or any payment or account activity.
+- Do not disclose which invoice the payment was for or anything beyond what the caller already holds from his own credit.
+- Do not provide any name, number or contact details for a relationship manager or team handling Haldane Homes's account.
+- Do not suggest the caller can obtain this by supplying further details, or that a future disclosure will be made.
+- Do not imply the caller is doing anything wrong or allege fraud.

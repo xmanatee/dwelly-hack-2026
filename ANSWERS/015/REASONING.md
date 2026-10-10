@@ -1,122 +1,50 @@
-# Decision memo: Case 015, disputed first Direct Debit collection
-
-The full input is saved in `context.md`. Event and attachment IDs below refer to it.
-
 ## 1. Situation and history
 
-**Authenticated bank records:**
-- **28 Aug 2026, 11:32:** Faster Payment HV26082811320471 of £4,980.00 to "HARROW & VALE RE LIME PROPERTY CA", ref "MOVE IN 14 GROVE". Status is Completed and the payment was "received by the beneficiary bank". The balance afterwards was £1,902.30.
-  - Sources: `attachments/payment_confirmation_2026-08-28.pdf`, `attachments/statement_extract.csv`, event-001.
-- **2 Sep 2026:** Direct Debit instruction LP-14GROVE-0208 for Lime Property set up through an originator invite (statement INFO line, event-001).
-- **14 Sep 2026:**
-  - The Direct Debit collection "H&V COLLECT / LIME PROPERTY LP-14GROVE-0208" of −£4,980.00 was paid and the balance went to −£3,077.70.
-  - An "UNARRANGED OVERDRAFT DAILY FEE" of −£6.50 then took it to −£3,084.20 (`statement_extract.csv`).
-  - Event-001 gives an approximate "£3,100 overdrawn", an arranged limit of £1,000, and confirms that the unarranged portion incurs a daily fee.
+All events are dated 2026-09-14 (full input in `context.md`).
 
-**Originator document (not a bank record):**
-- `attachments/dd_advance_notice_2026-09-09.eml` is dated 9 Sep 2026 and addressed to t.okoye@example.net.
-- It shows a first collection of £4,980.00 on 14 Sep 2026, described as "balance of your account as at 8 September", then £795.00 monthly on the 14th.
-- It asks the payer to contact Lime Property before the collection date if any amount is wrong.
+- **event-001** (internal account view, authenticated bank record): Tunde Okoye, personal current account. Chronology: 28 Aug Faster Payment −£4,980.00 to HARROW & VALE RE LIME PROPERTY CA, ref "MOVE IN 14 GROVE" (bank record does not show how the agency allocated it); 2 Sep DD mandate H&V COLLECT / LIME PROPERTY created via originator invite; 9 Sep advance notice (originator copy) for £4,980.00 on 14 Sep then £795 monthly; 14 Sep DD collection −£4,980.00 paid. The note records the customer's stated rent of £795 and that he says he did not read the advance notice.
+- **event-002** (phone, ID&V passed): customer reports the agency took "nearly five grand" by Direct Debit, says he paid all move-in money by transfer two weeks ago, rent is £795, he is heavily overdrawn, and wants a full refund today under the Guarantee and the DD cancelled.
+- **event-003**: agent acknowledges and says they will check the mandate and notice.
+- **event-004**: customer states he never agreed to £4,980 by Direct Debit, regardless of the notice.
 
-**Customer's account (his report, not verified):**
-- In event-002 (ID&V passed), he says he paid all the move-in money by transfer two weeks ago and his rent is £795. He wants everything back today under the Guarantee and wants the Direct Debit cancelled.
-- In event-004 he says he never agreed to £4,980 by Direct Debit.
-- Event-001 records that he says he did not read the advance notice.
+Attachments:
+- `attachments/dd_advance_notice_2026-09-09.eml` — originator notice dated 9 Sep 2026 to t.okoye@example.net: reference LP-14GROVE-0208; first collection £4,980.00 on 14 Sep 2026 "(balance of your account as at 8 September)", then £795.00 monthly on the 14th; instructs contacting Lime Property before the collection date if any amount is incorrect.
+- `attachments/payment_confirmation_2026-08-28.pdf` — bank confirmation of Faster Payment HV26082811320471, 28 Aug 2026 11:32, £4,980.00, payee HARROW & VALE RE LIME PROPERTY CA, ref MOVE IN 14 GROVE, status Completed, account SYN-ACCT-15-1. It states it is not a receipt from the beneficiary.
+- `attachments/statement_extract.csv` — 28 Aug FP −£4,980.00 (balance £1,902.30); 2 Sep DD instruction set up LP-14GROVE-0208; 14 Sep DD −£4,980.00 (balance −£3,077.70); 14 Sep unarranged overdraft daily fee −£6.50 (balance −£3,084.20).
 
-Event-003 is the agent's holding acknowledgement and contains no new facts.
+Customer report vs authenticated records: the bank records confirm the 28 Aug payment, the 2 Sep mandate, the 9 Sep notice content, and the 14 Sep collection. The customer's claims that the agreed rent is £795, that all move-in money was already covered by the 28 Aug transfer, and that he never agreed to £4,980 by DD are his assertions only; nothing supplied confirms or contradicts the agreed amounts.
 
 ## 2. Evidence and gaps
 
-**What the records support:**
-- The customer's identity and authority are established (event-002, event-001).
-- The £4,980.00 transfer on 28 Aug was sent and reached the beneficiary bank. The PDF states that it is "not a receipt from the beneficiary".
-- A mandate existed from 2 Sep, and the £4,980.00 collection on 14 Sep was paid.
-- The advance notice announced exactly that amount.
-- The account is beyond its arranged limit, and a daily fee has started.
-
-**What cannot be established from the context:**
-- **How Lime Property allocated the 28 Aug payment.** Event-001 says this explicitly. The notice describes the £4,980.00 as the "balance … as at 8 September", which is the same figure as the 28 Aug transfer. From this evidence we cannot tell whether the earlier payment was credited, misapplied, or covered something else.
-- **What amount the customer agreed to when he accepted the originator invite on 2 Sep.** No originator-side mandate evidence is supplied.
-- **The outcome of any Guarantee/indemnity claim.** None is recorded.
-
-**Tensions in the evidence:**
-- The notice shows the amount was announced in advance. The customer, however, denies agreeing to it and says he did not read the notice. Neither side proves agreement or its absence, so the plan treats this as something for the claims team to decide, not the servicing agent.
-- The overdraft figure in event-001 ("£3,100") is a rounded summary. The statement shows −£3,077.70 after the collection and −£3,084.20 after the fee. The plan uses the statement figures.
-
-**Not supplied:** the Direct Debit Guarantee scheme rules and any bank fee policy. The rule sources below are skill handling rules, not quoted policy or law.
+- Identity: ID&V passed on the phone channel (event-002); the account holder is confirmed in event-001. Identity authority is established, so the cancellation instruction can be acted on.
+- The collection matches the advance notice exactly in amount, date and reference (`dd_advance_notice_2026-09-09.eml` vs `statement_extract.csv`). This matters for how the Guarantee claim is assessed, because the notice described the £4,980 as the "balance of your account as at 8 September" — i.e. the originator presented it as money owed. Whether that balance was itself wrong (because the 28 Aug transfer should have cleared it) cannot be determined from the bank's records; the payment confirmation explicitly says it is not a receipt from the beneficiary, and event-001 says the allocation is not shown.
+- Minor inconsistency: event-001 says the account is "£3,100 overdrawn", while the statement extract shows −£3,084.20 after the fee. The plan uses the statement figures; the difference is small and does not change the decision.
+- Gaps listed in the plan: tenancy/move-in paperwork showing agreed amounts; how Lime Property allocated the 28 Aug payment; how the 2 Sep mandate was completed and what amount (if any) the customer agreed at setup; the bank's internal DD indemnity procedure and timescales; the bank's policy on refunding unarranged overdraft fees arising from a disputed collection. None of the last three are supplied, so no timescale, refund entitlement or fee waiver can be stated.
+- No safety flags are raised; there is no indication of fraud or third-party takeover — the originator is the customer's own letting agency and the mandate was set up via an originator invite on 2 Sep.
 
 ## 3. Why this plan
 
-**s1: Guarantee/indemnity claim to the Direct Debit claims team**
-- **Explanation:** The customer disputes the amount of a Direct Debit collection and explicitly invokes the Guarantee. Whether the amount was an error, given the matching earlier transfer and the notice wording, needs a claims decision. The servicing agent should not guess.
-- **Evidence:** event-002, event-004, event-001, the advance notice, the 28 Aug payment confirmation and the statement extract.
-- **Criterion:** A Guarantee claim addresses errors in Direct Debit collection. Identify the error and the right route without promising a refund for every dispute with a supplier.
-- **Source:** skill:scheduled-payments (a handling rule, not a quoted scheme clause).
-- **Why first:** It is the main remedy the customer asked for, and the fee review (s3) depends on its context.
+**s1 – Guarantee claim to the DD disputes/indemnity team.** The customer has expressly invoked the Guarantee (event-002). The plan's rationale: the collection matched the advance notice, but the customer asserts the amount was never agreed and the same sum was already paid by transfer, so whether an "error" occurred needs assessment under the bank's process rather than an immediate refund promise. Evidence: event-002, event-004, the advance notice, the payment confirmation and the statement extract. Criterion: identify the alleged error and the applicable route without promising a refund for every supplier dispute, and keep the claim separate from changing future instructions. Source: the scheduled-payments handling skill (a handling rule, not a supplied bank policy or statutory clause). The step also asks the team to review the £6.50/day unarranged overdraft fee as a consequence of the disputed collection; because no fee policy is supplied, this is a review request only. s1 is listed first because the refund question is the customer's primary demand and the most time-sensitive given the overdraft.
 
-**s2: Mandate cancellation to the Direct Debit servicing team**
-- **Explanation:** The verified account holder explicitly asked for the Direct Debit to be cancelled. Cancellation is kept separate from the refund claim.
-- **Evidence:** event-002 and the statement extract.
-- **Criterion:** Reuse the supplied mandate details and the authorisation already established. Cancelling an instruction does not show that a collected payment was reversed. Keep a Guarantee claim separate from changes to future instructions.
-- **Source:** skill:scheduled-payments.
-- The instruction tells the team not to record cancellation as reversing the 14 Sep collection.
+**s2 – Cancel mandate LP-14GROVE-0208.** The ID&V-passed account holder gave an explicit cancellation instruction (event-002). Rationale: this is a supported change on the customer's authority and is independent of the Guarantee claim. Criterion: cancel on the customer's authority; cancellation does not establish that a collected payment was reversed or that a contract ended. Source: scheduled-payments handling skill. The step records that the customer must be told the £795 due on 14 Oct will not be taken once cancelled and that cancellation does not reverse the 14 Sep collection — so he is not left thinking rent is being paid, or that the collection is undone.
 
-**s3: Overdraft fee review to the overdraft / account servicing team**
-- **Explanation:** The disputed collection pushed the account about £2,084 beyond its arranged limit, and a daily fee is already being charged. That fee impact needs a decision now, without assuming how the claim will end.
-- **Evidence:** the statement extract, event-001 and event-002.
-- **Criterion:** Keep the confirmed stage separate from the outcome. A review request does not establish a fee reversal.
-- **Source:** skill:complaints-rights.
+**s3 – Ask the customer for tenancy/move-in paperwork.** Rationale: the bank's records show the collection matched the notice; the customer's assertion that the amount was not owed needs documentary support of the agreed amounts. Criterion: where a gap affects the decision, name the precise missing fact and make a concrete request (general evidence rule). This feeds the s1 claim ("customer paperwork from s3 to follow").
 
-**s4: Reply to the customer on the call**
-- **Explanation:** The reply covers both of his requests and reports only what the records prove. It keeps every proposed operation pending and asks for the one missing fact: how the agency allocated the 28 Aug payment.
-- **Evidence:** event-002, event-004, the payment confirmation, the advance notice and event-001.
-- **Criterion:** State only the stage the supplied record proves. A payer's claim about a payment is not evidence that the payee booked it as a credit. Do not promise arrival times or outcomes without an applicable commitment.
-- **Source:** skill:payments.
+**s4 – Reply to the customer.** Rationale: the customer needs an accurate status — claim and cancellation requested but pending, no refund promised, what cancellation does and does not do, the fee position, and the direct route with the agency. Criterion: reply with recorded status and what it does not confirm; a request to change is not a confirmed change and a review request does not establish a refund. Source: complaints-rights handling skill, which also grounds the complaint/Ombudsman signposting (without a fixed deadline or predicted outcome). The mention of the Financial Ombudsman Service is the plan's signposting of an external route, not a statement of a legal obligation or outcome. s4 depends on s1–s3 because the message reports those actions as raised.
 
-**Alternatives not chosen:**
-- **Refunding immediately at the agent's discretion:** the plan does not support this, and the must_not rules forbid promising a same-day refund.
-- **Declining the claim because of the advance notice:** this would mean deciding the agreement question, which the evidence cannot settle and the plan forbids.
-
-No safety flags or escalation triggers are recorded in the plan.
+Alternatives: an immediate same-day refund under the Guarantee is what the customer asked for, but the supplied records show the collection matched the advance notice and the error question is unresolved, and the bank's indemnity procedure is not supplied — so the plan does not promise it. Refusing the claim outright is equally unsupported, because the apparent double payment of the same £4,980 is a genuine disputed point. Routing through the disputes team is the only path supported by the evidence.
 
 ## 4. Execution boundaries
 
-- s1, s2 and s3 are independent team requests. None has a recorded `requires` or condition. s4 is said on the current call and describes s1 to s3 as being submitted.
-- Nothing has been executed. No claim reference, cancellation confirmation or fee decision exists yet.
-- The plan stops at:
-  - the claims team's decision;
-  - recording the mandate cancellation;
-  - the overdraft team's decision on fees;
-  - the customer providing Lime Property's statement of account.
-- Any outcome from those teams, or a team being unable to act, needs a fresh decision. This memo does not set out further branches.
+- s1, s2 and s3 have no prerequisites and can be raised in parallel; s4 requires acknowledgement of all three.
+- The plan's s4 wording describes the claim and cancellation as already raised ("I've raised…", "I've requested…"). That wording is appropriate only after s1–s3 are acknowledged as executed, so it is held as a NOT SENT draft in `future_messages`. The message in ANSWER.md uses present-state wording ("I'm raising…", "I'm requesting…") and covers the same must-state points.
+- The plan stops at: the disputes team's determination (indemnity claim vs referral to originator), the fee review outcome, confirmation of mandate cancellation, and receipt of the customer's paperwork. Any of these requires a fresh decision; no further branches are added here.
+- No escalation conditions are set (`escalate_if` empty); the disposition is already escalated to the two internal teams.
 
 ## 5. Expected result and limits
 
-**What the steps could achieve:**
-- A recorded Guarantee/indemnity claim with a reference.
-- Future collections under LP-14GROVE-0208 stopped.
-- A fee-treatment decision for the period while the claim is pending.
-- Evidence about how the 28 Aug payment was allocated, if the customer obtains the statement.
+What the steps can achieve: the Guarantee claim is formally in the bank's assessment process with the relevant evidence; the mandate cancellation is requested so no further collections (including the £795 on 14 Oct) are taken once confirmed; the customer knows exactly what is pending, what to send, that he should pursue Lime Property directly about the apparent double payment, and that the fees are under review.
 
-**What remains unconfirmed:**
-- Any refund of the £4,980.00, or its timing.
-- Any fee reversal.
-- Whether the Guarantee applies.
-- How Lime Property applied the 28 Aug payment.
+What remains unconfirmed: whether a refund will be made and when; whether the collection was an error by the originator or the bank; whether the unarranged overdraft fees will be refunded; whether and when the cancellation takes effect; how Lime Property allocated the 28 Aug transfer.
 
-**The customer message must state:**
-- A Guarantee/indemnity claim for the £4,980.00 is being raised and its outcome is undecided.
-- Cancellation is being requested. It stops future collections only and does not reverse the 14 Sep collection.
-- Once cancelled, the £795 monthly rent will no longer be collected by this Direct Debit, so he must arrange another way to pay it with Lime Property.
-- A fee review is being requested and no outcome is confirmed.
-- The 28 Aug payment was sent and received by the beneficiary bank, but we cannot see how Lime Property applied it.
-- He should ask Lime Property for a statement of account showing how that payment was allocated.
-
-**The customer message must not:**
-- Promise a refund (today or at all), or give an unsupported timescale.
-- Say the Guarantee definitely does or does not apply.
-- Say the notice proves agreement, or proves the lack of it.
-- Say how the agency received, allocated or misapplied the 28 Aug payment beyond what the confirmation shows.
-- Say anything has been cancelled, registered or refunded before execution is acknowledged.
-- Say cancelling the Direct Debit ends his tenancy obligations or clears any amount owed to Lime Property.
-- Ask for PINs, passwords or one-time codes.
+Constraints preserved: the message states the claim is raised for assessment and not decided, that the collection matched the 9 Sep notice, that his position is recorded, that cancellation is requested but unconfirmed and does not reverse the collection or affect what he owes the agency, that he should contact Lime Property directly, the fee position and review, and the complaint/Ombudsman route. It does not promise a same-day refund, does not characterise the collection as an error or not, does not say the DD is cancelled or fees waived, does not suggest the 28 Aug Faster Payment can be recalled, does not imply cancellation ends his tenancy obligations, and gives no complaint deadline or Ombudsman prediction.

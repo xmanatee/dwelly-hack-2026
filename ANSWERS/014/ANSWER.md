@@ -1,44 +1,33 @@
-# Case 014: Two £634.00 card payments to PAYGATE*NORTHGATE LET
-
 ## Decision
-**Proposed: pass this to the card disputes team (disposition: escalated).** None of the steps below has been carried out yet.
 
-The records support a duplicate payment. On 11 Sep 2026 there were two £634.00 payments to the same merchant, about two minutes apart. Both settled on 13 Sep. The agency's email of 14 Sep admits the duplicate.
-
-No bank chargeback policy was supplied. So the agent must not promise that a chargeback is allowed, that it will succeed, or how long it will take. The card disputes team will decide whether a dispute can be raised now.
+**Disposition: escalated (pending Card Disputes assessment).** The request to charge back the second £634 payment is not treated as an instant or guaranteed refund. The second payment (11 Sep 2026 18:04:12, £634.00, auth A71C09) is to be referred to the Card Disputes team as a dispute request, together with the agency's written refund commitment, for eligibility assessment under the applicable scheme rules and bank policy. The customer is to be told the proven status of both payments, what a chargeback is and is not, and that the dispute request is pending. Nothing has been executed yet.
 
 ## Proposed actions (in order)
 
-1. **s1: Ask the card disputes team to act (pending)**
-   - **Account:** Tomás Ribeiro, personal current account, debit card.
-   - **Disputed payment:** 11 Sep 2026, 18:04:12, PAYGATE*NORTHGATE LET, £634.00, auth A71C09, settled 13 Sep 2026.
-   - **Matching payment:** 11 Sep 2026, 18:02:37, £634.00, auth A71C02, settled 13 Sep 2026.
-   - **Facts to include:**
-     - The customer says the payment page showed "not responding" and he clicked twice.
-     - Northgate Lettings emailed on 14 Sep 2026. They admitted the duplicate and promised to refund one payment to the card within 5–10 working days, showing as a PAYGATE refund.
-     - No refund shows in the records we have.
-     - The customer says he urgently needs the money for the actual tenancy deposit.
-   - **Attachments:** `agency_refund_email.eml` and `card_transactions.csv`.
-   - **Ask the team:** decide whether a dispute can be raised now, and take the promised merchant refund into account so the customer isn't credited twice.
+1. **s1 — Request team action: Card Disputes team (Harrow & Vale Bank plc)** — *pending*
+   Ask the team to log and assess a dispute request for Tomás Ribeiro, personal current account debit card: second payment to PAYGATE*NORTHGATE LET, 2026-09-11 18:04:12, £634.00, MCC 6513, auth code A71C09, settled 2026-09-13 (first payment 18:02:37, auth A71C02, also settled 13 Sep). Pass: the customer's statement that he clicked the payment link twice after a "page not responding" message; the agency's email of 14 Sep 2026 15:22 (Northgate Lettings, accounts@northgate-lettings.example) acknowledging the duplicate and committing to refund £634 to the card within 5–10 working days as a PAYGATE refund; and the fact that no refund is visible on the card record as at 16 Sep. Ask the team to assess whether a duplicate / credit-not-processed dispute can be raised now or must await expiry of the merchant's refund window, and to report the result to the servicing agent for onward communication. Not to be presented to the customer as a raised chargeback until the team acknowledges.
 
-2. **s2: Reply to the customer in chat (pending, depends on s1)**
-   - Use "I've passed" only once s1 is confirmed as done. Until then, say the request is being passed on and is still pending.
-   - The wording to use after s1 is confirmed is saved separately as a draft (not sent).
+2. **s2 — Reply to customer (in-app chat)** — *pending; depends on s1*
+   Send the message below. Until s1 is acknowledged, the dispute request must be described as pending/being passed, not as passed or raised.
 
-## Message to the customer (wording while s1 is still pending)
+## Message to the customer (proposed, not sent)
 
-> I understand you need this money for the actual deposit, so I don't want you left waiting without a clear picture. I can see two payments of £634.00 to PAYGATE*NORTHGATE LET on 11 Sep, about two minutes apart, and both have now gone through. Northgate's email of 14 Sep agrees one is a duplicate and says they'll refund it to your card within 5–10 working days. That timescale is theirs, not ours, and I can't see a refund yet. I'm passing your request for a chargeback on the second payment to our card disputes team, along with the agency's email and the payment details. That referral is still pending. A chargeback isn't an instant reversal. I can't confirm yet whether one can be raised here or how long it would take, and it may not be quicker than the agency's refund. In the meantime, you could ask Northgate to speed up their refund. Please let us know if a refund from PAYGATE arrives, so the same payment isn't reclaimed twice.
+> I can see both £634 payments to Northgate Lettings on 11 September, at 18:02 and 18:04, each with its own authorisation code because the link was clicked twice; both settled on 13 September. The agency's email of 14 September confirms it will refund one £634 payment to your card within 5–10 working days, showing as a PAYGATE refund. That window has not yet passed and I can't see a refund on your card yet. I understand you need the money for the deposit.
+>
+> A chargeback is a card-scheme dispute that our Card Disputes team has to assess; it isn't an instant refund, it isn't guaranteed, and I can't promise it would be quicker than the agency's refund — in cases where the merchant has already agreed in writing to refund, the dispute may need that period to pass first.
+>
+> I am passing your request to dispute the second payment, together with the agency's email, to our Card Disputes team; this is pending their assessment and nothing has been raised or credited yet.
+>
+> Please keep the agency's email, watch your statement for a PAYGATE refund, and you can also contact the agency to ask them to speed up the refund. We'll update you once the disputes team has reviewed it.
 
-## Things the message must not do
-- Say he is entitled to a chargeback or that one will succeed.
-- Promise an immediate reversal, a credit date, or that a chargeback will be faster than the agency's refund.
-- Say a chargeback has been raised, or that the money has been or will be returned.
-- Say the agency's refund has been processed or received.
-- Call either payment unauthorised or fraudulent.
-- Invent a chargeback policy, scheme rule or timeframe.
+## Status
+
+- Dispute request to Card Disputes: **pending** (not logged, not raised).
+- Customer reply: **pending** (not sent).
+- No refund or credit has been applied; no chargeback has been raised.
 
 ## Future message draft — NOT SENT
 
 Use only after confirmed execution of: s1.
 
-> I understand you need this money for the actual deposit, so I don't want you left waiting without a clear picture. I can see two payments of £634.00 to PAYGATE*NORTHGATE LET on 11 Sep, about two minutes apart, and both have now gone through. Northgate's email of 14 Sep agrees one is a duplicate and says they'll refund it to your card within 5–10 working days. That timescale is theirs, not ours, and I can't see a refund yet. I've passed your request for a chargeback on the second payment to our card disputes team, along with the agency's email and the payment details. A chargeback isn't an instant reversal. I can't confirm yet whether one can be raised here or how long it would take, and it may not be quicker than the agency's refund. In the meantime, you could ask Northgate to speed up their refund. Please let us know if a refund from PAYGATE arrives, so the same payment isn't reclaimed twice.
+> I can see both £634 payments to Northgate Lettings on 11 September, at 18:02 and 18:04, each with its own authorisation code because the link was clicked twice; both settled on 13 September. The agency's email of 14 September confirms it will refund one £634 payment to your card within 5–10 working days, showing as a PAYGATE refund. That window has not yet passed and I can't see a refund on your card yet. I understand you need the money for the deposit. A chargeback is a card-scheme dispute that our Card Disputes team has to assess; it isn't an instant refund, it isn't guaranteed, and I can't promise it would be quicker than the agency's refund — in cases where the merchant has already agreed in writing to refund, the dispute may need that period to pass first. I have passed your request to dispute the second payment, together with the agency's email, to our Card Disputes team; this is pending their assessment and nothing has been raised or credited yet. Please keep the agency's email, watch your statement for a PAYGATE refund, and you can also contact the agency to ask them to speed up the refund. We'll update you once the disputes team has reviewed it.

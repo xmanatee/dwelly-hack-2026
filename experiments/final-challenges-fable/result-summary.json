@@ -1,0 +1,44 @@
+{
+  "packaged_at": "2026-10-10T16:09:05.099194+00:00",
+  "fable_cases": [
+    "001",
+    "002",
+    "003",
+    "004",
+    "005",
+    "006",
+    "007",
+    "008",
+    "009",
+    "010",
+    "011",
+    "012",
+    "013",
+    "014",
+    "015",
+    "016",
+    "017",
+    "019",
+    "021",
+    "022",
+    "023"
+  ],
+  "retained_opus_cases": [
+    "018",
+    "020",
+    "024",
+    "025",
+    "026",
+    "027",
+    "028",
+    "029",
+    "030"
+  ],
+  "failed_refresh_cases": [],
+  "refresh_request_statuses": {
+    "settled": 102,
+    "uncertain": 9
+  },
+  "refresh_settled_cost_usd_estimate": 27.2647475,
+  "refresh_nonsettled_exposure_usd": 19.86225
+}
