@@ -75,3 +75,7 @@ These are proposed planning boundaries, not a legal conclusion about the hypothe
 ## Next stage
 
 Specify bounded stronger-model/research/review orchestration and contrastive tests before changing runtime. The objective is to detect unsupported final decisions and produce a useful, justified next operation—not to promise correctness by spending indefinitely. Routing and evaluator/optimizer patterns are established design options, but their benefit must be measured for this workload. [Anthropic: Building effective agents](https://www.anthropic.com/engineering/building-effective-agents).
+
+See the [concrete complex-case design and evaluation sequence](complex-cases.md) and
+[16 synthetic contrastive cases](contrastive-cases.json). These are prepared development
+inputs and proposed checks; no Planner run or quality gain is claimed.

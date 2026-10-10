@@ -65,3 +65,12 @@ records disputed grades separately and proposes experiments without changing pro
 uv run --extra analysis dwelly-bot analyze run analysis/planner-review/recipe.py \
   --data experiments/winner-public-decisions
 ```
+
+## Planner generalization and complex cases
+
+[Source audit](planner-generalization/README.md) reviews all eleven runtime skills,
+shared instructions and routing for case-specific assumptions and missing capabilities.
+Its [complex-case design](planner-generalization/complex-cases.md) specifies bounded
+model escalation, research, composition review and stale-plan handling, with 16 synthetic
+contrastive development inputs. This is an audit and proposed experiment, not a runtime
+change or a claim that these cases passed.

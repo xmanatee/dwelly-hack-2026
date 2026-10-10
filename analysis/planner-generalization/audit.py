@@ -62,7 +62,7 @@ def main() -> None:
         "new_model_calls": 0,
     }
     OUTPUT.mkdir(parents=True, exist_ok=True)
-    save_json(OUTPUT / "inventory.json", data)
+    save_json(OUTPUT / "inventory.json", data, overwrite=True)
     report = Report(
         title="Planner generalization audit",
         subtitle="Source review, not an unseen-case accuracy result",
@@ -94,7 +94,7 @@ def main() -> None:
         "review_sha256": data["review_sha256"],
         "new_model_calls": 0,
     }
-    save_json(OUTPUT / "report.json", report.model_dump(mode="json"))
+    save_json(OUTPUT / "report.json", report.model_dump(mode="json"), overwrite=True)
     render(report, OUTPUT / "report.html")
     print(OUTPUT / "report.html")
 
