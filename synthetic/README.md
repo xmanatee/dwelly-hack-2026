@@ -132,3 +132,10 @@ Add a module under `synth/scenarios/` and register functions with
 4. Call `b.meta(...)` and `b.label(...)`.
 
 The build fails loudly on any broken case.
+
+## Run the production skeleton against this world
+
+[Local banking setup](../local_testing/banking/README.md) reuses this generator and splits
+its output into runtime state, incoming event JSON and separate evaluation material.
+Use `dwelly-bot local run` for context collection → shared production Planner → mock
+execution. Raw entity tables and command-result templates are not exposed as current facts.

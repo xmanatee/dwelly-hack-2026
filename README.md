@@ -21,7 +21,7 @@ Dwelly-bot separates that work into three components: **gather the evidence, dec
 
 [![Product workflow, shared Planner and a separate evaluation loop](docs/architecture/diagram.png)](docs/architecture/index.html)
 
-*Blue: the operational workflow. Purple: the shared Planner and contest path. Gold: evaluation and improvement. The contest path is the target design; its separate Solver package is pending.*
+*Blue: the operational workflow. Purple: the shared Planner and contest path. Gold: evaluation and improvement. The shared-core diagram is the target design; the separate Solver package now exists, with Planner contract alignment still pending.*
 
 [Interactive diagram source](docs/architecture/index.html) · [Component contracts](docs/architecture/README.md) · [Implementation status](docs/architecture/integration-status.md)
 
@@ -31,7 +31,7 @@ Dwelly-bot separates that work into three components: **gather the evidence, dec
 | --- | --- | --- |
 | **Trigger** | Normalize email, call or ticket; preserve its reply route. | Typed inputs and local fixtures. |
 | **Context** | Identify useful information and read authorized sources. | JSON/SQLite readers and synthetic-bank sources; optional Pydantic AI investigator. |
-| **Planner** | Apply knowledge to the available facts; choose concrete actions. | Public `text → Plan` API and action profiles. Current implementation is a human-review stub. |
+| **Planner** | Apply knowledge to the available facts; choose concrete actions. | Public `text → Plan` API and action profiles. Local runner uses a human-review stub; a separate [advisory Planner](src/dwelly_bot/planner/README.md) also exists. |
 | **Execution** | Run the selected steps and record their results. | Mock communication/handoff/ticket actions; local arithmetic; durable mock receipts. |
 
 Replying in the original channel is a plan action. The executor does not make a second business decision or silently send an extra response.
@@ -52,7 +52,7 @@ flowchart LR
     D -. Planned Solver .-> F[ANSWER + REASONING]
 ```
 
-**Design direction:** a multi-step reasoning component that selects relevant skills, checks candidate actions against evidence and emits a small executable plan. Hierarchical skill access and specialist sub-agents are options under consideration, not implemented capabilities. [Planner design and Vera's TODOs](docs/planner/README.md).
+**Design direction:** a multi-step reasoning component that selects relevant skills, checks candidate actions against evidence and emits a small executable plan. Hierarchical skill access and specialist sub-agents remain design options. The team has added an advisory case Planner with its own schema; the local executable-plan pipeline still uses its stub. [Planner design and Vera's TODOs](docs/planner/README.md).
 
 ## Quickstart
 
@@ -93,7 +93,7 @@ uv run dwelly-bot actions --profile contest
 ## Run the synthetic banking world
 
 ```sh
-uv run --extra evaluation --with reportlab==5.0.1 --with pillow==12.3.0 \
+uv run --extra synthetic --extra evaluation \
   python local_testing/banking/build.py
 uv run dwelly-bot local run --case SYN-0001 --output .cache/local-bank/quickstart
 ```
@@ -110,7 +110,7 @@ Our testing approach has two complementary paths:
 
 | Path | What it tests | Status |
 | --- | --- | --- |
-| **Dwelly examples → prepared context → Planner → answer** | Decision quality on supplied operational cases. | Banking data adapter and historical evaluations exist; new Planner/Solver integration is pending. |
+| **Dwelly examples → prepared context → Planner → answer** | Decision quality on supplied operational cases. | Data adapter, advisory Planner and [Solver generation/export](packages/hackathon_solver/README.md) exist; shared Planner contract alignment remains pending. |
 | **Synthetic world → noisy events → context → plan → execution** | Missing facts, ambiguous identities, conflicting records and failed actions. | 1,180 generated banking cases; separate state/cases/evaluation data and a working local runner. |
 
 The generator direction is reusable across service tracks; the current implemented dataset adapter is banking-specific. We keep future outcomes outside the acting context and evaluate saved decisions afterward. [Evaluation loops, scenario design and optimization TODOs](docs/evaluation/README.md).
@@ -136,7 +136,7 @@ Voice will use the same context/planning/execution core. [Voice integration slot
 
 Source adapters establish access boundaries; names and email addresses remain search hints. A plan is intent, a mock receipt is a simulation, and neither proves an external bank operation occurred. Public examples are development data, not final Reality Test submissions.
 
-Next: implement Vera's Planner, connect the Solver, evaluate the new decision core, add temporal entity snapshots and real channel/voice adapters. Live banking effects, final voice integration and a recorded demo are not implemented. [Detailed gaps and ownership](docs/architecture/integration-status.md).
+Next: align the advisory Planner with the shared executable-plan contract and Solver, evaluate the combined decision core, add temporal entity snapshots and real channel/voice adapters. Live banking effects, final voice integration and a recorded demo are not implemented. [Detailed gaps and ownership](docs/architecture/integration-status.md).
 
 ## Explore and contribute
 

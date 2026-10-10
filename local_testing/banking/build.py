@@ -37,12 +37,12 @@ def main() -> None:
                 "--per-variant",
                 str(args.per_variant),
             ],
-            cwd=root / "generator",
+            cwd=root.parents[1] / "synthetic",
             check=True,
         )
         subprocess.run(
             [sys.executable, "-m", "synth.validate", str(original)],
-            cwd=root / "generator",
+            cwd=root.parents[1] / "synthetic",
             check=True,
         )
         manifest = prepare(original, output)

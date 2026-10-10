@@ -11,8 +11,10 @@ Three acceptance checks:
   capture `context.md`, plan, receipts and tool journal; replay without duplicate mock effects.
 
 The supplied archive contains Nikita's generator, not a built dataset. Its original source
-is preserved in `generator/` (excluding the embedded Git repository); `source.json` pins
-every imported file and the archive. The seed-2026 build contains 1,180 cases, 75 scenarios,
+is shared in [`synthetic/`](../../synthetic/README.md) (excluding the embedded Git repository);
+`source.json` pins every originally imported file and the archive. The upstream generator
+code matches those hashes; its extended README is separate from our preserved
+[`source-README.md`](source-README.md). The seed-2026 build contains 1,180 cases, 75 scenarios,
 295 variants, 1,020 customers, 1,248 accounts and 11,063 background transactions.
 
 ## Build the data
@@ -20,7 +22,7 @@ every imported file and the archive. The seed-2026 build contains 1,180 cases, 7
 From the repository root:
 
 ```sh
-uv run --extra evaluation --with reportlab==5.0.1 --with pillow==12.3.0 \
+uv run --extra synthetic --extra evaluation \
   python local_testing/banking/build.py
 ```
 
@@ -122,3 +124,10 @@ Acceptance evidence: 27 affected offline tests, strict types and Ruff; the full 
 seed-2026 build and a fresh 295-case seed-2028 build passed generator integrity checks.
 Three live context smokes were inspected, fixed and repeated; all six captures remain
 saved. This establishes integration mechanics, not corpus-wide retrieval or Planner quality.
+
+Team synchronization consolidated the duplicate generator into `synthetic/`. The build now
+uses the existing locked `synthetic` dependency extra. Earlier captures retain their original
+ReportLab 5.0.1 receipt; fresh builds record their installed versions in `manifest.json`.
+The local pipeline still uses `dwelly_bot.planning.HumanReviewPlanner`; the team's new
+[`dwelly_bot.planner`](../../src/dwelly_bot/planner/README.md) has an advisory schema and
+is not silently substituted for the executable `text → Plan` contract.

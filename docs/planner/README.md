@@ -55,3 +55,11 @@ The model, routing, skill hierarchy and number of passes are deliberately open. 
 | Vera + evaluation | New baseline, candidate comparison and inspected failures. |
 
 **Current code:** `HumanReviewPlanner` always emits human review and an acknowledgement. It demonstrates the boundary, not banking reasoning quality. Implement the final component in [planning/implementation/](../../src/dwelly_bot/planning/implementation/README.md); update this page when the design becomes code.
+
+## Concurrent team implementation
+
+The team has added an [advisory case Planner](../../src/dwelly_bot/planner/README.md) and
+[Solver package](../../packages/hackathon_solver/README.md). That Planner currently accepts
+`PlanInput` and emits its own advisory schema. The local runner continues to use the shared
+`planning.Planner` protocol and human-review stub. A deliberate adapter/alignment step is
+needed before substituting it for executable plans; its advice is not silently executed.

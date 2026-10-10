@@ -73,7 +73,7 @@ examples/production/          # small runnable fixtures
 experiments/                  # saved protocols, configurations and results
 ```
 
-The separate `hackathon_solver` package is a target boundary, not a present directory. Keep contest-specific preparation and output generation out of the product Planner.
+The separate [`hackathon_solver` package](../../packages/hackathon_solver/README.md) now implements generation/export and development predictions. Its advisory case Planner has a separate schema; alignment with the local executable-plan contract remains pending. Keep contest-specific preparation and output generation out of the product Planner.
 
 ## Checks and contributions
 
