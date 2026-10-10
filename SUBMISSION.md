@@ -12,7 +12,7 @@
 - Submitted evaluation commit: pending — frozen source plus final Reality Test results
 - Generated Reality Test results: `ANSWERS/` — pending release; public development cases are excluded.
 - Demo video: `demo/demo.mp4` — pending recording
-- LinkedIn post URL: pending publication
+- LinkedIn post URL: https://lnkd.in/p/efv86t2M
 - X post URL: https://x.com/nickodp97/status/2108941052547645941
 - Licence: [Apache 2.0](LICENSE)
 - Source/prompts/config and demo video freeze: 16:30 London BST / 15:30 UTC
