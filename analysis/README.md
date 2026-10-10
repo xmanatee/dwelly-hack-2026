@@ -26,3 +26,12 @@ Both recipes are offline by default. Shared helpers support profiling, sample re
 Without an API key, `--model-config configs/analysis-claude-code.toml --embedding-model lexical` runs model steps through the logged-in `claude` CLI (Claude Code subscription). Its separate ledger records API-equivalent list prices as a usage guard, not a bill.
 
 Recipes expose `build(ctx) -> Report`. Keep dataset semantics in the recipe and reusable methods under `src/dwelly_bot/analysis/`. Reports contain source hashes, sample counts and limitations; generated HTML/JSON stay ignored under `analysis/artifacts/`. Pages builds only offline source analysis and saved execution reports. Analysis findings may change the agent only through the experiment workflow.
+
+## Discovery over raw case folders
+
+```sh
+uv run --extra analysis dwelly-bot analyze run dwelly_bot.analysis.dwelly_cases --data "dwelly-cases/Banking & Financial Services" --deep-analysis --exhaustive --model-config configs/analysis-claude-code.toml --embedding-model lexical --screen-batch 5
+```
+
+- `--data` is one organizer track folder of `NNN/index.md`, `history.md` and `attachments/` (a local clone of the public cases, or `experiments/safety-cases/…`). Each case is one conversation: initial request, every timed event and extracted attachment text (CSV/TXT/MD/JSON/PDF). Overview, next action and outcome summaries are excluded.
+- `--exhaustive` deep-reviews, audits, compares and names every record and label; without it those stages sample.

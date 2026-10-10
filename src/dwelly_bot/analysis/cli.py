@@ -58,6 +58,7 @@ async def execute(args: argparse.Namespace) -> Path:
         "deep_analysis": args.deep_analysis,
         "semantic_map": args.semantic_map,
         "screen_batch": args.screen_batch,
+        "exhaustive": args.exhaustive,
         "deep_sample": args.deep_sample,
         "audit_sample": args.audit_sample,
         "embedding_model": args.embedding_model,
@@ -157,6 +158,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="Full cited screening, taxonomy, semantic groups, edge cases and review",
     )
     run.add_argument("--screen-batch", type=int, default=12)
+    run.add_argument(
+        "--exhaustive",
+        action="store_true",
+        help="Deep-review, audit, compare and name every record; no sampled discovery stage",
+    )
     run.add_argument("--deep-sample", type=int, default=12)
     run.add_argument("--audit-sample", type=int, default=5)
     run.add_argument(

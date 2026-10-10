@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 5
 requires-python = "==3.12.*"
 
 [[package]]
@@ -177,6 +177,7 @@ dependencies = [
 [package.optional-dependencies]
 analysis = [
     { name = "plotly" },
+    { name = "pypdf" },
     { name = "scikit-learn" },
 ]
 evaluation = [
@@ -197,6 +198,7 @@ requires-dist = [
     { name = "pydantic", specifier = ">=2,<3" },
     { name = "pydantic-ai-slim", extras = ["anthropic", "openai", "openrouter"], specifier = "==2.54.0" },
     { name = "pydantic-evals", specifier = "==2.54.0" },
+    { name = "pypdf", marker = "extra == 'analysis'", specifier = ">=6,<7" },
     { name = "pypdf", marker = "extra == 'evaluation'", specifier = ">=6,<7" },
     { name = "python-dotenv", specifier = ">=1,<2" },
     { name = "scikit-learn", marker = "extra == 'analysis'", specifier = ">=1.6,<2" },

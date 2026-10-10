@@ -14,7 +14,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-analysis = ["plotly>=6,<7", "scikit-learn>=1.6,<2"]
+analysis = ["plotly>=6,<7", "pypdf>=6,<7", "scikit-learn>=1.6,<2"]
 evaluation = [
     "pypdf>=6,<7",
 ]
