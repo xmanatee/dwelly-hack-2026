@@ -121,3 +121,40 @@ async def test_template_renders_case_planner_plans_as_proposals() -> None:
     assert "Registration does not confirm a return" in generated.answer
     assert "Identity checks complete (event-002)" in generated.reasoning
     assert not EXECUTED_CLAIM.search(generated.answer + generated.reasoning)
+
+
+def test_html_report_escapes_case_text(tmp_path: Path) -> None:
+    from hackathon_solver.export.html import render
+
+    case = tmp_path / "banking-001"
+    case.mkdir()
+    (case / "ANSWER.md").write_text("## Decision\n\n- Check **record** <script>alert(1)</script>\n")
+    (case / "REASONING.md").write_text("Grounds `event-002`.\n")
+    (case / "generation.json").write_text(
+        json.dumps(
+            {
+                "plan": {"summary": "S", "steps": [], "safety_flags": ["privacy"]},
+                "context": "<b>x</b>",
+            }
+        )
+    )
+    (tmp_path / "predictions.json").write_text(
+        json.dumps(
+            {
+                "dataset": "dwelly-banking",
+                "cases": [
+                    {
+                        "case_id": "banking-001",
+                        "planner": "available",
+                        "generator": "model",
+                        "requests": 2,
+                        "cost_usd": 0.01,
+                    }
+                ],
+            }
+        )
+    )
+    page = render(tmp_path).read_text()
+    assert "<script>alert(1)</script>" not in page and "&lt;script&gt;" in page
+    assert "<strong>record</strong>" in page and "<code>event-002</code>" in page
+    assert "&lt;b&gt;x&lt;/b&gt;" in page and "privacy" in page

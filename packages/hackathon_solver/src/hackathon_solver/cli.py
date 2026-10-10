@@ -165,8 +165,10 @@ async def predict(args: argparse.Namespace) -> int:
             "# Development predictions\n\nPublic practice cases, not Reality Test results. "
             "Do not submit them.\n"
         )
+    from hackathon_solver.export.html import render
+
     failed = sum(row["planner"] != "available" for row in rows)
-    print(f"{len(rows)} cases, {failed} planner errors. Output: {output}")
+    print(f"{len(rows)} cases, {failed} planner errors. Report: {render(output)}")
     return 0
 
 
@@ -192,5 +194,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     case.add_argument("--config", type=Path, required=True, help="Planner/generator run config")
     case.add_argument("--output", type=Path, help="Empty directory; default under experiments")
     case.add_argument("--template", action="store_true", help="Deterministic generator")
+    page = commands.add_parser("report", help="Write report.html for a predictions directory")
+    page.add_argument("--input", type=Path, required=True)
     args = parser.parse_args(argv)
+    if args.command == "report":
+        from hackathon_solver.export.html import render
+
+        print(render(args.input))
+        return 0
     return asyncio.run(predict(args) if args.command == "predict" else generate(args))
