@@ -23,7 +23,11 @@ class AssignmentBatch(BaseModel):
 
 
 async def build_taxonomy(
-    ctx: AnalysisContext, screens: dict[str, ScreenedRecord], *, kinds: list[str]
+    ctx: AnalysisContext,
+    screens: dict[str, ScreenedRecord],
+    *,
+    kinds: list[str],
+    label_limit: int | None = 60,
 ) -> TaxonomyDraft:
     if not screens:
         raise ValueError("Taxonomy requires saved screened records")
@@ -57,9 +61,12 @@ async def build_taxonomy(
             ) - {example["id"] for row in proposal for example in row["examples"]}:
                 raise ValueError("Only supplied alias/example IDs are allowed")
 
-    head = sorted(inputs, key=lambda row: row["count"], reverse=True)[:40]
-    tail = [row for row in inputs if row not in head]
-    proposal = head + random.Random(0).sample(tail, min(20, len(tail)))
+    if label_limit is None:
+        proposal = inputs
+    else:
+        head = sorted(inputs, key=lambda row: row["count"], reverse=True)[: label_limit * 2 // 3]
+        tail = [row for row in inputs if row not in head]
+        proposal = head + random.Random(0).sample(tail, min(label_limit - len(head), len(tail)))
     draft = await ctx.ask(
         "taxonomy-definitions",
         {"candidate_labels": proposal, "all_alias_count": len(inputs), "source_kinds": kinds},

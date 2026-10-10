@@ -15,6 +15,7 @@ from dwelly_bot.analysis.discovery_types import DiscoveryRecord, ScreenedRecord
 from dwelly_bot.analysis.semantic import semantic_groups
 from dwelly_bot.budget import BudgetLedger
 from dwelly_bot.models import BudgetedModel
+from dwelly_bot.storage import save_json
 
 
 def record(id: str, kind: str = "question") -> DiscoveryRecord:
@@ -111,6 +112,29 @@ def test_saved_conversation_does_not_load_private_prompts_or_gold(tmp_path: Path
     assert records[0].sources[0].origin == "message"
     payload = json.dumps(records[0].model_dump())
     assert "PRIVATE" not in payload and "GOLD" not in payload
+
+
+def test_saved_conversations_read_compressed_bundles(tmp_path: Path) -> None:
+    file = tmp_path / "capture.json.gz"
+    save_json(
+        file,
+        {
+            "runs": [
+                {
+                    "id": "run",
+                    "cases": [
+                        {
+                            "id": "case",
+                            "state_snapshots": {
+                                "after": {"conversation": [{"role": "customer", "message": "Hi"}]}
+                            },
+                        }
+                    ],
+                }
+            ]
+        },
+    )
+    assert saved_conversations(file)[0].sources[0].text == "Hi"
 
 
 async def test_batch_keeps_valid_neighbors_and_repairs_only_bad_record(tmp_path: Path) -> None:

@@ -107,6 +107,8 @@ async def requested_discovery(
         seed=int(ctx.parameters.get("seed", 0)),
         embedding=embedding,
     )
+    if ctx.parameters.get("exhaustive"):
+        cfg = cfg.exhaustive(len(records))
     view = Report(title=report.title, subtitle=report.subtitle)
     result = await discover(ctx, records, cfg)
     add_discovery_views(view, records, result, scope=scope)

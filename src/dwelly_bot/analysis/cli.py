@@ -13,7 +13,10 @@ from datetime import UTC, datetime
 from importlib import import_module
 from importlib.metadata import version
 from pathlib import Path
+from typing import Any
 
+from dwelly_bot.analysis.claude_code import PREFIX as CLAUDE_CODE
+from dwelly_bot.analysis.claude_code import claude_code_model, claude_code_profile
 from dwelly_bot.analysis.session import AnalysisContext, validate_analysis
 from dwelly_bot.budget import BudgetLedger
 from dwelly_bot.configuration import read_config
@@ -55,6 +58,7 @@ async def execute(args: argparse.Namespace) -> Path:
         "deep_analysis": args.deep_analysis,
         "semantic_map": args.semantic_map,
         "screen_batch": args.screen_batch,
+        "exhaustive": args.exhaustive,
         "deep_sample": args.deep_sample,
         "audit_sample": args.audit_sample,
         "embedding_model": args.embedding_model,
@@ -81,9 +85,15 @@ async def execute(args: argparse.Namespace) -> Path:
     try:
         if args.run:
             ctx.saved_run()
-        async with (
-            model_context(profile_for(settings)) if args.model_config else nullcontext(None)
-        ) as client:
+        subscription = settings.model.startswith(CLAUDE_CODE)
+        transport: Any = (
+            nullcontext(claude_code_model(settings.model))
+            if subscription
+            else model_context(profile_for(settings))
+            if args.model_config
+            else nullcontext(None)
+        )
+        async with transport as client:
             if client is not None:
                 ledger_path = args.ledger
                 if ledger_path is None:
@@ -97,7 +107,9 @@ async def execute(args: argparse.Namespace) -> Path:
                     BudgetLedger(ledger_path, settings.total_budget_usd),
                     "analysis/" + recipe.parent.name,
                     request_timeout=settings.request_timeout_seconds,
-                    profile=client.connection_profile,
+                    profile=claude_code_profile(settings)
+                    if subscription
+                    else client.connection_profile,
                 )
             report = builder(ctx)
             if inspect.isawaitable(report):
@@ -146,6 +158,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="Full cited screening, taxonomy, semantic groups, edge cases and review",
     )
     run.add_argument("--screen-batch", type=int, default=12)
+    run.add_argument(
+        "--exhaustive",
+        action="store_true",
+        help="Deep-review, audit, compare and name every record; no sampled discovery stage",
+    )
     run.add_argument("--deep-sample", type=int, default=12)
     run.add_argument("--audit-sample", type=int, default=5)
     run.add_argument(

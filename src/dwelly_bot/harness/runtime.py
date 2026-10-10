@@ -48,8 +48,11 @@ class CaseRuntime:
         model: Any,
         config: RunConfig,
         journal: Journal,
+        *,
+        planner_model: Any = None,
     ) -> None:
         self.model = model
+        self.planner_model = planner_model
         self.config = config
         self.journal = journal
         self.usage = RunUsage()
@@ -69,7 +72,7 @@ class CaseRuntime:
         role: str = "subject",
     ) -> Agent[Any, OutputT]:
         """Configure the acting model and its role-specific tools."""
-        model = self.model
+        model = self.planner_model if role == "planner" and self.planner_model else self.model
         if model is None:
             raise ValueError(f"{role.capitalize()} role requires an explicit {role} model")
         if role == "subject" and self.config.skills and self.config.skill_mode == "on_demand":

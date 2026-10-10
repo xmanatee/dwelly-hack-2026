@@ -98,6 +98,18 @@ class ModelProfile(BaseModel):
         return self
 
 
+class PlannerConfig(BaseModel):
+    """Separately tunable pre-solver planner; it has no tools and its plan is advisory."""
+
+    model_config = ConfigDict(extra="forbid")
+    mode: Literal["off", "advisory"] = "advisory"
+    # None reuses the solver's model, account and limits.
+    model: ModelProfile | None = None
+    # planner/playbooks/<name>.md (prose) and <name>.json (actions and safety flags).
+    playbook: str = Field(default="banking", pattern=r"^[a-z0-9_-]+$")
+    instructions: str = Field(default="", max_length=16000)
+
+
 class RunConfig(ModelProfile):
     max_requests: int = Field(default=40, ge=1, le=100)
     max_tool_calls: int = Field(default=80, ge=1, le=200)
@@ -120,6 +132,7 @@ class RunConfig(ModelProfile):
     retries: int = Field(default=1, ge=0, le=2)
     modules: Modules = Field(default_factory=Modules)
     instructions: str = Field(default="", max_length=16000)
+    planner: PlannerConfig | None = None
 
     @model_validator(mode="after")
     def validate_run(self) -> RunConfig:

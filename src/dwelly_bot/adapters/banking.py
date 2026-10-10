@@ -2,6 +2,7 @@
 
 import json
 import re
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any, Literal
 
@@ -11,6 +12,9 @@ from dwelly_bot.context.documents import Documents
 from dwelly_bot.contracts import AgentCase, RunConfig, SolutionOutput
 from dwelly_bot.harness.runtime import CaseRuntime
 from dwelly_bot.paths import DATASET
+from dwelly_bot.planner.context import case_input, tool_specs
+from dwelly_bot.planner.contracts import PlanInput
+from dwelly_bot.planner.planner import advisory, plan_case
 from dwelly_bot.tools.arithmetic import calculate
 
 TRACK = "Banking & Financial Services"
@@ -74,6 +78,34 @@ def initial_view(index: str, history: str, *, events: int = 2) -> tuple[str, str
     return request[1].strip(), visible + "\n", matches[events - 1][1]
 
 
+def decision_input(
+    identifier: str,
+    request: str,
+    number: str,
+    decision_time: str,
+    visible_events: int,
+    *,
+    attachments: bool,
+) -> dict[str, Any]:
+    """The solver's case input; plan evaluation builds the same fields for its cut-off points."""
+    return {
+        "request": request,
+        "organizer_id": number,
+        "track": TRACK,
+        "decision_time": decision_time,
+        "visible_events": visible_events,
+        "evidence_directory": identifier,
+        "task": "Review the available case evidence and give the next supported response and action plan. Clearly state what remains unverified and which actions require a bank operator.",
+        "capabilities": "Read-only case evidence and arithmetic. No bank systems, customer messaging or operational write tools are connected.",
+        "attachment_policy": (
+            "Only the listed attachment text is available at this decision point. "
+            "A supplied file does not establish bank receipt, validation, authorisation or execution."
+            if attachments
+            else "Attachments are withheld: availability at this decision time has not been established."
+        ),
+    }
+
+
 class BankingAdapter:
     name = DATASET_NAME
     dataset_root = DATASET
@@ -91,22 +123,14 @@ class BankingAdapter:
                     id=row["id"],
                     dataset=self.name,
                     title=f"Banking case {number}",
-                    input={
-                        "request": row["request"],
-                        "organizer_id": number,
-                        "track": TRACK,
-                        "decision_time": row["decision_time"],
-                        "visible_events": row["visible_events"],
-                        "evidence_directory": row["id"],
-                        "task": "Review the available case evidence and give the next supported response and action plan. Clearly state what remains unverified and which actions require a bank operator.",
-                        "capabilities": "Read-only case evidence and arithmetic. No bank systems, customer messaging or operational write tools are connected.",
-                        "attachment_policy": (
-                            "Only the listed attachment text is available at this decision point. "
-                            "A supplied file does not establish bank receipt, validation, authorisation or execution."
-                            if record.view_version == 2
-                            else "Attachments are withheld: availability at this decision time has not been established."
-                        ),
-                    },
+                    input=decision_input(
+                        row["id"],
+                        row["request"],
+                        number,
+                        row["decision_time"],
+                        row["visible_events"],
+                        attachments=record.view_version == 2,
+                    ),
                     metadata={
                         "split": "development",
                         "organizer_id": number,
@@ -216,23 +240,48 @@ class BankingAdapter:
 class BankingSession:
     def __init__(self, case: AgentCase, documents: Documents) -> None:
         self.case, self.documents = case, documents
+        self.plan: dict[str, Any] | None = None
+
+    def tool_groups(self) -> list[tuple[str, dict[str, Callable[..., Any]], str]]:
+        """Solver tools by toolset and module; the planner's catalogue uses the same bindings."""
+        return [
+            (
+                "documents",
+                {
+                    "list_documents": self.documents.list_documents,
+                    "read_document": self.documents.read_document,
+                    "search_documents": self.documents.search_documents,
+                },
+                "knowledge",
+            ),
+            ("calculator", {"calculate": calculate}, "calculator"),
+        ]
+
+    def plan_input(self, config: RunConfig) -> PlanInput:
+        enabled = {
+            name: function
+            for _, bindings, module in self.tool_groups()
+            if getattr(config.modules, module)
+            for name, function in bindings.items()
+            if name not in config.disabled_tools
+        }
+        texts = {name: path.read_text() for name, path in self.documents.files.items()}
+        return case_input(self.case, texts, tool_specs(enabled))
 
     async def run(self, runtime: CaseRuntime) -> SolutionOutput:
+        planner = runtime.config.planner
+        advice: list[str] = []
+        if planner and planner.mode == "advisory":
+            self.plan = await plan_case(runtime, self.plan_input(runtime.config), planner)
+            if self.plan["status"] == "available":
+                advice.append(advisory(self.plan["plan"]))
         agent = runtime.agent(
             output_type=SolutionOutput,
             output_name="case_answer",
-            instructions=runtime.instructions("banking"),
+            instructions=runtime.instructions("banking", *advice),
             toolsets=[
-                runtime.toolset(
-                    "documents",
-                    {
-                        "list_documents": self.documents.list_documents,
-                        "read_document": self.documents.read_document,
-                        "search_documents": self.documents.search_documents,
-                    },
-                    module="knowledge",
-                ),
-                runtime.toolset("calculator", {"calculate": calculate}, module="calculator"),
+                runtime.toolset(name, bindings, module=module)
+                for name, bindings, module in self.tool_groups()
             ],
         )
         result = await runtime.ask(agent, self.case.input)
@@ -244,4 +293,5 @@ class BankingSession:
             "decision_time": self.case.input["decision_time"],
             "documents": self.documents.list_documents(),
             "operational_writes_available": False,
+            **({"plan": self.plan} if self.plan is not None else {}),
         }

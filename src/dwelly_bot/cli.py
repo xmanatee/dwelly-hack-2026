@@ -16,6 +16,7 @@ COMMANDS = {
     "experiment": ("experiments.cli", "Run, grade, render or compare saved experiments"),
     "analyze": ("analysis.cli", "Run analysis recipes or render their saved results"),
     "data": ("data", "Pin supplied dataset bytes"),
+    "plan": ("planner.cli", "Run the planner alone on JSON inputs or dataset cases"),
     "export": ("reporting.submission", "Export faithful ANSWERS from a saved run"),
     "monitor": ("reporting.monitor", "Serve local live status on loopback"),
 }

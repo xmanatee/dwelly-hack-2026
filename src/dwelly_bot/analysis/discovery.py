@@ -5,7 +5,7 @@ from __future__ import annotations
 import asyncio
 import random
 from collections import Counter, defaultdict
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from itertools import chain, islice, zip_longest
 from typing import cast
 
@@ -39,8 +39,22 @@ class DiscoveryConfig:
     deep_sample: int = 12
     audit_sample: int = 5
     conflict_pairs: int = 10
+    flagged_audit: int = 3
+    # None proposes the taxonomy from every candidate label instead of a head/tail sample.
+    taxonomy_labels: int | None = 60
     seed: int = 0
     embedding: EmbeddingConfig | None = None
+
+    def exhaustive(self, records: int) -> DiscoveryConfig:
+        """Review, audit, compare and name every record and label; no sampled stage."""
+        return replace(
+            self,
+            deep_sample=records,
+            audit_sample=records,
+            flagged_audit=records,
+            conflict_pairs=records,
+            taxonomy_labels=None,
+        )
 
 
 def select_review(
@@ -72,6 +86,9 @@ def select_review(
         reasons[row["id"]].append("semantic_novelty")
     for record in random.Random(seed).sample(records, min(len(records), max(1, limit // 4))):
         reasons[record.id].append("random_audit")
+    if limit >= len(records):
+        for record in records:
+            reasons[record.id].append("full_coverage")
     buckets = [
         "operational_issue",
         "rare_topic",
@@ -80,6 +97,7 @@ def select_review(
         "cluster_boundary",
         "representative",
         "random_audit",
+        "full_coverage",
     ]
     queues = ([id for id, rs in reasons.items() if reason in rs] for reason in buckets)
     ordered = (id for row in zip_longest(*queues) for id in row if id is not None)
@@ -201,7 +219,10 @@ async def discover(
 
         try:
             taxonomy = await build_taxonomy(
-                ctx, screens, kinds=sorted({record.kind for record in records})
+                ctx,
+                screens,
+                kinds=sorted({record.kind for record in records}),
+                label_limit=config.taxonomy_labels,
             )
         except Exception as error:
             errors.append({"stage": "taxonomy", "error": str(error)})
@@ -212,85 +233,113 @@ async def discover(
     if ctx.model:
         from dwelly_bot.analysis.llm import extract
 
-        for item in selection:
-            record = by_id[item["id"]]
+        stage = asyncio.Semaphore(3)
+
+        async def deep_extract(record: DiscoveryRecord) -> None:
             try:
-                deep[record.id] = (
-                    await extract(ctx, record.sources, source_kind=record.kind)
-                ).model_dump(mode="json")
+                async with stage:
+                    deep[record.id] = (
+                        await extract(ctx, record.sources, source_kind=record.kind)
+                    ).model_dump(mode="json")
             except Exception as error:
                 errors.append({"id": record.id, "stage": "deep-extraction", "error": str(error)})
-                if isinstance(error, BudgetExceeded):
-                    break
+
+        await asyncio.gather(*(deep_extract(by_id[item["id"]]) for item in selection))
+        deep = {item["id"]: deep[item["id"]] for item in selection if item["id"] in deep}
     conflicts = ConflictBatch(conflicts=[])
     pairs = geometry["pairs"][: config.conflict_pairs]
     if ctx.model and pairs:
-        pair_records = [by_id[id] for id in dict.fromkeys(id for p in pairs for id in p["ids"])]
+        stage = asyncio.Semaphore(3)
 
-        def check_conflicts(result: ConflictBatch) -> None:
-            allowed = {frozenset(pair["ids"]) for pair in pairs}
-            for conflict in result.conflicts:
-                conflict.check(pair_records)
-                if (
-                    conflict.status != "internal_inconsistency"
-                    and frozenset(conflict.record_ids) not in allowed
-                ):
-                    raise ValueError("Only supplied neighbor pairs may be compared")
+        async def compare(chunk: list[JsonRecord]) -> None:
+            pair_records = [by_id[id] for id in dict.fromkeys(id for p in chunk for id in p["ids"])]
 
-        try:
-            conflicts = await ctx.ask(
-                "cross-record-conflicts",
-                {"pairs": pairs, "records": [r.model_dump() for r in pair_records]},
-                ConflictBatch,
-                text("prompts/cross-record-conflicts.md"),
-                validate=check_conflicts,
-                repair=True,
-            )
-        except Exception as error:
-            errors.append({"stage": "conflicts", "error": str(error)})
+            def check_conflicts(result: ConflictBatch) -> None:
+                allowed = {frozenset(pair["ids"]) for pair in chunk}
+                for conflict in result.conflicts:
+                    conflict.check(pair_records)
+                    if (
+                        conflict.status != "internal_inconsistency"
+                        and frozenset(conflict.record_ids) not in allowed
+                    ):
+                        raise ValueError("Only supplied neighbor pairs may be compared")
+
+            try:
+                async with stage:
+                    found = await ctx.ask(
+                        "cross-record-conflicts",
+                        {"pairs": chunk, "records": [r.model_dump() for r in pair_records]},
+                        ConflictBatch,
+                        text("prompts/cross-record-conflicts.md"),
+                        validate=check_conflicts,
+                        repair=True,
+                    )
+                conflicts.conflicts.extend(found.conflicts)
+            except Exception as error:
+                errors.append({"stage": "conflicts", "error": str(error)})
+
+        # Small pair chunks keep each comparison within one request's token limit.
+        await asyncio.gather(*(compare(pairs[i : i + 4]) for i in range(0, len(pairs), 4)))
     audit_ids = [r.id for r in screens.values() if not r.findings]
     audit_ids = sorted(
         random.Random(config.seed).sample(audit_ids, min(config.audit_sample, len(audit_ids)))
     )
     flagged = [r.id for r in screens.values() if r.findings]
     flagged_ids = sorted(
-        random.Random(config.seed + 1).sample(flagged, min(3, config.audit_sample, len(flagged)))
+        random.Random(config.seed + 1).sample(
+            flagged, min(config.flagged_audit, config.audit_sample, len(flagged))
+        )
     )
     audit_ids = list(dict.fromkeys(audit_ids + flagged_ids))
     audits = AuditBatch(records=[])
     if ctx.model and audit_ids:
-        audit_sources = [by_id[id] for id in audit_ids]
+        stage = asyncio.Semaphore(3)
 
-        def check_audit(result: AuditBatch) -> None:
-            if {r.id for r in result.records} != set(audit_ids) or len(result.records) != len(
-                audit_ids
-            ):
-                raise ValueError("Audit must cover exactly its assigned IDs")
-            for row in result.records:
-                check_citations(
-                    row.evidence + (row.issue.evidence if row.issue else []), by_id[row.id].sources
-                )
-                if (
-                    by_id[row.id].kind != "conversation"
-                    and row.issue
-                    and row.issue.scope == "observed_case"
+        async def audit(chunk: list[str]) -> None:
+            def check_audit(result: AuditBatch) -> None:
+                if {r.id for r in result.records} != set(chunk) or len(result.records) != len(
+                    chunk
                 ):
-                    raise ValueError("Audit inferred an observed customer from policy/task text")
+                    raise ValueError("Audit must cover exactly its assigned IDs")
+                for row in result.records:
+                    check_citations(
+                        row.evidence + (row.issue.evidence if row.issue else []),
+                        by_id[row.id].sources,
+                    )
+                    if (
+                        by_id[row.id].kind != "conversation"
+                        and row.issue
+                        and row.issue.scope == "observed_case"
+                    ):
+                        raise ValueError(
+                            "Audit inferred an observed customer from policy/task text"
+                        )
 
-        try:
-            audits = await ctx.ask(
-                "unflagged-audit",
-                {
-                    "records": [r.model_dump() for r in audit_sources],
-                    "extractions": [screens[id].model_dump() for id in audit_ids],
-                },
-                AuditBatch,
-                text("prompts/unflagged-audit.md"),
-                validate=check_audit,
-                repair=True,
+            try:
+                async with stage:
+                    found = await ctx.ask(
+                        "unflagged-audit",
+                        {
+                            "records": [by_id[id].model_dump() for id in chunk],
+                            "extractions": [screens[id].model_dump() for id in chunk],
+                        },
+                        AuditBatch,
+                        text("prompts/unflagged-audit.md"),
+                        validate=check_audit,
+                        repair=True,
+                    )
+                audits.records.extend(found.records)
+            except Exception as error:
+                errors.append({"stage": "audit", "error": str(error)})
+
+        await asyncio.gather(
+            *(
+                audit(audit_ids[i : i + config.batch_size])
+                for i in range(0, len(audit_ids), config.batch_size)
             )
-        except Exception as error:
-            errors.append({"stage": "audit", "error": str(error)})
+        )
+        order = {id: index for index, id in enumerate(audit_ids)}
+        audits.records.sort(key=lambda row: order[row.id])
     patterns = PatternBatch(patterns=[])
     groups: dict[str, list[DiscoveryRecord]] = defaultdict(list)
     for id, row in screens.items():
