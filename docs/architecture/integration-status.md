@@ -1,80 +1,47 @@
-# Что улучшено и что подключаем дальше
+# Component audit and deployment boundaries
 
-## Входные события
+[Architecture](README.md) · [Checks and live captures](../../experiments/usability-integration/README.md)
 
-Есть типизированные email, call и ticket, исходный маршрут ответа и единый Trigger.
-Реальные webhooks, email-провайдер, телефония и тикетная система ещё не подключены.
-Их адаптер должен устанавливать доверенный scope, проверять подпись события и передавать
-состояние звонка. Нельзя доверять scope из произвольного JSON или считать email проверкой личности.
+| Component | Implemented and usable | Remaining boundary |
+| --- | --- | --- |
+| Intake | Typed email, call and ticket; original reply route; authenticated HTTP turns bound to a trusted session | Real email/ticket provider webhooks and their signature verification are deployment adapters. |
+| Context | Read-only investigator, JSON/SQLite and synthetic-bank sources, scoped/time-filtered records, source errors and exact `context.md` | Real tenant permissions and identifiers must come from trusted integration; PNG OCR and complete temporal entity versions are absent. |
+| Planner | Shared canonical `Plan`, skill selection, concrete decisions and evidence-linked grounds; product `DecisionPlanner` and Winner `make_plan` | No guarantee of semantic correctness; stronger-model routing and specialist sub-agents are not implemented. |
+| Execution | Canonical `DecisionExecutor`, dependency validation, durable mock receipts, replay/conflict checks, original-channel routing and session closure guard | All bank/email/ticket/call effects are simulated. Live adapters need provider authority, idempotency and reconciliation. |
+| Voice / text service | FastAPI/Uvicorn, session-scoped bearer tokens, SQLite request state, one active turn, timeout/close handling and replay after restart | ElevenLabs audio needs account setup, HTTPS and a trusted lifecycle handler; a real audio conversation has not been verified. |
+| Winner | Folder input, supplied context and attachments, shared Planner, ANSWER/REASONING, labeled future drafts, failures and journals | Full supplied history is retrospective unless an explicit decision-time input is prepared. |
+| Storage | Dataset state, incoming cases and private evaluation material separated; source hashes; independent session and action-receipt SQLite | Local deployment only. Retention, backups and distributed locking depend on the deployment. |
+| Evaluation | Saved-result scoring, public/synthetic preparation, model judge and existing report workflows | Historical scores are not a fresh quality baseline for this integrated product. |
 
-## Сборщик контекста
+## What changed in this audit
 
-Закрыты: вопросы к источникам вместо только выгрузки по кейсу; отдельный read-only агент;
-JSON/SQLite-источники; ограниченное время чтения; фиксация недоступных источников;
-фильтрация чужих/будущих записей до передачи модели; сохранение исходных фактов,
-информационных потребностей, пробелов и модельной трассы.
+The product now accepts `--planner-config` and preserves the same complete decision schema
+as Winner. The earlier offline fixture remains available without keys. HTTP intake invokes
+that common pipeline rather than duplicating context/planning logic. Session history adds
+customer assertions, never generated plans as bank facts. Closing a session while planning
+prevents subsequent mock execution. Provider retries reuse persisted results.
 
-[Данные Никиты подключены](../../local_testing/banking/README.md): 1 180 кейсов,
-отдельные входящие JSON, SQLite со срезом на момент решения и изолированный архив
-полных историй/ожидаемых ответов. Контакты, треды, документы и банковские источники
-доступны агенту через фиксированные инструменты чтения. Вывод — единый `context.md`.
+Planner sees an explicit registry of valid evidence IDs; ambiguous input IDs are rejected.
+Winner separates conditional future message drafts from current status and labels them
+NOT SENT. Its generator repairs unknown prerequisite IDs and unsupported completion claims;
+these guards are not a semantic correctness proof.
 
-В исходных таблицах хранится финальное состояние; часть ответов систем описывает
-уже выполненные команды. Они не используются как исходные факты: адаптер допускает
-только проверенные запросы чтения. Имена и локальные телефонные/email-алиасы —
-подсказки, не аутентификация. PDF-текст читается при подготовке; PNG остаются явным пробелом.
+## Synthetic data boundaries
 
-Свободные выводы LLM сохраняются в журнале. В Planner поступают исходные записи,
-реальные поисковые вопросы и предупреждения источников. [Три живые проверки и их
-ограничения](../../experiments/synthetic-context-integration/README.md).
+The current bank world has 1,180 cases and a reviewed decision-time projection. Full histories,
+expected answers and final entity tables are separate. The runtime admits reviewed read
+responses; command, mixed and unknown responses are withheld. Names, phone/email aliases and
+claims in incoming messages are search hints, not identity verification. PDF text is extracted
+when preparing the world; unavailable or unread attachments remain explicit gaps.
 
-Дальше: полноценные временные версии сущностей вместо финальных таблиц, реальные
-контактные идентификаторы/права доступа, OCR и широкая оценка полноты сбора контекста.
+[Dataset setup and provenance](../../local_testing/banking/README.md) ·
+[Context integration evidence](../../experiments/synthetic-context-integration/README.md)
 
-## Planner · Вера
+## Before live deployment
 
-Папка работы: [planning/implementation](../../src/dwelly_bot/planning/implementation/README.md).
-Есть API `text → Plan`, JSON-профили production/contest, схемы аргументов и заглушка. Команда также добавила [advisory Planner](../../src/dwelly_bot/planner/README.md) с отдельным JSON-контрактом; Solver уже использует его в `predict`.
-Модель, знания, скиллы и качество решений реализует Вера. Мы её логику не подменяем.
-Профиль задаётся при создании Planner; разные action sets не требуют второй реализации.
-
-## Действия и результат
-
-Есть шесть категорий: ответить в исходный канал, email, исходящий звонок, обновить тикет,
-передать человеку, посчитать. Расчёт использует существующую ограниченную Decimal-арифметику.
-Следующее сообщение может сослаться на результат через `{{id.value}}`.
-Результат расчёта — `computed`, внешнего действия — `simulated`; intent не выдаётся за delivery.
-
-Добавлены проверка профиля до действий, остановка при ошибке, запрет неизвестных ссылок,
-сохранение mock-квитанций в отдельной SQLite через `--state`, защита от повторов после
-перезапуска и конфликтов изменённого события/действия. Конкурирующие локальные mock-запуски
-с одним state-файлом сериализуются транзакцией. Без `--state` защита остаётся в памяти.
-
-Реальное исполнение требует отдельных адаптеров и проверки полномочий. SQLite-квитанция
-не обеспечивает exactly-once для внешнего банка: понадобятся provider idempotency keys,
-состояние pending/unknown и сверка после таймаута. Ответ внутри звонка также потребует
-сигналов о завершении сессии. Не добавляем фиктивные банковские полномочия и операции.
-
-## Контест
-
-Профиль contest использует предметные действия как предложения; mock-исполнитель его
-не принимает. [Пакет Solver](../../src/hackathon_winner/README.md) уже добавлен командой: генерация
-ANSWER/REASONING, экспорт и development predict. Новый `dwelly_bot.planner` использует
-отдельную advisory-схему; локальный runner сохраняет `planning.HumanReviewPlanner`.
-Согласование контрактов ещё предстоит.
-Качество Planner и генератора измеряем отдельно после их реализации. Исторический
-benchmark не является проверкой нового Planner. Свежие платные проверки сборщика
-на трёх синтетических кейсах проверяют интеграцию, а не качество решений Planner.
-
-## Проверка интеграции · 10 октября
-
-[Аудит и офлайн-проверки](../../experiments/integration-audit-2026-10-10/README.md):
-единая обработка ошибок источников; общие ограничения и трассы моделей; сохранение ошибок
-отдельных кейсов; точная передача условий плана; атомарный импорт, хеши входящих кейсов
-и сохранение происхождения данных при сбоях. Подготовка данных для оценки использует
-тот же список разрешённых запросов чтения, что и локальный бот.
-
-`predict` читает полную историю и предназначен для ретроспективной разработки.
-Это отдельный режим от оценки на срезе до решения; его результаты не доказывают
-качество на скрытых будущих событиях. Голосовые и банковские адаптеры и согласование
-двух контрактов Planner остаются явно выделенными задачами, а не готовыми возможностями.
+Connect actual authorized source/action adapters, provision the speech provider and secure
+HTTPS service, and test disconnects and uncertain provider outcomes. A SQLite mock receipt
+cannot establish exactly-once behavior in an external bank. Do not tell a customer an operation
+completed without a provider acknowledgement. Local captures contain request/model text;
+choose access and retention appropriate to the deployment. No audio recording or vendor
+telemetry is enabled by this repository.

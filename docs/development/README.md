@@ -20,7 +20,9 @@ Copy `.env.example` to `.env` only when enabling a model provider. Set the provi
 
 | Command | Use |
 | --- | --- |
-| `dwelly-bot local run` | Full product pipeline over the [synthetic bank](../../local_testing/banking/README.md); optional model collector. |
+| `dwelly-bot local run` | Full product pipeline over the [synthetic bank](../../local_testing/banking/README.md); optional model collector and shared decision Planner. |
+| `dwelly-bot service` | Provision trusted sessions and serve authenticated turns; install `--extra server`. |
+| `hackathon-winner` | Case folders → shared Planner → ANSWER/REASONING and traces. |
 | `dwelly-bot demo` | Current trigger/context/Planner/mock-execution path. |
 | `dwelly-bot actions --profile production` | Effective action JSON schemas; also accepts `contest`. |
 | `dwelly-bot agent doctor` | Inspect historical agent/provider readiness. |
@@ -28,7 +30,7 @@ Copy `.env.example` to `.env` only when enabling a model provider. Set the provi
 | `dwelly-bot analyze` | Explicit source-data analysis recipes. |
 | `dwelly-bot check` | Complete offline lint/type/test gate. |
 
-[Demo options](../../examples/production/README.md) include `--records`, `--sqlite`, `--plan` and `--state`. Only `--context-config PATH` enables paid model-driven context investigation. That configuration uses the existing [RunConfig loader](../../src/dwelly_bot/configuration.py); choose a provider/model, request limits and a shared budget file. The default Planner remains the no-model stub.
+[Demo options](../../examples/production/README.md) include `--records`, `--sqlite`, `--plan` and `--state`. `--context-config PATH` enables paid context investigation; `--planner-config PATH` enables the shared decision Planner. That configuration uses the existing [RunConfig loader](../../src/dwelly_bot/configuration.py); choose a provider/model, request limits and a shared budget file. The default Planner remains the no-model stub.
 
 Captures require a new output directory. `--state` points to a separate SQLite file for mock replay across processes; it is not the source database. Keep local captures and state in `.cache/`.
 
@@ -63,8 +65,9 @@ Account ledgers under `.cache/accounts/` retain settled costs and unresolved res
 src/dwelly_bot/
 ├── channels/                 # input normalization and original reply routes
 ├── context/                  # evidence collection, sources, investigator
-├── planning/                 # public contract, action profiles, stub
-│   └── implementation/       # Vera's implementation slot
+├── planner/                  # canonical decision contract, skills, model implementation
+├── planning/                 # legacy fixture contract, profiles, offline stub
+├── service/                  # authenticated HTTP turns and durable sessions
 ├── execution/                # action receipts, mock executor, durable state
 ├── harness/production.py     # current shared production skeleton
 ├── adapters/                 # existing dataset mapping and guards
@@ -75,7 +78,7 @@ examples/production/          # small runnable fixtures
 experiments/                  # saved protocols, configurations and results
 ```
 
-The separate [`hackathon_winner` package](../../src/hackathon_winner/README.md) now implements generation/export and development predictions. Its advisory case Planner has a separate schema; alignment with the local executable-plan contract remains pending. Keep contest-specific preparation and output generation out of the product Planner.
+The separate [`hackathon_winner` package](../../src/hackathon_winner/README.md) now implements generation/export and development predictions. It and the model-backed local pipeline share the canonical `planner.Plan`; no conversion to legacy fixture actions is needed. Keep contest-specific preparation and output generation out of the product Planner.
 
 ## Checks and contributions
 
@@ -90,4 +93,4 @@ uv run pytest -q tests/test_intake_context.py tests/test_context_sources.py \
 
 Use `uv run dwelly-bot check` for the full offline gate. These checks do not call paid models. Follow [repo sync](../../.agents/skills/dwelly-bot-repo-sync/SKILL.md) before edits/pushes and [the experiment workflow](../../.agents/skills/dwelly-bot-experiment/SKILL.md) for model, prompt, retrieval or tool behavior changes. Preserve other contributors' changes and original run outputs.
 
-The current implementation has no live bank connector or voice service. Context-source permissions and cross-entity joins must be defined with the actual data. [Remaining integration work](../architecture/integration-status.md).
+The current implementation has an authenticated voice/text webhook backend but no live bank connector. Provider audio deployment still needs account configuration and verification. Context-source permissions and cross-entity joins must be defined with the actual data. [Remaining integration work](../architecture/integration-status.md).

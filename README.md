@@ -21,7 +21,7 @@ Dwelly-bot separates that work into three components: **gather the evidence, dec
 
 [![Product workflow, shared Planner and a separate evaluation loop](docs/architecture/diagram.png)](docs/architecture/index.html)
 
-*Blue: the operational workflow. Purple: the shared Planner and contest path. Gold: evaluation and improvement. The shared-core diagram is the target design; the separate Solver package now exists, with Planner contract alignment still pending.*
+*Blue: the operational workflow. Purple: the shared Planner and contest path. Gold: evaluation and improvement. Both product and Winner now call the same Planner; external actions remain explicitly simulated.*
 
 [Interactive diagram source](docs/architecture/index.html) · [Component contracts](docs/architecture/README.md) · [Implementation status](docs/architecture/integration-status.md)
 
@@ -29,9 +29,9 @@ Dwelly-bot separates that work into three components: **gather the evidence, dec
 
 | Stage | Responsibility | In this repository |
 | --- | --- | --- |
-| **Trigger** | Normalize email, call or ticket; preserve its reply route. | Typed inputs and local fixtures. |
+| **Trigger** | Normalize email, call or ticket; preserve its reply route. | Typed email/call/ticket inputs; authenticated HTTP sessions and local fixtures. |
 | **Context** | Identify useful information and read authorized sources. | JSON/SQLite readers and synthetic-bank sources; optional Pydantic AI investigator. |
-| **Planner** | Apply knowledge to the available facts; choose concrete actions. | Public `text → Plan` API and action profiles. Local runner uses a human-review stub; a separate [case Planner](src/dwelly_bot/planner/README.md) also exists. |
+| **Planner** | Apply knowledge to the available facts; choose concrete actions. | Shared [decision Planner](src/dwelly_bot/planner/README.md), selected skills and evidence-linked grounds. Enable with `--planner-config`; offline default is a human-review fixture. |
 | **Execution** | Run the selected steps and record their results. | Mock communication/handoff/ticket actions; local arithmetic; durable mock receipts. |
 
 Replying in the original channel is a plan action. The executor does not make a second business decision or silently send an extra response.
@@ -40,7 +40,7 @@ Replying in the original channel is a plan action. The executor does not make a 
 
 Gathering more data and choosing what to do are different problems. Once the context is ready, the Planner can concentrate on the hardest question: **what is the right next action, given these facts, rules and uncertainties?**
 
-That boundary also makes the component independently testable. Production gathers the context; the hackathon adapter prepares supplied case evidence as text. Both are intended to call the same Planner.
+That boundary also makes the component independently testable. Production gathers the context; the hackathon adapter prepares supplied case evidence as text. Both call the same Planner when model planning is enabled.
 
 ```mermaid
 flowchart LR
@@ -52,7 +52,7 @@ flowchart LR
     D --> F[Winner: ANSWER + REASONING]
 ```
 
-**Implemented case Planner:** a structured selection call chooses relevant [banking skills](src/dwelly_bot/planner/skills/README.md), then the Planner combines them with general evidence/safety rules and emits a validated decision with concrete instructions and evidence-linked grounds. Hackathon Winner imports this component directly. The local executable-plan pipeline still uses its stub; specialist sub-agents are not implemented. [Planner design and Vera's TODOs](docs/planner/README.md).
+**Implemented case Planner:** a structured selection call chooses relevant [banking skills](src/dwelly_bot/planner/skills/README.md), then the Planner combines them with general evidence/safety rules and emits a validated decision with concrete instructions and evidence-linked grounds. Hackathon Winner imports this component directly. The product calls it through `DecisionPlanner`; Winner calls `make_plan` directly. Both retain the same complete `Plan`. Specialist sub-agents are not implemented. [Planner contract](docs/planner/README.md).
 
 ## Quickstart
 
@@ -100,7 +100,7 @@ uv run dwelly-bot local run --case SYN-0001 --output .cache/local-bank/quickstar
 
 [Local testing guide](local_testing/banking/README.md): state/case separation, email and call
 replays, model configuration and custom triggers. Add `--context-config
-experiments/synthetic-context-integration/config.json` to enable the LLM collector.
+experiments/synthetic-context-integration/config.json` to enable the LLM collector; add `--planner-config src/hackathon_winner/config.json` to use the shared decision Planner.
 The runtime uses reviewed decision-time responses; completed entity state and evaluator
 answers remain separate. [Integration checks and saved runs](experiments/synthetic-context-integration/README.md).
 
@@ -110,7 +110,7 @@ Our testing approach has two complementary paths:
 
 | Path | What it tests | Status |
 | --- | --- | --- |
-| **Dwelly examples → prepared context → Planner → answer** | Decision quality on supplied operational cases. | Data adapter, advisory Planner and [Solver generation/export](src/hackathon_winner/README.md) exist; shared Planner contract alignment remains pending. |
+| **Dwelly examples → prepared context → Planner → answer** | Decision quality on supplied operational cases. | Shared Planner and [Winner generation/export](src/hackathon_winner/README.md); supplied attachments, per-case errors and traces are preserved. |
 | **Synthetic world → noisy events → context → plan → execution** | Missing facts, ambiguous identities, conflicting records and failed actions. | 1,180 generated banking cases; separate state/cases/evaluation data and a working local runner. |
 
 The generator direction is reusable across service tracks; the current implemented dataset adapter is banking-specific. We keep future outcomes outside the acting context and evaluate saved decisions afterward. [Evaluation loops, scenario design and optimization TODOs](docs/evaluation/README.md).
@@ -123,20 +123,20 @@ The generator direction is reusable across service tracks; the current implement
 | --- | --- |
 | Agent runtime | Pydantic AI; locked dependencies in `uv.lock`. |
 | Context investigator | Optional model via `--context-config`; shared provider pool, budget and journal. |
-| Planner | Final model and skill hierarchy **TBD — Vera**; default stub makes no model calls. |
+| Planner | Versioned skills and `RunConfig`; `--planner-config` enables the same Planner used by Winner. Offline default makes no calls. |
 | Historical experiments | MiniMax M3 / OpenRouter; Sonnet 5.5 and Opus 5.5 judge / Anthropic. |
 | Sources and execution | Local JSON/SQLite; communication adapters are mock. |
-| Voice | Call-event contract exists. Speech provider, model and live transport **TBD**. |
+| Voice | Authenticated FastAPI turn service and documented ElevenLabs webhook contract. Provider audio session still requires provisioning and a live test. |
 
-For model-backed runs, copy `.env.example` to `.env` and set only the selected provider's key (`ANTHROPIC_API_KEY`, `OPENROUTER_API_KEY` or `OPENAI_API_KEY`). `--context-config` explicitly enables paid calls; offline demos, checks and saved-report rendering do not. No vendor telemetry or session capture is enabled. [Configuration and development](docs/development/README.md).
+For model-backed runs, copy `.env.example` to `.env` and set only the selected provider's key (`ANTHROPIC_API_KEY`, `OPENROUTER_API_KEY` or `OPENAI_API_KEY`). `--context-config` and `--planner-config` explicitly enable paid calls; offline demos, checks and saved-report rendering do not. No vendor telemetry or session capture is enabled. [Configuration and development](docs/development/README.md).
 
-Voice will use the same context/planning/execution core. [Voice integration slots and diagram](docs/voice/README.md) · [Demo storyboard — video pending](demo/README.md).
+The voice backend uses the same context/planning/execution core. [Run the service and configure ElevenLabs](docs/voice/README.md) · [Demo storyboard — video pending](demo/README.md).
 
 ## Assumptions and next steps
 
 Source adapters establish access boundaries; names and email addresses remain search hints. A plan is intent, a mock receipt is a simulation, and neither proves an external bank operation occurred. Public examples are development data, not final Reality Test submissions.
 
-Next: align the case Planner with the shared executable-plan contract and Solver, evaluate the combined decision core, add temporal entity snapshots and real channel/voice adapters. Live banking effects, final voice integration and a recorded demo are not implemented. [Detailed gaps and ownership](docs/architecture/integration-status.md).
+Next: evaluate the combined decision core, add temporal entity snapshots and provision real channel adapters. Live banking effects, an end-to-end provider audio conversation and a recorded demo are not verified. The authenticated service is usable locally; its external effects remain mock. [Component audit and remaining deployment work](docs/architecture/integration-status.md). [Integration receipts](experiments/usability-integration/README.md).
 
 ## Explore and contribute
 

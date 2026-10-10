@@ -88,3 +88,14 @@ uv run --extra analysis dwelly-bot plan eval build --synthetic .cache/datasets/b
 ```
 
 Standalone Planner runs save configuration, model messages and cost receipts in each local journal, including failed calls, and return a nonzero exit code when any plan fails.
+
+## Product and voice integration
+
+`service.DecisionPlanner(event, config, journal_path).plan(context)` wraps the same
+`make_plan` path used by Winner, preserving its canonical `Plan` and model journal.
+Enable it in `demo`, `local run` or `service serve` with `--planner-config PATH`.
+The product `DecisionExecutor` validates and simulates these steps; no bank operation
+or customer message is actually sent. The historical solver's fallback behavior above
+is separate: product/Winner failures stay visible and do not fabricate a replacement plan.
+
+[Product contract](../../../docs/planner/README.md) · [HTTP / ElevenLabs setup](../../../docs/voice/README.md)

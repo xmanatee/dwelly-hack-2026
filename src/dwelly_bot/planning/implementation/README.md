@@ -1,20 +1,12 @@
-# TODO · Вера
+# Implementation moved to the shared Planner
 
-Реализовать Planner в этой папке. Внешний контракт: Markdown-текст → `Plan`.
+Vera's implementation is in [dwelly_bot/planner](../../planner/README.md).
+Its prompts, skill selection, evidence validation and canonical `Plan` are used by
+both the product and [Hackathon Winner](../../../hackathon_winner/README.md).
 
-1. Создать класс с `async def plan(self, context: str) -> Plan`.
-2. При создании принимать `ActionProfile`, модель и набор знаний/скиллов.
-3. Использовать `profile.catalog()` как доступный словарь действий и `Plan` как схему
-   ответа. Возвращать уже выбранное решение и конкретные параметры; не поручать
-   исполнителю повторное рассуждение или поиск уже предоставленных данных.
-4. Перед возвратом проверить `profile.validate_plan(plan)`.
-5. Подключить класс вместо `HumanReviewPlanner` в `ProductionPipeline`. Тот же класс
-   позже импортируется отдельным Hackathon Solver.
+`planner/service.py:DecisionPlanner` exposes `async plan(context: str) -> Plan` for
+the product pipeline. Winner imports `make_plan` directly and owns answer generation.
+This directory is retained as a pointer for earlier links, not a second implementation slot.
 
-Готовые границы: `planning/contracts.py`, `planning/catalog.py`, `context/collector.py`,
-`execution/contracts.py`. Для модели использовать существующие `BudgetedModel`,
-model pool и `CaseRuntime`, как в `context/investigator.py`; не создавать отдельный
-API-клиент без общего учёта и трассы. Промпты/скиллы — ресурсы пакета, не строки в CLI.
-
-Генератор contest answer/reasoning — отдельный компонент Solver, тоже зона Веры.
-На данном этапе он ещё не реализован. Текущая заглушка и её ответы — не baseline качества.
+The parent `planning/` module remains the offline fixture contract. No migration of
+historical saved plans or experiment captures is needed.

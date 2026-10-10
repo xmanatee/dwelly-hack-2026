@@ -1,0 +1,353 @@
+{
+  "source_commit": "e71c742",
+  "scope": "Integration smoke, not a quality benchmark or accepted baseline",
+  "offline": {
+    "tests_passed": 344,
+    "ruff": "passed",
+    "mypy": "passed"
+  },
+  "live": {
+    "local_cases": [
+      "SYN-0001"
+    ],
+    "channel": "call",
+    "winner_cases": [
+      "001",
+      "002"
+    ],
+    "errors": 0,
+    "execution": "mock",
+    "context_config": "experiments/synthetic-context-integration/config.json",
+    "planner_and_winner_config": "src/hackathon_winner/config.json",
+    "model_requests": 11,
+    "cost_upper_bound_usd": 0.1785604
+  },
+  "http": {
+    "health": 200,
+    "unauthorized": 401,
+    "turn": 200,
+    "replay": 200,
+    "replayed": "true",
+    "same_result": true,
+    "close": 200,
+    "closed_turn": 410,
+    "execution": "mock",
+    "external_effects": false
+  },
+  "costs": [
+    {
+      "journal": "live-local-e71c742/events.jsonl",
+      "status": "settled",
+      "account": "anthropic:ANTHROPIC_API_KEY",
+      "response_id": "msg_011CftkWyVdWV5etme9w9WAn",
+      "cost_usd": 0.0089155,
+      "cost_basis": "configured_token_price_upper_bound",
+      "sdk_cost_estimate": null,
+      "usage": {
+        "input_tokens": 2363,
+        "cache_write_tokens": 2359,
+        "cache_read_tokens": 0,
+        "output_tokens": 301,
+        "input_audio_tokens": 0,
+        "cache_audio_read_tokens": 0,
+        "output_audio_tokens": 0,
+        "audio_seconds": 0.0,
+        "details": {
+          "input_tokens": 4,
+          "output_tokens": 301,
+          "cache_creation_input_tokens": 2359,
+          "cache_read_input_tokens": 0
+        },
+        "cost": null
+      }
+    },
+    {
+      "journal": "live-local-e71c742/events.jsonl",
+      "status": "settled",
+      "account": "anthropic:ANTHROPIC_API_KEY",
+      "response_id": "msg_011CftkXAMjVhnhghFArveiA",
+      "cost_usd": 0.0074158,
+      "cost_basis": "configured_token_price_upper_bound",
+      "sdk_cost_estimate": null,
+      "usage": {
+        "input_tokens": 3945,
+        "cache_write_tokens": 1584,
+        "cache_read_tokens": 2359,
+        "output_tokens": 298,
+        "input_audio_tokens": 0,
+        "cache_audio_read_tokens": 0,
+        "output_audio_tokens": 0,
+        "audio_seconds": 0.0,
+        "details": {
+          "input_tokens": 2,
+          "output_tokens": 298,
+          "cache_creation_input_tokens": 1584,
+          "cache_read_input_tokens": 2359
+        },
+        "cost": null
+      }
+    },
+    {
+      "journal": "live-local-e71c742/events.jsonl",
+      "status": "settled",
+      "account": "anthropic:ANTHROPIC_API_KEY",
+      "response_id": "msg_011CftkXKthzToioAMMAMQAj",
+      "cost_usd": 0.0050576,
+      "cost_basis": "configured_token_price_upper_bound",
+      "sdk_cost_estimate": null,
+      "usage": {
+        "input_tokens": 4643,
+        "cache_write_tokens": 698,
+        "cache_read_tokens": 3943,
+        "output_tokens": 252,
+        "input_audio_tokens": 0,
+        "cache_audio_read_tokens": 0,
+        "output_audio_tokens": 0,
+        "audio_seconds": 0.0,
+        "details": {
+          "input_tokens": 2,
+          "output_tokens": 252,
+          "cache_creation_input_tokens": 698,
+          "cache_read_input_tokens": 3943
+        },
+        "cost": null
+      }
+    },
+    {
+      "journal": "live-local-e71c742/planner.jsonl",
+      "status": "settled",
+      "account": "anthropic:ANTHROPIC_API_KEY",
+      "response_id": "msg_011CftkXW9rjnPKNPNpCyKfK",
+      "cost_usd": 0.0120955,
+      "cost_basis": "configured_token_price_upper_bound",
+      "sdk_cost_estimate": null,
+      "usage": {
+        "input_tokens": 4583,
+        "cache_write_tokens": 4579,
+        "cache_read_tokens": 0,
+        "output_tokens": 64,
+        "input_audio_tokens": 0,
+        "cache_audio_read_tokens": 0,
+        "output_audio_tokens": 0,
+        "audio_seconds": 0.0,
+        "details": {
+          "input_tokens": 4,
+          "output_tokens": 64,
+          "cache_creation_input_tokens": 4579,
+          "cache_read_input_tokens": 0
+        },
+        "cost": null
+      }
+    },
+    {
+      "journal": "live-local-e71c742/planner.jsonl",
+      "status": "settled",
+      "account": "anthropic:ANTHROPIC_API_KEY",
+      "response_id": "msg_011CftkXd9Hq8JNfDnWF4oEs",
+      "cost_usd": 0.034993,
+      "cost_basis": "configured_token_price_upper_bound",
+      "sdk_cost_estimate": null,
+      "usage": {
+        "input_tokens": 8906,
+        "cache_write_tokens": 8902,
+        "cache_read_tokens": 0,
+        "output_tokens": 1273,
+        "input_audio_tokens": 0,
+        "cache_audio_read_tokens": 0,
+        "output_audio_tokens": 0,
+        "audio_seconds": 0.0,
+        "details": {
+          "input_tokens": 4,
+          "output_tokens": 1273,
+          "cache_creation_input_tokens": 8902,
+          "cache_read_input_tokens": 0
+        },
+        "cost": null
+      }
+    },
+    {
+      "journal": "winner-e71c742/journals/001.jsonl",
+      "status": "settled",
+      "account": "anthropic:ANTHROPIC_API_KEY",
+      "response_id": "msg_011CftkWz4MZzXh4St8DuYnL",
+      "cost_usd": 0.0062305,
+      "cost_basis": "configured_token_price_upper_bound",
+      "sdk_cost_estimate": null,
+      "usage": {
+        "input_tokens": 2213,
+        "cache_write_tokens": 2209,
+        "cache_read_tokens": 0,
+        "output_tokens": 70,
+        "input_audio_tokens": 0,
+        "cache_audio_read_tokens": 0,
+        "output_audio_tokens": 0,
+        "audio_seconds": 0.0,
+        "details": {
+          "input_tokens": 4,
+          "output_tokens": 70,
+          "cache_creation_input_tokens": 2209,
+          "cache_read_input_tokens": 0
+        },
+        "cost": null
+      }
+    },
+    {
+      "journal": "winner-e71c742/journals/001.jsonl",
+      "status": "settled",
+      "account": "anthropic:ANTHROPIC_API_KEY",
+      "response_id": "msg_011CftkX8QuUa4tPEGfGW6Ed",
+      "cost_usd": 0.027673,
+      "cost_basis": "configured_token_price_upper_bound",
+      "sdk_cost_estimate": null,
+      "usage": {
+        "input_tokens": 6958,
+        "cache_write_tokens": 6954,
+        "cache_read_tokens": 0,
+        "output_tokens": 1028,
+        "input_audio_tokens": 0,
+        "cache_audio_read_tokens": 0,
+        "output_audio_tokens": 0,
+        "audio_seconds": 0.0,
+        "details": {
+          "input_tokens": 4,
+          "output_tokens": 1028,
+          "cache_creation_input_tokens": 6954,
+          "cache_read_input_tokens": 0
+        },
+        "cost": null
+      }
+    },
+    {
+      "journal": "winner-e71c742/journals/001.jsonl",
+      "status": "settled",
+      "account": "anthropic:ANTHROPIC_API_KEY",
+      "response_id": "msg_011CftkXgVhqFy33kHfpGBpk",
+      "cost_usd": 0.020638,
+      "cost_basis": "configured_token_price_upper_bound",
+      "sdk_cost_estimate": null,
+      "usage": {
+        "input_tokens": 3224,
+        "cache_write_tokens": 3220,
+        "cache_read_tokens": 0,
+        "output_tokens": 1258,
+        "input_audio_tokens": 0,
+        "cache_audio_read_tokens": 0,
+        "output_audio_tokens": 0,
+        "audio_seconds": 0.0,
+        "details": {
+          "input_tokens": 4,
+          "output_tokens": 1258,
+          "cache_creation_input_tokens": 3220,
+          "cache_read_input_tokens": 0
+        },
+        "cost": null
+      }
+    },
+    {
+      "journal": "winner-e71c742/journals/002.jsonl",
+      "status": "settled",
+      "account": "anthropic:ANTHROPIC_API_KEY",
+      "response_id": "msg_011CftkWz5rSWMCLxbho542d",
+      "cost_usd": 0.0066155,
+      "cost_basis": "configured_token_price_upper_bound",
+      "sdk_cost_estimate": null,
+      "usage": {
+        "input_tokens": 2407,
+        "cache_write_tokens": 2403,
+        "cache_read_tokens": 0,
+        "output_tokens": 60,
+        "input_audio_tokens": 0,
+        "cache_audio_read_tokens": 0,
+        "output_audio_tokens": 0,
+        "audio_seconds": 0.0,
+        "details": {
+          "input_tokens": 4,
+          "output_tokens": 60,
+          "cache_creation_input_tokens": 2403,
+          "cache_read_input_tokens": 0
+        },
+        "cost": null
+      }
+    },
+    {
+      "journal": "winner-e71c742/journals/002.jsonl",
+      "status": "settled",
+      "account": "anthropic:ANTHROPIC_API_KEY",
+      "response_id": "msg_011CftkX63mPsYCkWGFvV3VN",
+      "cost_usd": 0.0277305,
+      "cost_basis": "configured_token_price_upper_bound",
+      "sdk_cost_estimate": null,
+      "usage": {
+        "input_tokens": 6777,
+        "cache_write_tokens": 6773,
+        "cache_read_tokens": 0,
+        "output_tokens": 1079,
+        "input_audio_tokens": 0,
+        "cache_audio_read_tokens": 0,
+        "output_audio_tokens": 0,
+        "audio_seconds": 0.0,
+        "details": {
+          "input_tokens": 4,
+          "output_tokens": 1079,
+          "cache_creation_input_tokens": 6773,
+          "cache_read_input_tokens": 0
+        },
+        "cost": null
+      }
+    },
+    {
+      "journal": "winner-e71c742/journals/002.jsonl",
+      "status": "settled",
+      "account": "anthropic:ANTHROPIC_API_KEY",
+      "response_id": "msg_011CftkXh4Bx4dsTKysFMbTB",
+      "cost_usd": 0.0211955,
+      "cost_basis": "configured_token_price_upper_bound",
+      "sdk_cost_estimate": null,
+      "usage": {
+        "input_tokens": 3355,
+        "cache_write_tokens": 3351,
+        "cache_read_tokens": 0,
+        "output_tokens": 1281,
+        "input_audio_tokens": 0,
+        "cache_audio_read_tokens": 0,
+        "output_audio_tokens": 0,
+        "audio_seconds": 0.0,
+        "details": {
+          "input_tokens": 4,
+          "output_tokens": 1281,
+          "cache_creation_input_tokens": 3351,
+          "cache_read_input_tokens": 0
+        },
+        "cost": null
+      }
+    }
+  ],
+  "files_sha256": {
+    "live-local-e71c742/context.json": "29975e3f9ac7e5d8f57c9df5a709744f62f83ade20dd155e8f912cda57569c3f",
+    "live-local-e71c742/context.md": "32dab68c7ab1e0e51e0d1f8b964bce6dd7a894cd968588ef633f8295b550ab63",
+    "live-local-e71c742/dataset.json": "833dafbdb26a4e5f49f185ad5569bc34ada2736a865f1077367200bde6ff4e90",
+    "live-local-e71c742/events.jsonl": "148e98b6d2c68f1923984635c1ad2f57dc8113edc0d84e894877185323dd9354",
+    "live-local-e71c742/input.json": "9667e32f424cb05d33dbd0267e3916b67479d8a02bfa78c67867bdb79c1b1070",
+    "live-local-e71c742/plan.json": "1243e5c8b7332f397282ccefabb7cb9a0f233735e9b12576376ccd52034611b6",
+    "live-local-e71c742/planner.jsonl": "dd3871fb692613adc6593ebd2b9d6d17376e4d0d495ca2b19d67f514dc5ce69c",
+    "live-local-e71c742/result.json": "b7444837078fa9ab79eb9d5017ad82bfd6bfc0c2f11b987de01ab08e92f9911b",
+    "live-local-e71c742/trigger.json": "05d29a1714caa799f7456f15c74d343ed938758206791e72a81d6520d673a536",
+    "winner-e71c742/001/ANSWER.md": "f62c1d6de3d2cbe4f2e5b51f7fbbb005440f5a9de1f1a24ae6e59c4500cf2b1d",
+    "winner-e71c742/001/REASONING.md": "29124941f833fcf749da12aea71d9aa492ede39e4885f53f1c4c6302fd2b0dc5",
+    "winner-e71c742/001/context.md": "166f26114f2416ff68e7bfa333c338d324d48bf3aa3feff9a0b059a60b57154c",
+    "winner-e71c742/001/generation.json": "e72508fe18ddf3f8cb04f0b995e13e782cb191aa483be3827720503ad9f6f352",
+    "winner-e71c742/001/plan.json": "cc93ac1a1f718626b83c51ef259f906529e2ae1b6d0c69b78a2870c3416ed993",
+    "winner-e71c742/002/ANSWER.md": "8216f1d0876a9466aa73c136912ce9a5aefc9f2614596dc77b21525430913f18",
+    "winner-e71c742/002/REASONING.md": "29e3b339ab8d345879391d6d7debab54155d56458acee0a0b76cb14c0b5bbff1",
+    "winner-e71c742/002/context.md": "705863993db311bfc1f0008c657b89ec325db08eabb2b4b9c8ba606b0dc5050e",
+    "winner-e71c742/002/generation.json": "27c0f3b63f9564ff049b9b670b4a9cf81121ba956fe365da2c56dfd1359a7813",
+    "winner-e71c742/002/plan.json": "8226341e9907d2fa36d1f39aa754270b95dd17b2d134d21a1d6d371fd0f6b3b1",
+    "winner-e71c742/journals/001.jsonl": "921745d48d20eaa50a60e3873333cc5774ad74e6cefb2ee30005c6c500590b10",
+    "winner-e71c742/journals/002.jsonl": "f83438f158ce5fb2ad0c2c4b732c3417561af4045c5a343e0d1c95ed6409352f",
+    "winner-e71c742/predictions.json": "4a1b2c07ef0351cda1d66c074dab487501dcb8d2391589c939468903117cb7d0",
+    "winner-e71c742/report.html": "e84199b621478ba55a11a9aae2dd668d56158d47d57a0737e022351bfccef690",
+    "http-e71c742/receipt.json": "a4d8a337411a10556fa7c190e92a5f4f80be63c861eb7cfeee6b1940a7290547"
+  },
+  "archive_sha256": "5c1ac6a2dfd884f4fc0c5dc0f48c56d77ad19c6d8b0e958643b1c2eae0e6a9c6",
+  "excluded": "HTTP session database, bearer credentials and service logs are not exported."
+}

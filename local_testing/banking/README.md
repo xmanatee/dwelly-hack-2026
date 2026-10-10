@@ -128,9 +128,11 @@ team synchronization; all nine captures remain saved. A further 36-test combined
 Team synchronization consolidated the duplicate generator into `synthetic/`. The build now
 uses the existing locked `synthetic` dependency extra. Earlier captures retain their original
 ReportLab 5.0.1 receipt; fresh builds record their installed versions in `manifest.json`.
-The local pipeline still uses `dwelly_bot.planning.HumanReviewPlanner`; the team's new
-[`dwelly_bot.planner`](../../src/dwelly_bot/planner/README.md) has an advisory schema and
-is not silently substituted for the executable `text → Plan` contract.
+The offline default uses `dwelly_bot.planning.HumanReviewPlanner`. Add
+`--planner-config src/hackathon_winner/config.json` to call the shared
+[`dwelly_bot.planner`](../../src/dwelly_bot/planner/README.md) through `DecisionPlanner`.
+Its full canonical plan is preserved and handled by `DecisionExecutor` in mock mode.
+`--context-config` independently enables model-directed evidence collection.
 
 New builds publish only after the entire projection succeeds and include `cases_sha256`
 checksums for incoming trigger files. The runner verifies these alongside the database and

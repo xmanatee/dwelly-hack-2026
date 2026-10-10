@@ -1,8 +1,9 @@
-# Planner — зона Веры
+# Legacy fixture planning API
 
-Публичный вызов остаётся `await planner.plan(context: str) -> Plan`.
-Реализация модели и скиллов живёт в [implementation/](implementation/README.md).
-Сейчас используется `HumanReviewPlanner`: константная заглушка, без модели и скиллов.
+Этот модуль сохраняет offline-демо, `HumanReviewPlanner`, старые JSON-планы и шесть
+типизированных действий. Реальная модель, скиллы и канонический `Plan` находятся
+в [planner/](../planner/README.md). Продукт вызывает их через `DecisionPlanner`,
+а Winner — через `make_plan`. Ниже описан именно fixture-контракт.
 
 Параметры экземпляра: `ActionProfile` (production/contest), модель и знания. Профиль
 не надо прятать в тексте пользователя или передавать новым аргументом каждого вызова.

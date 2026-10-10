@@ -69,3 +69,45 @@ ordinary answer/reasoning still reject first-person claims that planned work was
 Unknown draft prerequisites are repaired. This addresses the future-draft false positive
 without silently treating a planned operation as a receipt. The regex is a narrow guard,
 not proof of semantic faithfulness in every language; saved-result judging remains separate.
+
+## Stage 4: verified local operation
+
+At source commit `e71c742`, the full offline gate passed: **344 tests**, Ruff and strict
+mypy (167 source files). Paid integration smokes then completed with no run errors:
+
+| Path | Input | Inspected result |
+| --- | --- | --- |
+| Model collector → shared Planner → mock executor | Existing synthetic `SYN-0001`, call replay | Fee review / complaint request and response bound to the original call; both receipts simulated. |
+| Winner → shared Planner → generator | Bundled synthetic `001` | Hold unauthenticated contact change and route to secure recovery; no completed update claimed. |
+| Winner → shared Planner → generator | Bundled synthetic `002` | Preserve the distinction between sent and credited; no unsupported recall or duplicate payment. |
+
+Commands (use fresh output directories):
+
+```sh
+uv run dwelly-bot local run --case SYN-0001 --channel call \
+  --context-config experiments/synthetic-context-integration/config.json \
+  --planner-config src/hackathon_winner/config.json \
+  --output experiments/usability-integration/artifacts/live-local-e71c742
+uv run hackathon-winner --config src/hackathon_winner/config.json \
+  --output experiments/usability-integration/artifacts/winner-e71c742
+```
+
+The 11 model requests have a configured-price upper bound of **$0.1785604**, including
+context collection, skill selection, planning and answer generation. This is not a provider
+invoice. These three inspected inputs establish integration only, not corpus-wide decision
+quality, absence of overfitting or an accepted baseline. The old baseline remains stale.
+
+A real local Uvicorn process was also exercised without models: health 200, missing bearer
+401, turn 200, identical replay 200 with a replay header, close 200, new turn after close 410.
+It was stopped after the check. The first smoke harness attempted unsupported
+`python -m dwelly_bot`; it was corrected to the documented `dwelly-bot` entry point before
+any request ran. HTTP session credentials, state database and logs are excluded from export.
+
+[Winner HTML report](report.html) · [Verification and file hashes](verification.json) ·
+[Unmodified captures, compressed](captures.tar.gz)
+
+Documentation now points to the implemented shared Planner and authenticated service.
+[Component inventory](../../docs/architecture/integration-status.md) distinguishes working
+local mechanisms from real banking adapters, provider audio deployment and other remaining
+capabilities. No external bank operation, outbound message or live ElevenLabs audio session
+was performed. No baseline reference or historical run was rewritten.
