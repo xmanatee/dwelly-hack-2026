@@ -1,0 +1,100 @@
+name: Run Hackathon Winner
+# Manual run on organiser cases: Claude Fable 5.1 via the ANTHROPIC_API_KEY repository
+# secret, then commit ANSWERS/ to main. Never put the key itself in the repository.
+on:
+  workflow_dispatch:
+    inputs:
+      cases_repo:
+        description: GitHub repo with the cases (owner/name)
+        default: DwellyOrg/HackatonPublicCases
+      cases_ref:
+        description: Branch, tag or commit of that repo
+        default: main
+      cases_path:
+        description: Folder inside that repo holding the case folders (e.g. HackatonChallendges)
+        required: true
+      cases_zip_url:
+        description: Optional direct .zip URL with the cases; overrides the repo inputs
+        default: ""
+      ids:
+        description: Optional comma-separated case IDs (rerun only these)
+        default: ""
+      commit:
+        description: Commit ANSWERS/ to main
+        type: boolean
+        default: true
+permissions:
+  contents: read
+concurrency:
+  group: winner
+  cancel-in-progress: false
+jobs:
+  answer:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    permissions:
+      contents: write
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      CASES_REPO: ${{ inputs.cases_repo }}
+      CASES_REF: ${{ inputs.cases_ref }}
+      CASES_PATH: ${{ inputs.cases_path }}
+      CASES_ZIP: ${{ inputs.cases_zip_url }}
+      IDS: ${{ inputs.ids }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+      - name: Check the API key secret
+        run: |
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "::error::Add the ANTHROPIC_API_KEY repository secret (Settings > Secrets and variables > Actions)."
+            exit 1
+          fi
+      - name: Install (PDF reading included)
+        run: uv sync --locked --extra evaluation
+      - name: Fetch cases
+        run: |
+          mkdir -p .cache/cases
+          if [ -n "$CASES_ZIP" ]; then
+            curl -fsSL "$CASES_ZIP" -o .cache/cases.zip
+            unzip -q .cache/cases.zip -d .cache/cases/zip
+            SRC=".cache/cases/zip/$CASES_PATH"
+          else
+            git clone --depth 1 --branch "$CASES_REF" "https://github.com/$CASES_REPO" .cache/cases/repo \
+              || { git clone "https://github.com/$CASES_REPO" .cache/cases/repo && git -C .cache/cases/repo checkout "$CASES_REF"; }
+            SRC=".cache/cases/repo/$CASES_PATH"
+          fi
+          find "$SRC" -name __MACOSX -type d -prune -exec rm -rf {} +
+          test -d "$SRC" || { echo "::error::Cases folder not found: $SRC"; exit 1; }
+          echo "SRC=$SRC" >> "$GITHUB_ENV"
+          ls "$SRC"
+      - name: Check case loading (offline)
+        run: |
+          uv run python - <<'PY'
+          import json, os
+          from pathlib import Path
+          from dwelly_bot.contracts import RunConfig
+          from hackathon_winner.adapters import load
+          cfg = RunConfig.model_validate(json.loads(Path("src/hackathon_winner/config.json").read_text()))
+          cases = load(Path(os.environ["SRC"]), cfg, prefix="")
+          print(f"{len(cases)} cases load; model {cfg.model}")
+          PY
+      - name: Run Winner
+        run: |
+          OUT=ANSWERS
+          ARGS=()
+          if [ -n "$IDS" ]; then OUT=".cache/winner/retry-$GITHUB_RUN_ID"; ARGS+=(--ids "$IDS"); fi
+          uv run hackathon-winner "$SRC" --output "$OUT" "${ARGS[@]}"
+          if [ -n "$IDS" ]; then
+            for d in "$OUT"/*/; do n=$(basename "$d"); [ -f "$d/ANSWER.md" ] && rm -rf "ANSWERS/$n" && cp -r "$d" "ANSWERS/$n"; done
+          fi
+          ls ANSWERS
+      - name: Commit ANSWERS
+        if: ${{ inputs.commit }}
+        run: |
+          git config user.name "dwelly-bot winner"
+          git config user.email "actions@users.noreply.github.com"
+          git add -f ANSWERS
+          git commit -m "Reality Test answers from workflow run $GITHUB_RUN_ID" || { echo "Nothing to commit"; exit 0; }
+          for i in 1 2 3 4; do git pull --rebase -q origin main && git push origin HEAD:main && exit 0; sleep $((i * 5)); done
+          exit 1

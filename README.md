@@ -157,4 +157,6 @@ Default output: repository-root `ANSWERS/<original-case-folder>/ANSWER.md` and `
 With no arguments, the command uses the two bundled synthetic smoke cases. Default model:
 Claude Fable 5.1 (`claude-fable-5-1`, high effort) via `ANTHROPIC_API_KEY`; `--config` can select the saved Claude Code configuration.
 The runner imports `dwelly_bot.planner`, includes supplied attachments, preserves model
-failures, and saves context, plans and journals. [Setup, input contract and examples](src/hackathon_winner/README.md).
+failures, and saves context, plans and journals.
+
+**On GitHub:** add the `ANTHROPIC_API_KEY` repository secret (Settings → Secrets and variables → Actions), then Actions → *Run Hackathon Winner* → *Run workflow*. Give the cases repo/folder (or a `.zip` URL); it installs PDF support, checks that every case loads, runs Winner and commits `ANSWERS/` to `main`. Use the `ids` input to rerun only failed cases. [Setup, input contract and examples](src/hackathon_winner/README.md).
