@@ -56,32 +56,36 @@ def claude_code_model(model: str) -> FunctionModel:
         if len(info.output_tools) != 1 or info.function_tools:
             raise ValueError("Claude Code analysis supports exactly one structured output")
         [tool] = info.output_tools
-        process = await asyncio.create_subprocess_exec(
-            executable,
-            "-p",
-            "--output-format=json",
-            "--model",
-            alias,
-            "--system-prompt",
-            info.instructions or "",
-            "--tools=",
-            "--strict-mcp-config",
-            "--no-session-persistence",
-            "--json-schema",
-            json.dumps(tool.parameters_json_schema),
-            stdin=asyncio.subprocess.PIPE,
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE,
-        )
-        try:
-            stdout, stderr = await process.communicate(transcript(messages).encode())
-        except BaseException:
-            process.kill()
-            raise
-        try:
-            result = json.loads(stdout)
-        except json.JSONDecodeError as error:
-            raise RuntimeError(f"Claude Code CLI failed: {stderr.decode()[-500:]}") from error
+        for attempt in range(2):
+            process = await asyncio.create_subprocess_exec(
+                executable,
+                "-p",
+                "--output-format=json",
+                "--model",
+                alias,
+                "--system-prompt",
+                info.instructions or "",
+                "--tools=",
+                "--strict-mcp-config",
+                "--no-session-persistence",
+                "--json-schema",
+                json.dumps(tool.parameters_json_schema),
+                stdin=asyncio.subprocess.PIPE,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+            )
+            try:
+                stdout, stderr = await process.communicate(transcript(messages).encode())
+            except BaseException:
+                process.kill()
+                raise
+            try:
+                result = json.loads(stdout)
+            except json.JSONDecodeError as error:
+                raise RuntimeError(f"Claude Code CLI failed: {stderr.decode()[-500:]}") from error
+            # The CLI occasionally exhausts its own schema retries; one fresh call usually succeeds.
+            if result.get("subtype") != "error_max_structured_output_retries" or attempt:
+                break
         if process.returncode or result.get("is_error") or "structured_output" not in result:
             raise RuntimeError(
                 f"Claude Code CLI failed: {result.get('subtype')}: {str(result.get('result'))[:500]}"

@@ -108,12 +108,23 @@ async def run(
 
 
 def evaluate(argv: Sequence[str]) -> int:
-    from dwelly_bot.evaluation.plans import build_items, score, write_items
+    from dwelly_bot.evaluation.plans import (
+        build_items,
+        build_synthetic_items,
+        score,
+        write_items,
+    )
 
     parser = argparse.ArgumentParser(prog="dwelly-bot plan eval", description="Planner evaluation")
     commands = parser.add_subparsers(dest="command", required=True)
     build = commands.add_parser("build", help="Write decision-point inputs and references")
-    build.add_argument("--cases", type=Path, required=True, help="Track folder of NNN/ cases")
+    source = build.add_mutually_exclusive_group(required=True)
+    source.add_argument("--cases", type=Path, help="Track folder of NNN/ cases")
+    source.add_argument("--synthetic", type=Path, help="Built synthetic corpus directory")
+    build.add_argument("--per-scenario", type=int, help="Synthetic: first N cases per scenario")
+    build.add_argument(
+        "--records", action="store_true", help="Synthetic: add lookup-style system responses"
+    )
     build.add_argument("--labels", type=Path, help="Safety labels.json; one item per label")
     build.add_argument("--prefix", default="banking", help="Item ID prefix")
     build.add_argument("--attachments", action="store_true", help="Include attachment text")
@@ -127,12 +138,21 @@ def evaluate(argv: Sequence[str]) -> int:
     if args.command == "build":
         config = read_config(args.config) if args.config else RunConfig()
         labels = json.loads(args.labels.read_text()) if args.labels else None
-        inputs, references = build_items(
-            args.cases,
-            config=config,
-            prefix=args.prefix,
-            labels=labels,
-            attachments=args.attachments,
+        inputs, references = (
+            build_synthetic_items(
+                args.synthetic,
+                config=config,
+                per_scenario=args.per_scenario,
+                records=args.records,
+            )
+            if args.synthetic
+            else build_items(
+                args.cases,
+                config=config,
+                prefix=args.prefix,
+                labels=labels,
+                attachments=args.attachments,
+            )
         )
         write_items(args.output, inputs, references)
         print(f"{len(inputs)} decision points. Output: {args.output}")

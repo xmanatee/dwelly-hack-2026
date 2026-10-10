@@ -57,3 +57,22 @@ async def test_cli_error_is_not_an_output(tmp_path: Path, monkeypatch: pytest.Mo
     agent = Agent(claude_code_model("claude-code/sonnet"), output_type=Topic)
     with pytest.raises(RuntimeError, match="limit"):
         await agent.run("x")
+
+
+async def test_one_retry_after_cli_schema_exhaustion(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    counter = tmp_path / "calls"
+    script = tmp_path / "claude"
+    script.write_text(
+        f"#!{sys.executable}\nimport json, pathlib, sys\nsys.stdin.read()\n"
+        f"p = pathlib.Path({str(counter)!r})\nn = int(p.read_text()) if p.exists() else 0\n"
+        "p.write_text(str(n + 1))\n"
+        "print(json.dumps({'is_error': True, 'subtype': 'error_max_structured_output_retries'}"
+        " if n == 0 else {'structured_output': {'topic': 'ok'}}))\n"
+    )
+    script.chmod(0o755)
+    monkeypatch.setenv("PATH", str(tmp_path))
+    agent = Agent(claude_code_model("claude-code/haiku"), output_type=Topic)
+    assert (await agent.run("x")).output.topic == "ok"
+    assert counter.read_text() == "2"
