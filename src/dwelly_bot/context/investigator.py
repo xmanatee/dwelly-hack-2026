@@ -58,6 +58,7 @@ class AgentInvestigator:
                 agent,
                 {
                     "request": query.question,
+                    "as_of": query.as_of.isoformat(),
                     "hints": query.hints.model_dump(mode="json"),
                     "sources": [
                         {"name": s.name, "description": s.__doc__ or s.name} for s in sources
@@ -73,5 +74,10 @@ class AgentInvestigator:
             )
         finally:
             journal.append(
-                {"kind": "context_model_trace", "roles": runtime.role_records, "costs": model.calls}
+                {
+                    "kind": "context_model_trace",
+                    "config": self.config.model_dump(mode="json"),
+                    "roles": runtime.role_records,
+                    "costs": model.calls,
+                }
             )

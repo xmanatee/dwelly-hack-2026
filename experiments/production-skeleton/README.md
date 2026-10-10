@@ -55,3 +55,13 @@ Ruff, strict mypy and 31 affected/resource tests pass. Tests cover route preserv
 exact Planner input, future/scope boundaries, visible source failure, duplicate action
 IDs, unknown operations, in-process replay/conflicts, inactive calls, failure stopping,
 immutable captures and interrupted planning. All result receipts remain simulated.
+
+## Current hardening validation
+
+36 affected tests pass with Ruff and strict mypy. The optional context agent is tested
+with a local FunctionModel, including filtering before the model sees source output.
+A real temporary SQLite database is exercised read-only. Production/contest JSON catalogs
+were exported, and two separate CLI processes ran the calculation fixture using one
+receipt database: the second returned both saved receipts (`replayed: true`). Captures
+remain under ignored `.cache/integration-review/`. Arithmetic is `computed`; channel
+operations remain `simulated`. No paid quality benchmark or external action ran.

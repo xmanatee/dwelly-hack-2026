@@ -2,6 +2,7 @@
 
 - Python + Pydantic AI; use uv. [README](README.md) owns setup and checks.
 - Architecture: [context → planner → execution](docs/architecture/README.md). The public Planner is `text → Plan`; skills/configuration stay inside it. Plans contain decisions and concrete actions; execution does not repeat business reasoning. Channel replies are plan actions. The [offline production skeleton](examples/production/README.md) uses a human-review stub and mock execution; the historical agent is separate. A future separate Hackathon Solver imports Planner and generates faithful answer/reasoning through a distinct component.
+- Planner implementation belongs to Vera in `src/dwelly_bot/planning/implementation/`; keep its public contract and action profiles separate from context gathering. See [integration status](docs/architecture/integration-status.md).
 - Before editing, and again before an authorized push, follow [dwelly-bot-repo-sync](.agents/skills/dwelly-bot-repo-sync/SKILL.md). Work on `main`; preserve concurrent changes.
 - Agent behaviour, model/config, runtime prompts/skills, retrieval or tool changes: follow [dwelly-bot-experiment](.agents/skills/dwelly-bot-experiment/SKILL.md).
 - Data exploration: use [analyze](.agents/skills/analyze/SKILL.md); [analysis/README.md](analysis/README.md) owns recipe usage. Analysis findings become agent changes only through the experiment workflow.

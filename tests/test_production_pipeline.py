@@ -85,3 +85,26 @@ async def test_no_extra_delivery_after_plan_execution(tmp_path: Path) -> None:
     result = await pipeline.run(event, tmp_path / "replayed")
     assert len(executor.effects) == 2
     assert all(receipt.replayed for receipt in result.receipts)
+
+
+def test_calculation_cli_survives_restart_and_exports_catalog(tmp_path: Path) -> None:
+    args = [
+        "demo",
+        "--input",
+        str(ROOT / "examples/production/calculation.json"),
+        "--plan",
+        str(ROOT / "examples/production/calculation-plan.json"),
+        "--state",
+        str(tmp_path / "state.sqlite"),
+    ]
+    assert main([*args, "--output", str(tmp_path / "first")]) == 0
+    assert main([*args, "--output", str(tmp_path / "second")]) == 0
+    result = json.loads((tmp_path / "second/result.json").read_text())
+    assert all(r["replayed"] for r in result["receipts"])
+    assert (
+        result["receipts"][1]["parameters"]["message"] == "Total of the supplied amounts: 150.00."
+    )
+    assert (
+        main(["actions", "--profile", "contest", "--output", str(tmp_path / "catalog.json")]) == 0
+    )
+    assert json.loads((tmp_path / "catalog.json").read_text())["profile"]["execution"] == "proposal"

@@ -1,0 +1,8 @@
+{
+  "channel": "ticket",
+  "event_id": "total-001",
+  "scope_id": "demo-total",
+  "received_at": "2026-10-10T10:00:00Z",
+  "text": "Please add these two invoice amounts: 125.50 and 24.50. Report the total here.",
+  "ticket_id": "TOTAL-001"
+}

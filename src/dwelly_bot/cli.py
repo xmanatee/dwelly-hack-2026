@@ -8,6 +8,7 @@ from importlib import import_module
 from typing import cast
 
 COMMANDS = {
+    "actions": ("planning.cli", "Print production/contest action JSON schemas"),
     "demo": ("demo_cli", "Run the offline trigger/context/planner/mock-execution pipeline"),
     "run": ("experiments.agent_cli", "Run the common agent with a selected dataset adapter"),
     "agent": ("experiments.agent_cli", "Execute cases or inspect dataset/provider readiness"),

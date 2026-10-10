@@ -4,6 +4,8 @@
 
 **Architecture:** [Context → Planner → Execution](docs/architecture/README.md) · [Visual diagram](docs/architecture/index.html). An [offline production skeleton](examples/production/README.md) now connects email/call/ticket triggers, Markdown context, the public Planner (`text → Plan`) and mock execution. Planner currently always requests human review. Separate Hackathon Solver packaging and answer generation remain planned. The historical agent and benchmarks below predate this migration.
 
+[Integration status and remaining work](docs/architecture/integration-status.md) · [Planner handoff for Vera](src/dwelly_bot/planning/implementation/README.md). Optional context-agent mode can investigate JSON/SQLite sources; action profiles and local calculation are implemented.
+
 Run the new vertical slice without a model or external actions:
 
 ```sh

@@ -1,11 +1,13 @@
 """Categorized offline operations with local replay protection and explicit simulation."""
 
 import json
+from pathlib import Path
 
 from pydantic_ai import ModelRetry
 
 from dwelly_bot.channels.intake import CallRoute, EmailRoute, Trigger
 from dwelly_bot.execution.contracts import ActionReceipt, ExecutionResult
+from dwelly_bot.execution.receipts import ReceiptStore
 from dwelly_bot.experiments.journal import Journal
 from dwelly_bot.planning.catalog import ActionProfile, render_message
 from dwelly_bot.planning.contracts import (
@@ -22,15 +24,19 @@ from dwelly_bot.tools.arithmetic import calculate
 
 
 class MockExecutor:
-    """No I/O except the shared journal. Replay cache lasts for this instance only."""
+    """Only local journal/receipts and arithmetic; no external service operations."""
 
     def __init__(
-        self, *, fail_actions: frozenset[str] = frozenset(), profile: ActionProfile | None = None
+        self,
+        *,
+        fail_actions: frozenset[str] = frozenset(),
+        profile: ActionProfile | None = None,
+        state_path: Path | None = None,
     ) -> None:
         self.fail_actions = fail_actions
         self.inactive_calls: set[str] = set()
         self.effects: list[ActionReceipt] = []
-        self._receipts: dict[str, tuple[str, ActionReceipt]] = {}
+        self.store = ReceiptStore(state_path)
         self.profile = profile or ActionProfile.load()
         if self.profile.execution != "mock":
             raise ValueError("Proposal-only profiles cannot be executed")
@@ -129,28 +135,30 @@ class MockExecutor:
                         target="",
                         detail="Earlier action failed; no subsequent operation attempted.",
                     )
-                elif key in self._receipts:
-                    old_digest, previous = self._receipts[key]
-                    if old_digest != digest:
-                        receipt = ActionReceipt(
-                            action_id=action.id,
-                            status="failed",
-                            operation=action.kind,
-                            target="",
-                            detail="Idempotency conflict: event/action ID reused with changed input.",
-                        )
-                    else:
-                        receipt = previous.model_copy(update={"replayed": True})
                 else:
                     parameters = action.model_dump(exclude={"id", "kind"})
                     for field in ("message", "note", "subject"):
                         if field in parameters:
                             parameters[field] = render_message(parameters[field], results)
-                    receipt = self._simulate(trigger, action).model_copy(
-                        update={"parameters": parameters}
-                    )
-                    self._receipts[key] = (digest, receipt)
-                    if receipt.status == "simulated":
+
+                    def invoke(
+                        action: Action = action, parameters: dict[str, str] = parameters
+                    ) -> ActionReceipt:
+                        return self._simulate(trigger, action).model_copy(
+                            update={"parameters": parameters}
+                        )
+
+                    try:
+                        receipt = self.store.apply(key, digest, invoke)
+                    except ValueError as exc:
+                        receipt = ActionReceipt(
+                            action_id=action.id,
+                            status="failed",
+                            operation=action.kind,
+                            target="",
+                            detail=str(exc),
+                        )
+                    if receipt.status == "simulated" and not receipt.replayed:
                         self.effects.append(receipt)
                 if receipt.status == "computed":
                     results[action.id + ".value"] = receipt.outputs["value"]

@@ -3,6 +3,7 @@
 import asyncio
 import re
 import sqlite3
+from contextlib import closing
 from pathlib import Path
 
 from pydantic import TypeAdapter
@@ -42,7 +43,7 @@ class SQLiteSource:
     def _read(self, query: ContextQuery) -> SourceResult:
         terms = tuple(dict.fromkeys(re.findall(r"[\w@.+-]{3,}", query.question.casefold())))[:16]
         condition = " OR ".join("instr(lower(text), ?) > 0" for _ in terms)
-        with sqlite3.connect(self.path.as_uri() + "?mode=ro", uri=True, timeout=5) as db:
+        with closing(sqlite3.connect(self.path.as_uri() + "?mode=ro", uri=True, timeout=5)) as db:
             db.row_factory = sqlite3.Row
             db.execute("PRAGMA query_only = ON")
             rows = db.execute(

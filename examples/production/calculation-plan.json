@@ -1,0 +1,9 @@
+{
+  "decision": "Report the sum of the two supplied amounts.",
+  "disposition": "respond",
+  "rationale": "Use the two amounts explicitly supplied in the request; no charges or bank actions.",
+  "actions": [
+    {"kind": "calculate", "id": "total", "expression": "125.50 + 24.50", "rounding": "cents", "basis": "Two invoice amounts in the incoming request."},
+    {"kind": "reply_to_trigger", "id": "reply", "message": "Total of the supplied amounts: {{total.value}}."}
+  ]
+}
