@@ -1,0 +1,85 @@
+"""Hackathon Solver generation: plan stays the decision; nothing reported as done; safe export."""
+
+import json
+from pathlib import Path
+from typing import Any
+
+import pytest
+from hackathon_solver.cli import main as solver_cli
+from hackathon_solver.export import check_output, write_case
+from hackathon_solver.generation import EXECUTED_CLAIM, ModelGenerator, TemplateGenerator
+from pydantic_ai.messages import ModelMessage, ModelResponse, ToolCallPart
+from pydantic_ai.models.function import AgentInfo, FunctionModel
+
+from dwelly_bot.planning.contracts import Handoff, Plan, ReplyToTrigger
+
+PLAN = Plan(
+    decision="Register a return request for the misdirected £286.40 transfer.",
+    disposition="human_review",
+    actions=(
+        Handoff(id="review", queue="payment-team", reason="Register the return request."),
+        ReplyToTrigger(id="reply", message="We will ask the payment team to seek the return."),
+    ),
+    rationale="Verified call; transfer shown as sent; a return is not guaranteed.",
+)
+
+
+async def test_template_keeps_decision_and_marks_actions_proposed() -> None:
+    generated = await TemplateGenerator().generate(PLAN, "context")
+    assert PLAN.decision in generated.answer
+    assert "Hand off to the payment-team queue" in generated.answer
+    assert "none has been carried out" in generated.answer
+    assert "We will ask the payment team" in generated.answer
+    assert PLAN.rationale in generated.reasoning
+    assert "`review` (handoff): proposed, not executed" in generated.reasoning
+    assert not EXECUTED_CLAIM.search(generated.answer + generated.reasoning)
+
+
+async def test_model_claims_of_done_actions_are_repaired() -> None:
+    replies: list[dict[str, Any]] = [
+        {"answer": "I have registered the return.", "reasoning": "Done."},
+        {"answer": "A return request is proposed.", "reasoning": "Pending operator action."},
+    ]
+    prompts: list[str] = []
+
+    def model(messages: list[ModelMessage], info: AgentInfo) -> ModelResponse:
+        prompts.append(str(getattr(messages[0].parts[-1], "content", "")))
+        return ModelResponse(parts=[ToolCallPart(info.output_tools[0].name, replies.pop(0))])
+
+    generated = await ModelGenerator(FunctionModel(model)).generate(PLAN, "VISIBLE_CONTEXT")
+    assert generated.answer == "A return request is proposed."
+    assert "decision of record" in prompts[0] and "VISIBLE_CONTEXT" in prompts[0]
+    assert not replies
+
+
+def test_export_refuses_practice_answers_and_overwrites(tmp_path: Path) -> None:
+    with pytest.raises(ValueError, match="practice"):
+        check_output(tmp_path / "ANSWERS", development=True)
+    (tmp_path / "out").mkdir()
+    (tmp_path / "out" / "old.md").write_text("x")
+    with pytest.raises(ValueError, match="empty"):
+        check_output(tmp_path / "out", development=False)
+    with pytest.raises(ValueError, match="Unsafe"):
+        write_case(tmp_path, "../x", None, plan=PLAN, context="", generator={})  # type: ignore[arg-type]
+
+
+def test_cli_writes_two_files_and_audit_record(tmp_path: Path) -> None:
+    source = tmp_path / "in"
+    source.mkdir()
+    (source / "banking-005.plan.json").write_text(PLAN.model_dump_json())
+    (source / "banking-005.context.md").write_text("# Initial request\n\nPlease seek a return.\n")
+    output = tmp_path / "review"
+    assert (
+        solver_cli(["generate", "--input", str(source), "--output", str(output), "--development"])
+        == 0
+    )
+    case = output / "banking-005"
+    assert sorted(p.name for p in case.iterdir()) == [
+        "ANSWER.md",
+        "REASONING.md",
+        "generation.json",
+    ]
+    record = json.loads((case / "generation.json").read_text())
+    assert record["generator"] == {"kind": "template"}
+    assert record["plan"]["decision"] == PLAN.decision
+    assert "Please seek a return." in record["context"]

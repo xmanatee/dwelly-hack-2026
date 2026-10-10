@@ -8,7 +8,7 @@ from dwelly_bot.paths import ROOT
 
 
 def check(*, root: Path = ROOT) -> int:
-    sources = ("src", "tests", "experiments/controls", "dataset/fetch.py")
+    sources = ("src", "packages", "tests", "experiments/controls", "dataset/fetch.py")
     for module, arguments in [
         ("ruff", ["check", *sources]),
         ("ruff", ["format", "--check", *sources]),
