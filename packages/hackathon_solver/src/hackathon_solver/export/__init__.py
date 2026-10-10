@@ -6,7 +6,8 @@ import re
 from pathlib import Path
 from typing import Any
 
-from dwelly_bot.planning.contracts import Plan
+from pydantic import BaseModel
+
 from dwelly_bot.storage import save_json
 from hackathon_solver.generation import Generated
 
@@ -28,7 +29,7 @@ def write_case(
     case_id: str,
     generated: Generated,
     *,
-    plan: Plan,
+    plan: BaseModel,
     context: str,
     generator: dict[str, Any],
 ) -> Path:

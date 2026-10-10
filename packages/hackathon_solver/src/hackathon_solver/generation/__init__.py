@@ -8,6 +8,7 @@ from typing import Any, Protocol
 from pydantic import BaseModel, Field
 from pydantic_ai import Agent, ModelRetry
 
+from dwelly_bot.planner.contracts import Plan as CasePlan
 from dwelly_bot.planning.contracts import (
     Action,
     CallCustomer,
@@ -25,8 +26,12 @@ class Generated(BaseModel):
     reasoning: str = Field(min_length=1, description="REASONING.md body")
 
 
+# The shared product Plan, or the case planner's richer plan (dwelly_bot.planner).
+type AnyPlan = Plan | CasePlan
+
+
 class Generator(Protocol):
-    async def generate(self, plan: Plan, context: str) -> Generated: ...
+    async def generate(self, plan: AnyPlan, context: str) -> Generated: ...
 
 
 # The contest path has no executor: past-tense claims about planned actions would be false.
@@ -67,10 +72,54 @@ def customer_message(plan: Plan) -> str | None:
     return None
 
 
+def render_case_plan(plan: CasePlan) -> Generated:
+    proposed = [s for s in plan.steps if s.kind == "proposed_action"]
+    steps = [
+        f"{i}. {s.purpose}" + (f" ({s.target})" if s.target else "")
+        for i, s in enumerate(proposed, 1)
+    ] or ["No operations are planned."]
+    answer = [
+        "## Decision",
+        "",
+        plan.summary,
+        "",
+        f"**Disposition:** `{plan.expected_disposition}`.",
+        "",
+        "## Proposed actions",
+        "",
+        *steps,
+        "",
+        "These actions are proposed for a bank operator; none has been carried out.",
+    ]
+    if plan.must_state:
+        answer += [
+            "",
+            "## What the customer needs to know",
+            "",
+            *(f"- {m}" for m in plan.must_state),
+        ]
+    reasoning = [
+        "## Observed facts",
+        "",
+        *(f"- {f.claim} ({', '.join(f.evidence)})" for f in plan.facts),
+        "",
+        "## Missing or unverified",
+        "",
+        *(f"- {m}" for m in plan.missing or ["Nothing recorded as missing."]),
+        "",
+        f"- Identity and authority: `{plan.identity_authority}`",
+        *(f"- Safety flag: `{flag}`" for flag in plan.safety_flags),
+        *(f"- Escalate if: {e}" for e in plan.escalate_if),
+    ]
+    return Generated(answer="\n".join(answer), reasoning="\n".join(reasoning))
+
+
 class TemplateGenerator:
     """Deterministic rendering of the plan; the reference for faithful conversion."""
 
-    async def generate(self, plan: Plan, context: str) -> Generated:
+    async def generate(self, plan: AnyPlan, context: str) -> Generated:
+        if isinstance(plan, CasePlan):
+            return render_case_plan(plan)
         steps = [f"{i}. {describe(a)}" for i, a in enumerate(plan.actions, 1)] or [
             "No operations are planned."
         ]
@@ -124,7 +173,7 @@ class ModelGenerator:
                 )
             return output
 
-    async def generate(self, plan: Plan, context: str) -> Generated:
+    async def generate(self, plan: AnyPlan, context: str) -> Generated:
         prompt = (
             "PLAN (decision of record):\n"
             + plan.model_dump_json(indent=1)

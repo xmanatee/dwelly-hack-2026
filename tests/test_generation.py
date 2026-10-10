@@ -83,3 +83,41 @@ def test_cli_writes_two_files_and_audit_record(tmp_path: Path) -> None:
     assert record["generator"] == {"kind": "template"}
     assert record["plan"]["decision"] == PLAN.decision
     assert "Please seek a return." in record["context"]
+
+
+async def test_template_renders_case_planner_plans_as_proposals() -> None:
+    from dwelly_bot.planner.contracts import Plan as CasePlan
+
+    plan = CasePlan.model_validate(
+        {
+            "intent": "payments.stop_return",
+            "summary": "Register a return request for the verified transfer.",
+            "facts": [{"claim": "Identity checks complete", "evidence": ["event-002"]}],
+            "missing": ["Receiving bank response"],
+            "identity_authority": "established",
+            "safety_flags": [],
+            "steps": [
+                {
+                    "id": "s1",
+                    "kind": "solver_tool",
+                    "action": "read_document",
+                    "purpose": "Read history",
+                },
+                {
+                    "id": "s2",
+                    "kind": "proposed_action",
+                    "action": "request_team_action",
+                    "purpose": "Register the return request",
+                    "target": "payment team",
+                },
+            ],
+            "must_state": ["Registration does not confirm a return"],
+            "expected_disposition": "escalated",
+        }
+    )
+    generated = await TemplateGenerator().generate(plan, "context")
+    assert "1. Register the return request (payment team)" in generated.answer
+    assert "Read history" not in generated.answer
+    assert "Registration does not confirm a return" in generated.answer
+    assert "Identity checks complete (event-002)" in generated.reasoning
+    assert not EXECUTED_CLAIM.search(generated.answer + generated.reasoning)
