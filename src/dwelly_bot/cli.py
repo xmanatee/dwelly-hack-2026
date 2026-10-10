@@ -12,6 +12,7 @@ COMMANDS = {
     "local": ("local_cli", "Run the product pipeline with the synthetic banking world"),
     "actions": ("planning.cli", "Print production/contest action JSON schemas"),
     "demo": ("demo_cli", "Run the offline trigger/context/planner/mock-execution pipeline"),
+    "voice": ("voice_cli", "Answer an ElevenLabs voice call through the call pipeline"),
     "run": ("experiments.agent_cli", "Run the common agent with a selected dataset adapter"),
     "agent": ("experiments.agent_cli", "Execute cases or inspect dataset/provider readiness"),
     "experiment": ("experiments.cli", "Run, grade, render or compare saved experiments"),

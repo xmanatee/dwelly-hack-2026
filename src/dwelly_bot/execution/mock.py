@@ -1,4 +1,7 @@
-"""Categorized offline operations with local replay protection and explicit simulation."""
+"""Categorized offline operations with local replay protection and explicit simulation.
+
+The one optional live path: a reply to an open voice call is queued as speech in that call.
+"""
 
 import json
 from pathlib import Path
@@ -6,6 +9,7 @@ from pathlib import Path
 from pydantic_ai import ModelRetry
 
 from dwelly_bot.channels.intake import CallRoute, EmailRoute, Trigger
+from dwelly_bot.channels.live_call import LiveCalls
 from dwelly_bot.execution.contracts import ActionReceipt, ExecutionResult
 from dwelly_bot.execution.receipts import ReceiptStore
 from dwelly_bot.experiments.journal import Journal
@@ -24,7 +28,7 @@ from dwelly_bot.tools.arithmetic import calculate
 
 
 class MockExecutor:
-    """Only local journal/receipts and arithmetic; no external service operations."""
+    """Local journal/receipts and arithmetic; with `live_calls`, replies to an open call are spoken."""
 
     def __init__(
         self,
@@ -32,22 +36,50 @@ class MockExecutor:
         fail_actions: frozenset[str] = frozenset(),
         profile: ActionProfile | None = None,
         state_path: Path | None = None,
+        live_calls: LiveCalls | None = None,
     ) -> None:
         self.fail_actions = fail_actions
         self.inactive_calls: set[str] = set()
         self.effects: list[ActionReceipt] = []
         self.store = ReceiptStore(state_path)
+        self.live_calls = live_calls
         self.profile = profile or ActionProfile.load()
         if self.profile.execution != "mock":
             raise ValueError("Proposal-only profiles cannot be executed")
 
     @property
     def capabilities(self) -> str:
-        return "MOCK ONLY: no messages, calls or handoffs occur.\n" + json.dumps(
-            self.profile.catalog(), ensure_ascii=False
+        scope = (
+            "LIVE CALL REPLY: reply_to_trigger is spoken in the caller's open voice session. "
+            "Every other action is MOCK ONLY: no messages, calls or handoffs occur.\n"
+            if self.live_calls is not None
+            else "MOCK ONLY: no messages, calls or handoffs occur.\n"
+        )
+        return scope + json.dumps(self.profile.catalog(), ensure_ascii=False)
+
+    def _speak(self, action: Action, session_id: str, message: str) -> ActionReceipt:
+        assert self.live_calls is not None
+        if action.id in self.fail_actions or not self.live_calls.say(session_id, message):
+            return ActionReceipt(
+                action_id=action.id,
+                status="failed",
+                operation="speak_in_call",
+                target=session_id,
+                detail="Injected failure."
+                if action.id in self.fail_actions
+                else "Voice session is closed; no automatic callback was attempted.",
+            )
+        return ActionReceipt(
+            action_id=action.id,
+            status="sent",
+            operation="speak_in_call",
+            target=session_id,
+            detail="Queued as speech in the open voice session; the voice transport returns it to the caller.",
         )
 
-    def _simulate(self, trigger: Trigger, action: Action) -> ActionReceipt:
+    def _simulate(
+        self, trigger: Trigger, action: Action, parameters: dict[str, str]
+    ) -> ActionReceipt:
         operation: str = action.kind
         target = trigger.scope_id
         if isinstance(action, Calculate):
@@ -83,6 +115,8 @@ class MockExecutor:
                         target=target,
                         detail="Call is no longer active; no automatic callback was attempted.",
                     )
+                if self.live_calls is not None:
+                    return self._speak(action, route.session_id, parameters["message"])
             else:
                 operation, target = "ticket_comment", route.ticket_id
         elif isinstance(action, SendEmail):
@@ -144,7 +178,7 @@ class MockExecutor:
                     def invoke(
                         action: Action = action, parameters: dict[str, str] = parameters
                     ) -> ActionReceipt:
-                        return self._simulate(trigger, action).model_copy(
+                        return self._simulate(trigger, action, parameters).model_copy(
                             update={"parameters": parameters}
                         )
 
@@ -158,7 +192,7 @@ class MockExecutor:
                             target="",
                             detail=str(exc),
                         )
-                    if receipt.status == "simulated" and not receipt.replayed:
+                    if receipt.status in {"simulated", "sent"} and not receipt.replayed:
                         self.effects.append(receipt)
                 if receipt.status == "computed":
                     results[action.id + ".value"] = receipt.outputs["value"]

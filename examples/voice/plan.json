@@ -1,0 +1,18 @@
+{
+  "decision": "Report the recorded transfer status in the call and hand the receipt query to an investigator.",
+  "disposition": "respond",
+  "rationale": "The transfer record shows SENT with no confirmed credit by the receiving bank; a person must trace it.",
+  "actions": [
+    {
+      "kind": "handoff",
+      "id": "trace",
+      "queue": "human-support",
+      "reason": "Trace TRF-4417 (GBP 350.00 to Kestrel Joinery): bank status SENT, payee reports non-receipt."
+    },
+    {
+      "kind": "reply_to_trigger",
+      "id": "answer",
+      "message": "I've checked your transfer of 350 pounds to Kestrel Joinery from the 8th of October. It left your account and our records show it as sent, but we don't yet have confirmation that the receiving bank has credited it. I've asked our investigations team to trace it, and they'll update you through your secure messages. Please don't send the payment again while the trace is open."
+    }
+  ]
+}

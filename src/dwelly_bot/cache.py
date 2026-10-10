@@ -3,12 +3,12 @@
 from __future__ import annotations
 
 import asyncio
-import fcntl
 from collections.abc import AsyncIterator, Callable, Iterator
 from contextlib import asynccontextmanager, contextmanager
 from pathlib import Path
 from typing import Any
 
+from dwelly_bot.filelock import lock_exclusive
 from dwelly_bot.storage import fingerprint, load_json, save_json
 
 
@@ -25,7 +25,7 @@ class JsonCache:
     @contextmanager
     def locked(self, key: str) -> Iterator[None]:
         with self._path(key, ".lock").open("a+") as lock:
-            fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
+            lock_exclusive(lock)
             yield
 
     @asynccontextmanager
@@ -34,7 +34,7 @@ class JsonCache:
             async with asyncio.timeout(180):
                 while True:
                     try:
-                        fcntl.flock(lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+                        lock_exclusive(lock, blocking=False)
                         break
                     except BlockingIOError:
                         await asyncio.sleep(0.1)

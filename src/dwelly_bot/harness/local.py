@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from dwelly_bot.channels.intake import Inbound
+from dwelly_bot.channels.live_call import LiveCalls
 from dwelly_bot.context.collector import ContextCollector, ContextSource, Investigator
 from dwelly_bot.execution import MockExecutor
 from dwelly_bot.execution.contracts import ExecutionResult
@@ -23,6 +24,7 @@ async def run_local_pipeline(
     planner_config: Path | None = None,
     dataset: dict[str, Any] | None = None,
     is_active: Callable[[], bool] | None = None,
+    live_calls: LiveCalls | None = None,
 ) -> ExecutionResult:
     if output.exists():
         raise FileExistsError(f"Capture directory already exists: {output}")
@@ -47,7 +49,7 @@ async def run_local_pipeline(
         return await ProductionPipeline(
             ContextCollector(sources, investigator=investigator),
             planner,
-            MockExecutor(state_path=state),
+            MockExecutor(state_path=state, live_calls=live_calls),
         ).run(event, output, dataset=dataset, is_active=is_active)
 
     if context_config is None:

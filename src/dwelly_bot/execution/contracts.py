@@ -10,7 +10,8 @@ from dwelly_bot.experiments.journal import Journal
 
 class ActionReceipt(Contract):
     action_id: str
-    status: Literal["simulated", "computed", "failed", "skipped"]
+    # "sent": handed to a live transport (e.g. speech queued in an open call session).
+    status: Literal["simulated", "sent", "computed", "failed", "skipped"]
     operation: str
     target: str
     detail: str

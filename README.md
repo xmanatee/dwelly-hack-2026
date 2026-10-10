@@ -126,7 +126,7 @@ The generator direction is reusable across service tracks; the current implement
 | Planner | Versioned skills and `RunConfig`; `--planner-config` enables the same Planner used by Winner. Offline default makes no calls. |
 | Historical experiments | MiniMax M3 / OpenRouter; Sonnet 5.5 and Opus 5.5 judge / Anthropic. |
 | Sources and execution | Local JSON/SQLite; communication adapters are mock. |
-| Voice | Authenticated FastAPI turn service and documented ElevenLabs webhook contract. Provider audio session still requires provisioning and a live test. |
+| Voice | Authenticated FastAPI turn service and documented ElevenLabs webhook contract. Local demo without hosting: ElevenLabs agent → `ask_dwelly` client tool → call pipeline → reply spoken in the same call (optional `voice` extra, [voice demo](examples/voice/README.md)). |
 
 For model-backed runs, copy `.env.example` to `.env` and set only the selected provider's key (`ANTHROPIC_API_KEY`, `OPENROUTER_API_KEY` or `OPENAI_API_KEY`). `--context-config` and `--planner-config` explicitly enable paid calls; offline demos, checks and saved-report rendering do not. No vendor telemetry or session capture is enabled. [Configuration and development](docs/development/README.md).
 

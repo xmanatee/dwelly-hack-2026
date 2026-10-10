@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import fcntl
 import json
 import math
 import time
@@ -13,6 +12,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
 
+from dwelly_bot.filelock import lock_exclusive
 from dwelly_bot.storage import save_json
 
 
@@ -31,7 +31,7 @@ class BudgetLedger:
     @contextmanager
     def locked(self) -> Iterator[dict[str, Any]]:
         with self.path.with_suffix(".lock").open("a+") as lock:
-            fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
+            lock_exclusive(lock)
             state: dict[str, Any] = (
                 json.loads(self.path.read_text())
                 if self.path.exists()

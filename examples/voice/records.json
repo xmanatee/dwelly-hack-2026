@@ -1,0 +1,26 @@
+[
+  {
+    "id": "customer-profile",
+    "scope_id": "voice-demo-transfer",
+    "available_at": "2026-10-01T09:00:00Z",
+    "kind": "customer",
+    "source": "fixture/customers",
+    "text": "Jamie Rowe holds a personal current account. Identity on this call is not verified by these records."
+  },
+  {
+    "id": "transfer-4417",
+    "scope_id": "voice-demo-transfer",
+    "available_at": "2026-10-08T14:05:00Z",
+    "kind": "transaction",
+    "source": "fixture/transfers",
+    "text": "Outgoing transfer TRF-4417: GBP 350.00 to Kestrel Joinery, created 8 October 2026 14:02. Account debited. Bank status: SENT. No confirmation of credit by the receiving bank."
+  },
+  {
+    "id": "payee-note",
+    "scope_id": "voice-demo-transfer",
+    "available_at": "2026-10-09T10:15:00Z",
+    "kind": "note",
+    "source": "fixture/history",
+    "text": "Customer reports by secure message that Kestrel Joinery says the payment has not arrived."
+  }
+]

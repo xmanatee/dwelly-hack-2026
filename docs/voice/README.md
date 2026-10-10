@@ -1,6 +1,6 @@
 # Voice and authenticated service intake
 
-[Project](../../README.md) · [Implementation](../../src/dwelly_bot/service/) · [Integration evidence](../../experiments/usability-integration/README.md)
+[Project](../../README.md) · [Implementation](../../src/dwelly_bot/service/) · [Integration evidence](../../experiments/usability-integration/README.md) · [Local voice demo (no hosting)](#local-voice-session-without-hosting)
 
 The optional FastAPI service connects text turns from ElevenLabs webhook tools or another
 trusted channel adapter to the same context collector and Planner used by the local bot.
@@ -142,3 +142,38 @@ and access to the private state/capture directory. The server disables access lo
 All external actions currently return `execution: mock` / `external_effects: false`.
 Real banking, email, ticket or telephone effects require provider-specific authenticated
 executors and receipt reconciliation. This service does not claim those integrations exist.
+
+## Local voice session without hosting
+
+A second, demo-oriented transport needs no HTTPS endpoint. `dwelly-bot voice call` opens the
+ElevenLabs conversation from the local process (outbound WebSocket via the Python SDK). The agent's
+**client tool** `ask_dwelly` arrives over that socket and becomes a `CallInput` with a trusted scope
+and the live session ID ([bridge](../../src/dwelly_bot/channels/elevenlabs.py)). The executor
+speaks `reply_to_trigger` in the open session through
+[`LiveCalls`](../../src/dwelly_bot/channels/live_call.py): receipt `speak_in_call` with status
+`sent`. A closed session fails the reply; it never becomes a callback. Every other action stays
+mock. Telephony numbers still need the webhook service above.
+
+```mermaid
+flowchart LR
+    A[Caller audio] --> E[ElevenLabs agent]
+    E -- "ask_dwelly (client tool, over our WebSocket)" --> B[Call trigger]
+    B --> C[Context → Planner → Executor]
+    C --> D["reply_to_trigger → speak_in_call: sent"]
+    D --> E
+    E --> A
+```
+
+`voice ask` runs the same bridge offline; `voice call --text` / `--say` runs a typed or scripted
+session with the real agent; plain `voice call` uses the microphone. Setup, agent settings and
+demo script: [examples/voice](../../examples/voice/README.md). Tests:
+[test_voice_bridge.py](../../tests/test_voice_bridge.py). The live reply path currently uses the
+mock executor (`--plan` fixture or human-review stub), not `--planner-config`.
+
+| Field | Value |
+| --- | --- |
+| Provider and documentation | ElevenLabs Agents — [client tools](https://elevenlabs.io/docs/eleven-agents/customization/tools/client-tools), Python SDK `elevenlabs` 2.71 (optional extra `voice`). |
+| Agent | `Dwelly front desk`: default LLM Qwen3.5-397B-A17B, TTS V4 Turbo, ASR Scribe v2 Realtime, voice "Joshua – Calm British Male", English (as of 2026-10-10). Audio not stored; transcripts deleted after 7 days. |
+| Credentials and setup | `ELEVENLABS_API_KEY` (needs ElevenAgents: Write) and `ELEVENLABS_AGENT_ID` in `.env`. |
+| Transport / integration code | [channels/elevenlabs.py](../../src/dwelly_bot/channels/elevenlabs.py), [voice_cli.py](../../src/dwelly_bot/voice_cli.py). |
+| Measured behavior | 2026-10-10 scripted text session: greeting → one `ask_dwelly` call → reply read back faithfully → goodbye; capture shows `handoff: simulated`, `speak_in_call: sent`. **TODO** — audio latency, interruption and disconnect observations. |
