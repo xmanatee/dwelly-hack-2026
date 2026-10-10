@@ -1,0 +1,6 @@
+{
+  "path": "experiments/baseline/results.json.gz",
+  "content_hash": "1a18866ab6838562e85513bcf25ad68d9661a49b4cdebee0d2d5255d81763a3c",
+  "code_revision": "0a1779f5eba491678704c5e8ad7aeb4f7403880dc15120e059a959fc63995a3a",
+  "config_path": "experiments/baseline/config.json"
+}

@@ -2,6 +2,10 @@
 
 The first baseline assigns all 50 public banking development cases. Its tracked configuration uses Anthropic with the existing cumulative $20 account cap; the ledger also includes spend incurred before this dataset. Read costs as configured-rate estimates. Correctness has no trusted labels and remains unknown.
 
+Recorded baseline: **50/50 executed**, **$0.7832** estimated new spend, 150 model requests. All 50 pass answer-presence, evidence-read and observed-citation checks. Outcomes remain unknown for all 50; dispositions are 35 requiring human review and 15 needing information. Execution commit: `037fd29c2f61907f41927a222a146352847b332a`.
+
+Inspected cases 001, 035 and 039 through retrieval, answer, saved grading, report and faithful export. Draft handover wording still needs review: case 001 says “I’m passing this” inside a proposed response although no handover was sent. Case 035 similarly uses “We have recorded” in a draft. These outputs are preserved unchanged; checks of citation existence do not catch unsupported action wording. No improvement or independent quality score is claimed.
+
 [Baseline report](baseline/report.html) · [Compressed execution evidence](baseline/results.json.gz) · [Reference](baseline/reference.json) · [Configuration](baseline/config.json).
 
 ## Change the agent
