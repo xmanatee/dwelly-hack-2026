@@ -32,7 +32,7 @@ class ProductionPipeline:
                 "collect", {"scope_id": trigger.scope_id}, kind="context", read_only=True
             ) as entry:
                 context = await self.collector.collect(
-                    trigger, capabilities=self.executor.capabilities
+                    trigger, capabilities=self.executor.capabilities, journal=journal
                 )
                 context.write(output / "context.md")
                 save_json(output / "context.json", context.model_dump(mode="json"))

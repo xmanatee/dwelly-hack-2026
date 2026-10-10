@@ -39,6 +39,14 @@ Planner will need a new control round on this contract before quality claims.
 
 ## Offline validation
 
+### Integration hardening iteration
+
+The baseline check is now stale after the previously committed scaffold; its historical
+reference is preserved. This iteration adds source adapters, optional agent-driven
+context collection, action catalog profiles and planner handoff documentation. It is
+requested implementation, not adoption of a measured model improvement. Context-agent
+behavior is tested with a local FunctionModel; no live quality comparison is claimed.
+
 All three fixture channels were executed through the CLI and preserved under
 `.cache/production-demo/iteration-1/`. Context excludes the intentionally future and
 other-case records. The demo never reads the public retrospective report.
