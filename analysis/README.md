@@ -52,3 +52,16 @@ uv run --extra analysis dwelly-bot analyze run dwelly_bot.analysis.dwelly_cases 
 ## Planner topic inventory
 
 `dwelly_bot.analysis.planner_topics` screens case histories or `state/decision.sqlite` messages with inspectable regexes, never evaluator labels. Counts are multi-label navigation hints, not risk or quality scores. See [source study and reproduction commands](../experiments/planner-modular-skills/README.md). The runtime selector uses case meaning, not these patterns.
+
+## Saved Planner decision review
+
+[Planner review](planner-review/README.md) examines the saved public 102-decision
+Winner evaluation, including original judge results, references and skill-selection
+traces. This separate retrospective recipe reads public evaluation artifacts, not
+private evaluator labels, and never feeds references into runtime retrieval. It
+records disputed grades separately and proposes experiments without changing prompts.
+
+```sh
+uv run --extra analysis dwelly-bot analyze run analysis/planner-review/recipe.py \
+  --data experiments/winner-public-decisions
+```

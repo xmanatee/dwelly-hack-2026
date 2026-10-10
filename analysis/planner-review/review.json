@@ -1,0 +1,111 @@
+{
+  "scope": "Offline review of winner-public-decisions; annotations are interpretations, not replacement judge labels or runtime knowledge.",
+  "ordinary_sample_seed": 20261010,
+  "findings": [
+    {
+      "id": "bank_owned_gap",
+      "confidence": "confirmed decision gap",
+      "cases": ["007-e003", "010-e003", "018-e003", "024-e003", "029-e003", "030-e003", "050-e003"],
+      "observation": "The requested bank status remains unknown, but the plan replies, asks the customer to discover bank-owned facts, or only offers a future check. No concrete lookup/team procedure commits to resolving the request. Relevant payments/cards/scheduled/business skills were loaded.",
+      "proposal": "Route each essential gap to its owner: bank-owned fact -> named internal check or responsible team; customer intent/consent -> minimal question. No live tools means propose the operation, not abandon it."
+    },
+    {
+      "id": "workflow_state",
+      "confidence": "confirmed decision gap",
+      "cases": ["036-e005"],
+      "observation": "The address was already entered and confirmed in the secure workflow. Planner asks for the literal address again because it is absent from the transcript.",
+      "proposal": "Resume the existing verified workflow using its supplied handle/state; distinguish an unprinted value from an uncollected value. Never invent the address."
+    },
+    {
+      "id": "reference_prerequisite_ambiguity",
+      "confidence": "ambiguous raw failures",
+      "cases": ["002-e003", "003-e003", "031-e003", "048-e003"],
+      "observation": "The reference relies on an account/instruction identifier or authority context not explicit at the cutoff. Some clarification is defensible. Excessive questions and failure to propose an internal check remain possible defects, but the raw fail is not a clean gold label.",
+      "proposal": "Annotate known prerequisites, unknown prerequisites and acceptable gated alternatives before tuning. Ask only identifiers actually needed; do not assume secure-session authority."
+    },
+    {
+      "id": "reference_future_authority",
+      "confidence": "likely judge false positive",
+      "cases": ["045-e004"],
+      "observation": "Prior history promises an administrator check only if confirmed; its result is absent. The reference introduces a verified administrator. Holding disclosure and checking the record is defensible.",
+      "proposal": "Do not train the plan to send access material to an administrator verified only in the withheld reference."
+    },
+    {
+      "id": "identity_provenance",
+      "confidence": "confirmed unsupported facts",
+      "cases": ["010-e005", "012-e003", "030-e003", "038-e003"],
+      "observation": "Planner promotes a secure channel into established identity without evidence of completed checks.",
+      "proposal": "Separate channel, customer assertion and trusted verification result, including its scope. Internal review, disclosure and mutation must have different authority gates."
+    },
+    {
+      "id": "invented_blocking_requirement",
+      "confidence": "confirmed unnecessary restriction",
+      "cases": ["016-e005"],
+      "observation": "Review is already registered under HV016. Planner makes an extra reason or bill a prerequisite to proceeding, instead of optional supporting material.",
+      "proposal": "Never turn useful detail into a mandatory requirement unless supplied policy or the next operation requires it. Preserve registered workflow state."
+    },
+    {
+      "id": "speaker_misread",
+      "confidence": "likely judge false positive",
+      "cases": ["013-e004"],
+      "observation": "The customer says they completed identification checks; Planner attributes this as the customer's report. Judge instead treats the speaker as the agent.",
+      "proposal": "Preserve speaker attribution in evaluation; customer-reported verification is not a trusted bank result."
+    },
+    {
+      "id": "historical_security_urgency",
+      "confidence": "unjustified urgency in judge-passed plans",
+      "cases": ["039-e004", "039-e006"],
+      "observation": "A July sign-in notification discussed in October becomes an urgent security escalation. The context does not establish current compromise. A normal security review may still be justified.",
+      "proposal": "Distinguish current risk from a historical audit request, and a selected fraud skill from evidence that its urgent procedure applies."
+    },
+    {
+      "id": "duplicate_complaint",
+      "confidence": "possible excess procedure in judge-passed plan",
+      "cases": ["034-e005"],
+      "observation": "The tariff check already returned that the fee matches the applicable tariff. Planner registers another complaint based on the earlier word 'escalate', without distinguishing an unresolved complaint from a completed factual check.",
+      "proposal": "Track what is already handled and whether dissatisfaction remains; avoid duplicate registration. Ensure a draft does not claim referral before its prerequisite action."
+    },
+    {
+      "id": "consent_scope",
+      "confidence": "scope ambiguity in judge-passed plan",
+      "cases": ["006-e005"],
+      "observation": "A request to explain whether a pending duplicate was stopped/returned becomes a stop review 'at the customer's request'. Only one payment being intended is not an explicit cancellation instruction. The plan requests review, not actual cancellation.",
+      "proposal": "Keep status investigation separate from consent to stop a payment. Do not upgrade inferred intent into an explicit instruction."
+    },
+    {
+      "id": "implicit_operations",
+      "confidence": "quality gaps in judge-passed plans",
+      "cases": ["040-e003", "047-e003"],
+      "observation": "040 offers an unspecified self-service document route with a fallback hidden in prose. 047 says to start authority verification without committing an actual mandate-record check. Valid JSON and condition=null do not guarantee an executable decision.",
+      "proposal": "Require the selected next operation to appear in steps, not only summary, offers or prose branches. Do not invent a bank UI."
+    },
+    {
+      "id": "timestamp_conflation",
+      "confidence": "unsupported fact missed by judge",
+      "cases": ["005-e003"],
+      "observation": "Planner treats the notification date as the transfer date although the operation date is not supplied.",
+      "proposal": "Label dates by event type and preserve unknown operation dates."
+    },
+    {
+      "id": "identity_policy_inconsistency",
+      "confidence": "needs explicit provenance policy",
+      "cases": ["008-e003"],
+      "observation": "The customer reports completed identity checks, but Planner asks for a separate system record, while other cases incorrectly infer verification from the channel alone. The customer's assertion is not itself trusted verification.",
+      "proposal": "Have the context collector supply trusted verification state and scope when available; otherwise use a consistent verification gate rather than inconsistent assumptions."
+    },
+    {
+      "id": "planner_technical_failure",
+      "confidence": "observed execution errors",
+      "cases": ["009-e005", "035-e005", "043-e005"],
+      "observation": "No valid plan: malformed structured fields and invalid evidence references exhaust the one-retry allowance. The grounding/safety failure on 035 cannot establish an unsafe decision when no valid plan exists.",
+      "proposal": "Expose canonical evidence IDs, return allowed IDs in repairs, and isolate format repair from semantic replanning. Preserve raw errors separately from decision quality."
+    },
+    {
+      "id": "generator_guard",
+      "confidence": "observed generation failure",
+      "cases": ["012-e004"],
+      "observation": "The completion-claim regex rejects 'I have sent' inside an explicitly future draft; retry still fails. Planner's preserved decision is assessable separately.",
+      "proposal": "Represent future drafts, historical quotations and execution receipts separately. Scope the completion guard to actual execution claims instead of removing it."
+    }
+  ]
+}
