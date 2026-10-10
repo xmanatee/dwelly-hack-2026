@@ -107,6 +107,7 @@ class PlannerConfig(BaseModel):
     model: ModelProfile | None = None
     # planner/playbooks/<name>.md (prose) and <name>.json (actions and safety flags).
     playbook: str = Field(default="banking", pattern=r"^[a-z0-9_-]+$")
+    skill_selection: Literal["model", "all"] = "model"
     instructions: str = Field(default="", max_length=16000)
 
 

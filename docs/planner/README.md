@@ -63,3 +63,5 @@ The team has added an [advisory case Planner](../../src/dwelly_bot/planner/READM
 `PlanInput` and emits its own advisory schema. The local runner continues to use the shared
 `planning.Planner` protocol and human-review stub. A deliberate adapter/alignment step is
 needed before substituting it for executable plans; its advice is not silently executed.
+
+The advisory Planner now selects [modular runtime skills](../../src/dwelly_bot/planner/skills/README.md) with a structured model call before planning. Common evidence and triage modules remain always loaded; selected skills and hashes are journalled. This does not change the local executable-plan stub or its contract.

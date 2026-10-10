@@ -3,19 +3,23 @@
 Decision-point context in, advisory solver plan out. The planner has no tools; the solver keeps its own instructions, policies and tool limits, and treats the plan as untrusted advice.
 
 ```
-case evidence → PlanInput (JSON) → planner → Plan (JSON, code-checked) → solver
+case evidence → PlanInput → select skills → planner + selected knowledge → Plan → solver / Winner
 ```
 
 - `contracts.py`: `PlanInput` (request, timed events, documents, datapoints, `solver_tools`) and `Plan` (facts with evidence IDs, identity/authority, safety flags, ordered steps, response guidance, expected disposition).
 - `context.py`: builds `PlanInput` from the adapter's decision-point documents and the solver's own tool bindings, so disabled tools never appear.
 - `validate.py`: steps must use listed solver tools or playbook actions; facts must cite input evidence; safety flags force their required actions; state-changing actions need identity and authority first. A failed check uses the configured repair limit.
-- `prompt.md` and `playbooks/<name>.md|.json`: the tunable parts. The JSON defines the action vocabulary, state-changing and identity actions, and each safety flag's required actions.
+- `prompt.md`, `evidence.md`, `safety.md`: always-loaded instructions.
+- [skills/](skills/README.md): eleven focused banking skills, an allowlisted catalog and official sources. `skills.py` selects relevant IDs with a separate structured model call, then loads their Markdown into the Planner.
+- `playbooks/<name>.md|.json`: domain scope and the unchanged action/safety vocabulary.
 
 Enable it in a run config; omit `model` to reuse the solver's model and account:
 
 ```json
-{"planner": {"mode": "advisory", "playbook": "banking", "model": {"model": "claude-sonnet-5-5", "provider": "anthropic", "input_price_per_million": 3, "output_price_per_million": 15}}}
+{"planner": {"mode": "advisory", "playbook": "banking", "skill_selection": "model", "model": {"model": "claude-sonnet-5-5", "provider": "anthropic", "input_price_per_million": 3, "output_price_per_million": 15}}}
 ```
+
+Selection uses the same Planner model and cumulative runtime limits, normally adding one call. Journals retain selected IDs, content hashes and both model calls. `skill_selection: "all"` is a preload mode for controlled comparisons; selection errors remain visible Planner failures. Common evidence and safety rules apply even with zero selected topics.
 
 Plans are saved in each case's `state_snapshots.after.plan` with planner model calls under `model_roles`. A planner error is recorded and the solver runs without a plan. Turning the planner on changes agent behaviour, so compare it against the baseline through the experiment workflow.
 

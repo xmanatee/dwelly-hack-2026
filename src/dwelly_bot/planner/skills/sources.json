@@ -1,0 +1,74 @@
+{
+  "openbanking": {
+    "title": "Open Banking Read/Write API specifications",
+    "url": "https://github.com/OpenBankingUK/read-write-api-specs",
+    "scope": "API/schema reference; does not define a bank\u2019s customer-service policy.",
+    "reviewed_on": "2026-10-10"
+  },
+  "disputes": {
+    "title": "Financial Ombudsman: disputed transactions",
+    "url": "https://www.financial-ombudsman.org.uk/consumers/complaints-can-help/banking-and-payments/disputed-transactions",
+    "scope": "UK complaints; consider the rules and account terms applicable at the event date.",
+    "reviewed_on": "2026-10-10"
+  },
+  "complaints": {
+    "title": "Financial Ombudsman: banking and payments",
+    "url": "https://www.financial-ombudsman.org.uk/businesses/resolving-complaint/complaints-deal/banking-and-payments",
+    "scope": "UK complaint handling; response deadlines depend on complaint type.",
+    "reviewed_on": "2026-10-10"
+  },
+  "direct-debit": {
+    "title": "Pay.UK: cancelling a Direct Debit",
+    "url": "https://www.directdebit.co.uk/help/cancelling-a-direct-debit/",
+    "scope": "UK Direct Debit; not standing orders or card recurring payments.",
+    "reviewed_on": "2026-10-10"
+  },
+  "guarantee": {
+    "title": "Pay.UK: Direct Debit Guarantee",
+    "url": "https://www.directdebit.co.uk/direct-debit-guarantee/",
+    "scope": "UK scheme errors; not a universal merchant-dispute refund rule.",
+    "reviewed_on": "2026-10-10"
+  },
+  "fraud": {
+    "title": "PSR: APP scams",
+    "url": "https://www.psr.org.uk/our-work/app-scams/",
+    "scope": "UK APP fraud; reimbursement applicability depends on date, scheme and eligibility.",
+    "reviewed_on": "2026-10-10"
+  },
+  "abuse": {
+    "title": "UK Finance: Financial Abuse Code",
+    "url": "https://www.ukfinance.org.uk/policy-and-guidance/reports/financial-abuse-code",
+    "scope": "Voluntary industry code; support principles, not an assertion that every bank is a signatory.",
+    "reviewed_on": "2026-10-10"
+  },
+  "vulnerability": {
+    "title": "FCA: fair treatment of vulnerable customers (FG21/1)",
+    "url": "https://www.fca.org.uk/publications/finalised-guidance/guidance-firms-fair-treatment-vulnerable-customers",
+    "scope": "UK regulated firms; individual support needs, not demographic classification.",
+    "reviewed_on": "2026-10-10"
+  },
+  "privacy": {
+    "title": "ICO: guide to subject access",
+    "url": "https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/subject-access-requests/a-guide-to-subject-access/",
+    "scope": "UK personal-information access; updated July 2026, do not retroactively apply new provisions.",
+    "reviewed_on": "2026-10-10"
+  },
+  "crisis": {
+    "title": "NHS: urgent mental health help",
+    "url": "https://www.nhs.uk/nhs-services/mental-health-services/where-to-get-urgent-help-for-mental-health/",
+    "scope": "NHS England routes; confirm location before supplying local services.",
+    "reviewed_on": "2026-10-10"
+  },
+  "debt": {
+    "title": "GOV.UK: Breathing Space guidance for creditors",
+    "url": "https://www.gov.uk/government/publications/debt-respite-scheme-breathing-space-guidance/debt-respite-scheme-breathing-space-guidance-for-creditors",
+    "scope": "England and Wales; protection concerns eligible debts and the applicable moratorium.",
+    "reviewed_on": "2026-10-10"
+  },
+  "authority": {
+    "title": "Office of the Public Guardian: notification of death",
+    "url": "https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1128943/sd16-notification-of-death-Jan_2023.pdf",
+    "scope": "England and Wales enduring/lasting powers of attorney; estate authority is separate.",
+    "reviewed_on": "2026-10-10"
+  }
+}

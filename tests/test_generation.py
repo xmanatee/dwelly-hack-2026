@@ -278,9 +278,11 @@ def test_predict_retains_failures_and_continues_batch(
 
     def respond(messages: list[ModelMessage], info: AgentInfo) -> ModelResponse:
         tool = info.output_tools[0].name
-        stage = "planner" if tool == "case_plan" else "generator"
+        stage = "planner" if tool in {"case_plan", "planner_skill_selection"} else "generator"
         if stage == failure_stage and "FAIL_ME" in str(messages):
             raise RuntimeError("simulated model failure")
+        if tool == "planner_skill_selection":
+            return ModelResponse(parts=[ToolCallPart(tool, {"skill_ids": ["payments"]})])
         if stage == "planner":
             return ModelResponse(
                 parts=[
@@ -370,6 +372,8 @@ def test_winner_default_and_custom_output_preserve_case_folders(
 
     def respond(messages: list[ModelMessage], info: AgentInfo) -> ModelResponse:
         tool = info.output_tools[0].name
+        if tool == "planner_skill_selection":
+            return ModelResponse(parts=[ToolCallPart(tool, {"skill_ids": ["payments"]})])
         if tool == "case_plan":
             result = {
                 "intent": "review",

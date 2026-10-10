@@ -9,6 +9,7 @@ from pydantic_ai.exceptions import ModelRetry
 from dwelly_bot.contracts import PlannerConfig
 from dwelly_bot.harness.runtime import CaseRuntime
 from dwelly_bot.planner.contracts import Plan, PlanInput, Playbook
+from dwelly_bot.planner.skills import receipt, select_skills
 from dwelly_bot.planner.validate import check_plan
 from dwelly_bot.resources import text
 
@@ -18,16 +19,21 @@ def playbook(name: str) -> tuple[str, Playbook]:
     return prose, Playbook.model_validate_json(text(f"planner/playbooks/{name}.json"))
 
 
-def instructions(config: PlannerConfig) -> list[InstructionPart]:
+def instructions(
+    config: PlannerConfig, skills: list[tuple[str, str]] | None = None
+) -> list[InstructionPart]:
     prose, vocabulary = playbook(config.playbook)
     parts = [
         InstructionPart(text("planner/prompt.md"), name="planner"),
+        InstructionPart(text("planner/evidence.md"), name="evidence"),
+        InstructionPart(text("planner/safety.md"), name="safety"),
         InstructionPart(prose, name="playbook"),
         InstructionPart(
             "Allowed proposed actions and safety flags:\n" + vocabulary.model_dump_json(indent=2),
             name="vocabulary",
         ),
     ]
+    parts.extend(InstructionPart(content, name=path) for path, content in skills or [])
     if config.instructions.strip():
         parts.append(InstructionPart(config.instructions, name="variant"))
     return parts
@@ -35,10 +41,22 @@ def instructions(config: PlannerConfig) -> list[InstructionPart]:
 
 async def make_plan(runtime: CaseRuntime, source: PlanInput, config: PlannerConfig) -> Plan:
     _, vocabulary = playbook(config.playbook)
+    skills = await select_skills(runtime, source, config)
+    parts = instructions(config, skills)
+    with runtime.journal.record(
+        "planner_instructions",
+        {"case_id": source.case_id},
+        kind="planner_instructions",
+        role="planner",
+        read_only=True,
+    ) as event:
+        runtime.journal.returned(
+            event, {"parts": [receipt(str(part.name), part.content) for part in parts]}
+        )
     agent = runtime.agent(
         output_type=Plan,
         output_name="case_plan",
-        instructions=instructions(config),
+        instructions=parts,
         role="planner",
     )
 

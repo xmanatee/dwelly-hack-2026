@@ -160,7 +160,9 @@ async def test_invalid_plan_is_repaired_once(tmp_path: Path, journal: Journal) -
         return reply(info, bad if len(attempts) == 1 else PLAN)
 
     runtime = CaseRuntime(FunctionModel(model), RunConfig(), journal)
-    result = await plan_case(runtime, session(tmp_path).plan_input(RunConfig()), PlannerConfig())
+    result = await plan_case(
+        runtime, session(tmp_path).plan_input(RunConfig()), PlannerConfig(skill_selection="all")
+    )
     assert result["status"] == "available" and len(attempts) == 2
     assert result["plan"]["steps"][0]["action"] == "read_document"
 
@@ -180,7 +182,7 @@ async def test_solver_receives_advisory_plan_and_snapshot_keeps_it(
         seen["instructions"] = info.instructions or ""
         return reply(info, ANSWER)
 
-    config = RunConfig(planner=PlannerConfig())
+    config = RunConfig(planner=PlannerConfig(skill_selection="all"))
     runtime = CaseRuntime(
         FunctionModel(solver), config, journal, planner_model=FunctionModel(planner)
     )
@@ -202,7 +204,9 @@ async def test_planner_failure_never_blocks_the_solver(tmp_path: Path, journal: 
         seen["instructions"] = info.instructions or ""
         return reply(info, ANSWER)
 
-    runtime = CaseRuntime(FunctionModel(model), RunConfig(planner=PlannerConfig()), journal)
+    runtime = CaseRuntime(
+        FunctionModel(model), RunConfig(planner=PlannerConfig(skill_selection="all")), journal
+    )
     subject = session(tmp_path)
     await subject.run(runtime)
     assert subject.snapshot()["plan"]["status"] == "error"

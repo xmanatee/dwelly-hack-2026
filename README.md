@@ -49,10 +49,10 @@ flowchart LR
     K[Versioned skills and knowledge] --> P
     P --> D[Structured plan]
     D --> E[Operational execution]
-    D -. Planned Solver .-> F[ANSWER + REASONING]
+    D --> F[Winner: ANSWER + REASONING]
 ```
 
-**Design direction:** a multi-step reasoning component that selects relevant skills, checks candidate actions against evidence and emits a small executable plan. Hierarchical skill access and specialist sub-agents remain design options. The team has added an advisory case Planner with its own schema; the local executable-plan pipeline still uses its stub. [Planner design and Vera's TODOs](docs/planner/README.md).
+**Implemented case Planner:** a structured selection call chooses relevant [banking skills](src/dwelly_bot/planner/skills/README.md), then the Planner combines them with general evidence/safety rules and emits a validated advisory plan. Hackathon Winner imports this component directly. The local executable-plan pipeline still uses its stub; specialist sub-agents are not implemented. [Planner design and Vera's TODOs](docs/planner/README.md).
 
 ## Quickstart
 

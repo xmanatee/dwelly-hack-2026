@@ -48,3 +48,7 @@ uv run --extra analysis dwelly-bot analyze run dwelly_bot.analysis.dwelly_cases 
 
 - `--data` is one organizer track folder of `NNN/history.md` and `attachments/` (a local clone of the public cases, or `experiments/safety-cases/…`). Each case is one conversation from history.md alone: every timed event and extracted attachment text (CSV/TXT/MD/JSON/PDF). index.md is never read.
 - `--exhaustive` deep-reviews, audits, compares and names every record and label; without it those stages sample.
+
+## Planner topic inventory
+
+`dwelly_bot.analysis.planner_topics` screens case histories or `state/decision.sqlite` messages with inspectable regexes, never evaluator labels. Counts are multi-label navigation hints, not risk or quality scores. See [source study and reproduction commands](../experiments/planner-modular-skills/README.md). The runtime selector uses case meaning, not these patterns.

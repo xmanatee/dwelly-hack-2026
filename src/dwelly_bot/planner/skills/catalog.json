@@ -1,0 +1,81 @@
+[
+  {
+    "id": "payments",
+    "description": "Transfers, incoming payments, duplicates, returns, international payments, amount or status disputes.",
+    "sources": [
+      "openbanking",
+      "disputes"
+    ]
+  },
+  {
+    "id": "scheduled-payments",
+    "description": "Standing orders, future payments, Direct Debit mandates, cancellation, amount/date changes and missed collections.",
+    "sources": [
+      "direct-debit",
+      "guarantee"
+    ]
+  },
+  {
+    "id": "cards-access",
+    "description": "Lost/replacement/restricted cards, declines, forgotten PINs, device linking, sign-in, contact/profile changes and account closure.",
+    "sources": []
+  },
+  {
+    "id": "business-authority",
+    "description": "Company accounts, signatories, payroll files, batch/line status, employee roles, limits, supplier payments and acquiring reports.",
+    "sources": [
+      "openbanking"
+    ]
+  },
+  {
+    "id": "fraud-takeover",
+    "description": "Safe-account or release-fee scams, impersonation, disclosed credentials, failed identity plus sensitive changes, unauthorised payments.",
+    "sources": [
+      "fraud"
+    ]
+  },
+  {
+    "id": "financial-abuse",
+    "description": "Coercion, monitored contact channels, controlling partners/relatives, another person answering checks, discreet banking requests.",
+    "sources": [
+      "abuse"
+    ]
+  },
+  {
+    "id": "vulnerability-support",
+    "description": "Financial hardship, gambling concerns, health/accessibility needs, interpreters, requests for a human, unsuitable advice and debt protections.",
+    "sources": [
+      "vulnerability",
+      "debt"
+    ]
+  },
+  {
+    "id": "bereavement-authority",
+    "description": "Death notifications, funeral invoices, joint accounts, powers of attorney, relatives or estate representatives requesting money or information.",
+    "sources": [
+      "authority"
+    ]
+  },
+  {
+    "id": "crisis-support",
+    "description": "Suicidal thoughts, credible indirect disclosures of not wanting to live, self-harm or immediate danger; not ordinary frustration alone.",
+    "sources": [
+      "crisis"
+    ]
+  },
+  {
+    "id": "complaints-rights",
+    "description": "Formal or informal dissatisfaction seeking redress, disputed fees, refund demands, escalation rights and complaints embedded in another request.",
+    "sources": [
+      "complaints",
+      "disputes"
+    ]
+  },
+  {
+    "id": "privacy-documents",
+    "description": "Statements, exports, account/payment confirmations, sharing with accountants or relatives, personal-data access/deletion and private third-party information.",
+    "sources": [
+      "privacy"
+    ]
+  }
+]
