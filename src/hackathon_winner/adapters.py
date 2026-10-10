@@ -15,8 +15,9 @@ from hackathon_winner.export import CASE
 TASK = (
     "Use the supplied context to plan the next supported response and concrete proposed actions. "
     "All available evidence is already supplied; no solver tools or bank execution are connected. "
-    "Keep observed history separate from proposed future operations. State missing information, "
-    "conditions, escalation criteria and what must not be claimed."
+    "Keep observed history separate from proposed future operations. Decide the concrete next "
+    "actions, including a specific evidence request or handoff for a material gap. "
+    "State missing information and what must not be claimed; do not append hypothetical future decisions."
 )
 
 
@@ -75,7 +76,12 @@ def load(
     for folder in folders:
         checked_path(folder, track)
         case_id = identity(folder)
-        if not CASE.fullmatch(case_id) or case_id.casefold() in {"journals"}:
+        if not CASE.fullmatch(case_id) or case_id.casefold() in {
+            "journals",
+            "predictions.json",
+            "report.html",
+            "readme.md",
+        }:
             raise ValueError(f"Unsafe or reserved case identifier {case_id!r}")
         main = next(
             (

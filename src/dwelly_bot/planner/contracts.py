@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from typing import Any, Literal
+from typing import Any, Literal, Self
 
-from pydantic import AliasChoices, BaseModel, ConfigDict, Field
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field, model_validator
 
 
 class ToolSpec(BaseModel):
@@ -45,6 +45,15 @@ class PlanInput(BaseModel):
     documents: list[PlanDocument] = Field(default_factory=list)
     datapoints: dict[str, Any] = Field(default_factory=dict)
     solver_tools: list[ToolSpec] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def unique_evidence(self) -> Self:
+        ids = ["request", *(e.id for e in self.events), *(d.name for d in self.documents)]
+        if any(not key.strip() for key in ids) or len(ids) != len(set(ids)):
+            raise ValueError(
+                "Case evidence IDs must be nonempty and unique, including reserved request"
+            )
+        return self
 
     def evidence_ids(self) -> set[str]:
         return {"request", *(e.id for e in self.events), *(d.name for d in self.documents)}

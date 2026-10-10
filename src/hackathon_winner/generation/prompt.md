@@ -17,3 +17,9 @@ Write REASONING.md as a detailed, readable decision memo for an operator:
 
 Use enough detail for the case, without repeating every event or padding the explanation.
 This is a public evidence-based justification, not a private model thought transcript.
+
+Keep answer and reasoning in proposed/pending language. If a future customer-message draft
+uses completed-action wording, return it separately in `future_messages`, with `after_steps`
+listing the existing plan operations whose execution must first be acknowledged. The exporter
+labels these drafts NOT SENT. Do not invent a new operation or promise an outcome absent from
+the plan. Ordinary present-state replies belong in answer; future_messages may be empty.

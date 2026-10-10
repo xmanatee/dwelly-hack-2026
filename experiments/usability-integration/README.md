@@ -55,3 +55,17 @@ primary documentation; no vendor account resources or recordings are created.
 The server extra is optional for users; the full CI gate now installs all extras. Offline
 ASGI tests cover auth/scope, replay/conflict, timeout, pipeline captures/history and disconnect.
 A live provider audio conversation still requires account provisioning and has not been run.
+
+## Stage 3 evidence
+
+Planner receives an explicit canonical evidence-ID registry, including document-only inputs;
+repair feedback repeats the allowed IDs. Ambiguous duplicate/reserved evidence IDs fail at
+the input boundary. Winner's TASK now agrees with the concrete-next-action contract, and case
+folder names cannot collide with output metadata. No organizer/source bytes were rewritten.
+
+Generator future-message drafts have a separate typed field with existing plan-step
+prerequisites. Export labels each draft NOT SENT and requires confirmed execution first;
+ordinary answer/reasoning still reject first-person claims that planned work was performed.
+Unknown draft prerequisites are repaired. This addresses the future-draft false positive
+without silently treating a planned operation as a receipt. The regex is a narrow guard,
+not proof of semantic faithfulness in every language; saved-result judging remains separate.

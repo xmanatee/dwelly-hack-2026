@@ -44,6 +44,13 @@ async def make_plan(runtime: CaseRuntime, source: PlanInput, config: PlannerConf
     skills = await select_skills(runtime, source, config)
     selected_ids = {path.split("/")[-2] for path, _ in skills}
     parts = instructions(config, skills)
+    parts.append(
+        InstructionPart(
+            "Canonical case evidence IDs (use exactly these strings in facts and rationale; labels inside a document are not separate IDs):\n"
+            + json.dumps(sorted(source.evidence_ids())),
+            name="evidence-registry",
+        )
+    )
     with runtime.journal.record(
         "planner_instructions",
         {"case_id": source.case_id},
@@ -68,7 +75,9 @@ async def make_plan(runtime: CaseRuntime, source: PlanInput, config: PlannerConf
                 plan, source, vocabulary, require_decision=True, selected_skills=selected_ids
             )
         except ValueError as error:
-            raise ModelRetry(f"Fix the plan: {error}") from error
+            raise ModelRetry(
+                f"Fix the plan: {error}. Allowed evidence IDs: {json.dumps(sorted(source.evidence_ids()))}"
+            ) from error
         return plan
 
     result = await runtime.ask(agent, source.model_dump(mode="json"), role="planner")

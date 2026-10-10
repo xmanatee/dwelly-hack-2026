@@ -87,6 +87,8 @@ async def test_only_selected_topics_plus_common_rules_reach_plan(journal: Journa
             )
         prompt = str(info.instructions)
         assert "# Evidence and supplied context" in prompt
+        assert "Canonical case evidence IDs" in prompt
+        assert '"request"' in prompt
         assert "# Always-on triage" in prompt
         assert "# Financial Abuse" in prompt and "# Scheduled Payments" in prompt
         assert "# Bereavement Authority" not in prompt

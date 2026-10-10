@@ -37,7 +37,7 @@ def write_case(
         raise ValueError(f"Unsafe case identifier {case_id!r}")
     target = directory / case_id
     target.mkdir(parents=True, exist_ok=False)
-    (target / "ANSWER.md").write_text(generated.answer.strip() + "\n")
+    (target / "ANSWER.md").write_text(generated.rendered_answer.strip() + "\n")
     (target / "REASONING.md").write_text(generated.reasoning.strip() + "\n")
     (target / "context.md").write_text(context.strip() + "\n")
     save_json(target / "plan.json", plan.model_dump(mode="json"))

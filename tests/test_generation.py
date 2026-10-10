@@ -61,6 +61,45 @@ async def test_model_claims_of_done_actions_are_repaired(tmp_path: Path) -> None
     assert runtime.role_records[0]["role"] == "generator"
 
 
+async def test_future_message_is_separate_and_unknown_prerequisite_repairs(tmp_path: Path) -> None:
+    replies = [
+        {
+            "answer": "Request review.",
+            "reasoning": "Pending execution.",
+            "future_messages": [
+                {"after_steps": ["invented"], "message": "I have referred your case."}
+            ],
+        },
+        {
+            "answer": "Request review.",
+            "reasoning": "Pending execution.",
+            "future_messages": [
+                {"after_steps": ["review"], "message": "I have referred your case."}
+            ],
+        },
+    ]
+
+    def model(messages: list[ModelMessage], info: AgentInfo) -> ModelResponse:
+        return ModelResponse(parts=[ToolCallPart(info.output_tools[0].name, replies.pop(0))])
+
+    journal = Journal(tmp_path / "events.jsonl")
+    try:
+        generated = await ModelGenerator(
+            CaseRuntime(FunctionModel(model), RunConfig(), journal)
+        ).generate(PLAN, "context")
+    finally:
+        journal.close()
+    assert not replies
+    assert "I have referred" not in generated.answer
+    assert "NOT SENT" in generated.rendered_answer
+    assert "confirmed execution of: review" in generated.rendered_answer
+    output = write_case(
+        tmp_path / "out", "001", generated, plan=PLAN, context="context", generator={"kind": "test"}
+    )
+    assert "NOT SENT" in (output / "ANSWER.md").read_text()
+    assert "> I have referred" in (output / "ANSWER.md").read_text()
+
+
 def test_export_refuses_practice_answers_and_overwrites(tmp_path: Path) -> None:
     with pytest.raises(ValueError, match="practice"):
         check_output(tmp_path / "ANSWERS", development=True)

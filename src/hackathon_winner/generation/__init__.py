@@ -23,9 +23,32 @@ from dwelly_bot.planning.contracts import (
 from dwelly_bot.resources import text
 
 
+class FutureMessage(BaseModel):
+    after_steps: list[str] = Field(
+        min_length=1,
+        description="Existing plan step IDs whose execution acknowledgement is required before using this message",
+    )
+    message: str = Field(min_length=1)
+
+
 class Generated(BaseModel):
     answer: str = Field(min_length=1, description="ANSWER.md body")
     reasoning: str = Field(min_length=1, description="REASONING.md body")
+    future_messages: list[FutureMessage] = Field(
+        default_factory=list,
+        description="Optional drafts for after confirmed execution; never claims about actions already completed",
+    )
+
+    @property
+    def rendered_answer(self) -> str:
+        result = self.answer
+        for draft in self.future_messages:
+            result += "\n\n## Future message draft — NOT SENT\n\n"
+            result += (
+                "Use only after confirmed execution of: " + ", ".join(draft.after_steps) + ".\n\n"
+            )
+            result += "\n".join("> " + line for line in draft.message.splitlines())
+        return result
 
 
 # The shared product Plan, or the case planner's richer plan (dwelly_bot.planner).
@@ -180,6 +203,7 @@ class ModelGenerator:
 
     def __init__(self, runtime: CaseRuntime, instructions: str | None = None) -> None:
         self.runtime = runtime
+        self.step_ids: set[str] = set()
         self.agent = runtime.agent(
             output_type=Generated,
             output_name="generated_answer",
@@ -189,14 +213,24 @@ class ModelGenerator:
 
         @self.agent.output_validator
         def faithful(output: Generated) -> Generated:
+            if any(set(draft.after_steps) - self.step_ids for draft in output.future_messages):
+                raise ModelRetry(
+                    "Future-message prerequisites must be existing plan step IDs; do not invent an operation."
+                )
             if claim := EXECUTED_CLAIM.search(output.answer + "\n" + output.reasoning):
                 raise ModelRetry(
                     f"'{claim.group(0)}' reports a planned action as done. Nothing has been "
-                    "executed; describe it as proposed or pending."
+                    "executed; describe it as proposed or pending. If this is a draft for after execution, "
+                    "put it in future_messages with the existing prerequisite step IDs, not answer/reasoning."
                 )
             return output
 
     async def generate(self, plan: AnyPlan, context: str) -> Generated:
+        self.step_ids = (
+            {step.id for step in plan.steps}
+            if isinstance(plan, CasePlan)
+            else {action.id for action in plan.actions}
+        )
         prompt = (
             "PLAN (decision of record):\n"
             + plan.model_dump_json(indent=1)

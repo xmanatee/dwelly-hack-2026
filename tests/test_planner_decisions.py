@@ -6,6 +6,7 @@ from typing import Any
 import pytest
 
 from dwelly_bot.planner import Plan, PlanInput
+from dwelly_bot.planner.contracts import PlanDocument
 from dwelly_bot.planner.planner import advisory, playbook
 from dwelly_bot.planner.validate import check_plan
 from hackathon_winner.generation import TemplateGenerator
@@ -57,6 +58,20 @@ def test_decided_step_has_separate_instruction_and_grounds() -> None:
     context = advisory(encoded)
     assert "decision of record" in context and "stop the affected action" in context
     assert "where you deviate" not in context
+
+
+def test_input_rejects_colliding_evidence_ids() -> None:
+    import pytest
+
+    for documents in [
+        [PlanDocument(name="request", text="ambiguous")],
+        [
+            PlanDocument(name="context.md", text="first"),
+            PlanDocument(name="context.md", text="second"),
+        ],
+    ]:
+        with pytest.raises(ValueError, match="unique"):
+            PlanInput(case_id="case", decision_time="now", request="help", documents=documents)
 
 
 @pytest.mark.parametrize(
