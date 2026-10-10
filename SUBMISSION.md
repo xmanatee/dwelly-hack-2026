@@ -3,7 +3,7 @@
 **Preparation in progress.** This file records delivery metadata, not a completed submission or final audit.
 
 - Project: dwelly-bot
-- Team: pending
+- Team: Unsettled
 - Track: Banking & Financial Services
 - Members: pending
 - Public repository URL: https://github.com/xmanatee/dwelly-hack-2026
