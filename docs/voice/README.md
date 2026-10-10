@@ -75,7 +75,7 @@ is preserved. To make a **local transport replay** as a call, use `local_event(d
 not a real authentication check or a migration of a real customer's communication consent.
 The service verifies the prepared dataset manifest before using its read-only sources.
 
-`--planner-config` selects the actual shared case Planner; omit it for the offline stub.
+`--planner-config` selects the shared case Planner; the key-free default demonstrates human-review routing.
 `--context-config` selects the optional model-directed collector; omit it for deterministic
 source reads. Model keys come from `.env` / environment as in ordinary Winner runs. Provider
 pools, budgets and local traces are reused. The service's timeout bounds the whole request;
@@ -169,7 +169,8 @@ flowchart LR
 session with the real agent; plain `voice call` uses the microphone. Setup, agent settings and
 demo script: [examples/voice](../../examples/voice/README.md). Tests:
 [test_voice_bridge.py](../../tests/test_voice_bridge.py). The live reply path currently uses the
-mock executor (`--plan` fixture or human-review stub), not `--planner-config`.
+prepared-plan executor (`--plan` fixture or human-review profile). The HTTP transport above
+provides the `--planner-config` model route.
 
 | Field | Value |
 | --- | --- |

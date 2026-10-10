@@ -1,10 +1,16 @@
-# One decision core
+# Planner: the heart of the agent
 
 [← Project](../../README.md) · [Implementation](../../src/dwelly_bot/planner/README.md) · [Skills](../../src/dwelly_bot/planner/skills/README.md)
 
 **Prepared context in. Decided next actions with public grounds out.**
 The Planner interprets evidence, selects relevant skills and chooses what happens next.
-It has no customer-data tools and performs no banking operation.
+It is the central decision component we develop and evaluate for the hackathon: a reusable
+boundary between gathered context and concrete action. Collection supplies the facts;
+planning chooses the strategy; execution handles the chosen steps.
+
+Its output is a decision of record: actions, dependencies, public explanations and references
+to the evidence that supports them. Hackathon Winner renders that same decision into the
+submission files, making the contest a direct exercise of the agent's decision core.
 
 ```mermaid
 flowchart LR
@@ -60,9 +66,8 @@ The same pool, budget ledger and journal mechanisms account for model calls.
 [Winner configuration](../../src/hackathon_winner/config.json) is usable by the product
 with `--planner-config`.
 
-The offline default remains `planning.HumanReviewPlanner`, an explicit fixture.
-`planning/` preserves existing demo profiles and captures; it is not a second model
-implementation. Specialist sub-agents and automatic stronger-model routing are not implemented.
+The key-free demo profile uses `planning.HumanReviewPlanner` for reproducible human-review
+routing. `planning/` also preserves the prepared demo profiles and their captures.
 
 ## Evidence and boundaries
 

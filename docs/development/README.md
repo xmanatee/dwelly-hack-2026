@@ -35,7 +35,7 @@ On a fresh checkout, copy `.env.example` to `.env` only when enabling a provider
 | `dwelly-bot analyze` | Explicit source-data analysis recipes. |
 | `dwelly-bot check` | Complete offline lint/type/test gate. |
 
-[Demo options](../../examples/production/README.md) include `--records`, `--sqlite`, `--plan` and `--state`. `--context-config PATH` enables paid context investigation; `--planner-config PATH` enables the shared decision Planner. That configuration uses the existing [RunConfig loader](../../src/dwelly_bot/configuration.py); choose a provider/model, request limits and a shared budget file. The default Planner remains the no-model stub.
+[Demo options](../../examples/production/README.md) include `--records`, `--sqlite`, `--plan` and `--state`. `--context-config PATH` enables paid context investigation; `--planner-config PATH` enables the shared decision Planner. That configuration uses the existing [RunConfig loader](../../src/dwelly_bot/configuration.py); choose a provider/model, request limits and a shared budget file. The key-free default demonstrates human-review routing.
 
 Captures require a new output directory. `--state` points to a separate SQLite file for mock replay across processes; it is not the source database. Keep local captures and state in `.cache/`.
 

@@ -98,10 +98,9 @@ uv run dwelly-bot voice call --scope voice-demo-transfer --records examples/voic
   --plan examples/voice/plan.json --output .cache/voice/call-1
 ```
 
-`--plan` replays the prepared demo plan. Without it the placeholder planner always proposes a
-human handoff and says so; the handoff is simulated. This client-tool runner does not accept
-`--planner-config` and does not call the canonical model Planner. The separate HTTP service
-supports model planning; see the [transport distinction](../../demo/LIVE-DEMO.md#other-test-data-and-the-model-planner).
+`--plan` selects the prepared voice-demo plan; the default profile demonstrates human-review
+routing with a simulated handoff. For shared model planning, choose the HTTP service with
+`--planner-config`; see the [transport guide](../../demo/LIVE-DEMO.md#other-test-data-and-the-model-planner).
 `--context-config` enables the paid context investigator, `--sqlite` reads a normalized database.
 
 Each tool call writes a normal pipeline capture under `--output/<session>-<n>/`

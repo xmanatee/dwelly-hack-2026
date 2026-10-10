@@ -53,11 +53,13 @@ Dwelly-bot separates that work into three components: **gather the evidence, dec
 
 Replying in the original channel is a plan action. The executor does not make a second business decision or silently send an extra response.
 
-## Why the Planner matters
+## The Planner is the heart of the agent
 
-Gathering more data and choosing what to do are different problems. Once the context is ready, the Planner can concentrate on the hardest question: **what is the right next action, given these facts, rules and uncertainties?**
+The Planner turns evidence into a decision: **what should happen next, why, and in what order?** It brings together the case history, relevant banking skills, authority constraints and conflicting facts to produce a concrete plan with evidence-linked explanations.
 
-That boundary also makes the component independently testable. Production gathers the context; the hackathon adapter prepares supplied case evidence as text. Both call the same Planner when model planning is enabled.
+**This decision core is our focus for the hackathon.** Dwelly supplies the context; our Planner chooses the strategy. Hackathon Winner then presents that decision as `ANSWER.md` and `REASONING.md`. The same component sits inside the model-backed product pipeline, where the context collector supplies evidence and the executor consumes the plan.
+
+This separation lets us improve the agent's judgement directly: which knowledge to apply, which facts change the decision, when to ask a precise question and when to involve a person. Versioned skills, structured outputs and saved evidence make those decisions inspectable and independently testable.
 
 ```mermaid
 flowchart LR
@@ -69,7 +71,7 @@ flowchart LR
     D --> F[Winner: ANSWER + REASONING]
 ```
 
-**Implemented case Planner:** a structured selection call chooses relevant [banking skills](src/dwelly_bot/planner/skills/README.md), then the Planner combines them with general evidence/safety rules and emits a validated decision with concrete instructions and evidence-linked grounds. Hackathon Winner imports this component directly. The product calls it through `DecisionPlanner`; Winner calls `make_plan` directly. Both retain the same complete `Plan`. Specialist sub-agents are not implemented. [Planner contract](docs/planner/README.md).
+**Inside the Planner:** a structured selection call chooses relevant [banking skills](src/dwelly_bot/planner/skills/README.md), then the Planner combines them with general evidence/safety rules and emits a validated decision with concrete instructions and evidence-linked grounds. The product uses `DecisionPlanner`; Winner uses the same underlying `make_plan` implementation. Both preserve the complete `Plan`. [Planner contract](docs/planner/README.md).
 
 ## Quickstart
 
@@ -86,7 +88,7 @@ uv run dwelly-bot demo \
   --output .cache/quickstart/ticket
 ```
 
-The placeholder Planner requests human review and replies to the original ticket. Both external actions are explicitly **simulated**.
+The key-free quickstart demonstrates human-review routing and a reply to the original ticket, with **simulated** action receipts. Use `--planner-config` to select the shared model Planner.
 
 ```text
 .cache/quickstart/ticket/
@@ -130,7 +132,7 @@ Our testing approach has two complementary paths:
 | **Dwelly examples → prepared context → Planner → answer** | Decision quality on supplied operational cases. | Shared Planner and [Winner generation/export](src/hackathon_winner/README.md); supplied attachments, per-case errors and traces are preserved. |
 | **Synthetic world → noisy events → context → plan → execution** | Missing facts, ambiguous identities, conflicting records and failed actions. | 1,180 generated banking cases; separate state/cases/evaluation data and a working local runner. |
 
-The generator direction is reusable across service tracks; the current implemented dataset adapter is banking-specific. We keep future outcomes outside the acting context and evaluate saved decisions afterward. [Evaluation loops, scenario design and optimization TODOs](docs/evaluation/README.md).
+The generator direction is reusable across service tracks; the current dataset adapter specializes in banking. We keep future outcomes outside the acting context and evaluate saved decisions afterward. [Evaluation loops, scenario design and saved results](docs/evaluation/README.md).
 
 **Existing evidence:** [MiniMax M3 vs Sonnet 5.5](experiments/sonnet-vs-minimax-anthropic/README.md) contains 50 executed and reviewed cases per model for the **earlier agent**. Those results are not a score for the new Planner. [Saved report site](https://xmanatee.github.io/dwelly-hack-2026/).
 

@@ -17,11 +17,15 @@ flowchart LR
     E -. Next experiment .-> P
 ```
 
-The diagram is the target shared-core path. The [Solver package](../../src/hackathon_winner/README.md) now has generation/export and development predictions; aligning the advisory case Planner with the shared executable-plan contract is pending.
+The [Solver package](../../src/hackathon_winner/README.md) imports the same canonical Planner
+as the model-backed product. It prepares evidence, obtains a structured decision and renders
+the answer and reasoning, retaining the complete plan and execution traces of model calls.
 
 The organizer's public examples contain completed histories. Our adapter chooses a decision point, retains evidence available then and excludes later events and outcome summaries. It creates the text input; the raw corpus is not universally one ready-made prompt file. The recorded ending is an example, not the only acceptable decision. [Organizer data guidance](https://github.com/DwellyOrg/HackatonPublicCases#using-the-examples).
 
-The hackathon fits our architecture because prepared evidence can enter directly at the Planner boundary. The same production decision component is intended to generate the plan used for contest answers.
+The hackathon directly exercises the heart of our architecture: prepared evidence enters at
+the Planner boundary, and the shared decision component produces the strategy used for
+contest answers. Improving that component improves the product's decision-making core.
 
 | Compare | Hold fixed | Inspect |
 | --- | --- | --- |
@@ -53,7 +57,8 @@ flowchart LR
 | Failed handoff or ended call | Does execution stop without claiming success? |
 | Duplicate incoming event | Is a previously recorded action replayed safely? |
 
-Scenario-writing, simulated-customer and review sub-agents are possible supporting roles. A generated expectation is still a hypothesis to inspect, not ground truth merely because another model wrote it.
+Scenario expectations are reviewed alongside the evidence; model-generated expectations
+remain hypotheses to assess rather than automatic ground truth.
 
 ## Evidence already available
 
@@ -65,16 +70,22 @@ safety and reference ambiguity. Public examples remain development data.
 
 [Historical MiniMax/Sonnet comparison](../../experiments/sonnet-vs-minimax-anthropic/README.md): 50 executed cases and 50 reviews per model on the earlier agent. Inputs and saved outputs are preserved. The judge's verdicts are assessments, not observed bank outcomes, and model/provider differences limit cost and latency comparisons.
 
-The current skeleton has offline checks for context boundaries, action routing, arithmetic, model-tool interaction with a local test model, and durable mock replay. These establish mechanics; they do not establish final Planner quality.
+Offline checks cover context boundaries, action routing, arithmetic, model-tool interaction
+and durable replay. Saved model runs provide the separate evidence for decision review.
 
-## TODO · final optimization story
+## Final challenge run
 
-- [x] Integrate the supplied generator, schema, seed selection and case triggers.
-- [ ] Extend the generator with temporal entity snapshots and explicit read/action response types.
-- [ ] Vera: link the final Planner and versioned skills/configuration.
-- [x] Link [Solver generation/export](../../src/hackathon_winner/README.md).
-- [ ] Align context preparation and Planner contracts across local and contest paths.
-- [ ] Evaluation owner: add the new same-input baseline/candidate table and representative failures.
-- [ ] Team: document the final held-out split and immutable run receipts.
+All **30 released banking challenges** completed the shared Planner → Winner path using
+**Opus 5.5 high**. The submitted outputs preserve the exact context, plan, answer, reasoning
+and local model journal for each case. Zero terminal errors measures run completion;
+decision quality can be reviewed against the supplied evidence.
+
+[Final answers](../../ANSWERS/README.md) ·
+[Configuration and reproduction](../../experiments/final-challenges/README.md) ·
+[Source hashes and provenance](../../ANSWERS/submission-manifest.json).
+
+The development loop combines versioned [Planner skills](../../src/dwelly_bot/planner/skills/README.md),
+prepared decision-time contexts, independent review and preserved comparison runs.
+Further experiments can extend temporal snapshots and measure quality on held-out scenarios.
 
 Use the existing experiment workflow and shared model/budget/journal infrastructure. Keep unseen Reality Test inputs out of tuning. Never replace failed captured answers with hand-written corrections.

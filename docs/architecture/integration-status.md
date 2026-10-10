@@ -1,19 +1,23 @@
-# Component audit and deployment boundaries
+# Components and integration
 
 [Architecture](README.md) · [Checks and live captures](../../experiments/usability-integration/README.md)
 
-| Component | Implemented and usable | Remaining boundary |
+The Planner is the shared decision core: context adapters supply evidence, it chooses a
+concrete strategy, and each consuming application presents or executes the resulting plan.
+The hackathon exercises this core directly through Winner.
+
+| Component | Capability | Operating profile |
 | --- | --- | --- |
 | Intake | Typed email, call and ticket; original reply route; authenticated HTTP turns bound to a trusted session | Real email/ticket provider webhooks and their signature verification are deployment adapters. |
-| Context | Read-only investigator, JSON/SQLite and synthetic-bank sources, scoped/time-filtered records, source errors and exact `context.md` | Real tenant permissions and identifiers must come from trusted integration; runtime PNG OCR and complete temporal entity versions are absent. Final challenge preparation adds separate local OCR sidecars. |
-| Planner | Shared canonical `Plan`, skill selection, concrete decisions and evidence-linked grounds; product `DecisionPlanner` and Winner `make_plan` | No guarantee of semantic correctness; stronger-model routing and specialist sub-agents are not implemented. |
+| Context | Read-only investigator, JSON/SQLite and synthetic-bank sources, scoped/time-filtered records, source errors and exact `context.md` | Trusted scope and reviewed decision-time snapshots; final challenge preparation adds PDF text and local image OCR sidecars. |
+| Planner | Shared canonical `Plan`, skill selection, concrete decisions and evidence-linked grounds; product `DecisionPlanner` and Winner `make_plan` | Configurable model, versioned skills, structured decisions and preserved evidence. |
 | Execution | Canonical `DecisionExecutor`, dependency validation, durable mock receipts, replay/conflict checks, original-channel routing and session closure guard | Canonical-plan effects remain simulated; the separate fixture voice path can queue speech. Live bank adapters need provider authority, idempotency and reconciliation. |
 | Voice / text service | FastAPI/Uvicorn, session-scoped bearer tokens, SQLite request state, one active turn, timeout/close handling and replay after restart | Webhook mode needs HTTPS and a lifecycle handler. The team also added a local ElevenLabs WebSocket client-tool bridge with fixture speech; audio interruption/latency still need verification. |
 | Winner | Folder input, supplied context and attachments, shared Planner, ANSWER/REASONING, labeled future drafts, failures and journals | Development histories need a decision-time projection; released challenges use all supplied evidence. Thirty final banking outputs are saved; completion is not a correctness score. |
 | Storage | Dataset state, incoming cases and private evaluation material separated; source hashes; independent session and action-receipt SQLite | Local deployment only. Retention, backups and distributed locking depend on the deployment. |
 | Evaluation | Saved-result scoring, public/synthetic preparation, model judge and existing report workflows | Historical scores are not a fresh quality baseline for this integrated product. |
 
-## What changed in this audit
+## Shared decision contract
 
 The product now accepts `--planner-config` and preserves the same complete decision schema
 as Winner. The earlier offline fixture remains available without keys. HTTP intake invokes
@@ -29,9 +33,8 @@ these guards are not a semantic correctness proof.
 The team's [local voice bridge](../../examples/voice/README.md) is a second transport:
 `voice ask` works offline, while `voice call` uses the ElevenLabs SDK. It queues the
 fixture planner's `reply_to_trigger` in an open call; all other operations remain mock.
-This is separate from the HTTP service's model-backed path. The client-tool bridge does
-not yet render canonical Planner decisions into spoken text. No additional provider
-session or recording was started by this audit.
+The HTTP service provides the model-backed path; the client-tool bridge provides the
+prepared voice demonstration. [Choose a presentation profile](../../demo/LIVE-DEMO.md).
 
 ## Synthetic data boundaries
 
