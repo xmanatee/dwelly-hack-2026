@@ -13,7 +13,7 @@
 - Generated Reality Test results: `ANSWERS/` — pending release; public development cases are excluded.
 - Demo video: `demo/demo.mp4` — pending recording
 - LinkedIn post URL: pending publication
-- X post URL: pending publication
+- X post URL: https://x.com/nickodp97/status/2108941052547645941
 - Licence: [Apache 2.0](LICENSE)
 - Source/prompts/config and demo video freeze: 16:30 London BST / 15:30 UTC
 - Reality Test results and complete submission deadline: 17:00 London BST / 16:00 UTC
