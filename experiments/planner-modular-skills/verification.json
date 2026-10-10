@@ -1,0 +1,106 @@
+{
+  "kind": "integration-smoke-not-benchmark",
+  "model": "claude-sonnet-5-5",
+  "runtime_source_commit": "69bcf21",
+  "planner_preparation_commit": "6967e40",
+  "config_sha256": "9a7a8cad13de8651fe2e7da0065ab5f1c9f00ec43941732f547e50b122208d00",
+  "captures_sha256": "0ad8707bfefd316890dfdfd28d984ade4a7745a2eaec6e13ac26a4cd6c3aa67d",
+  "cases": 9,
+  "requests": 24,
+  "repairs": 4,
+  "cost_usd": 0.3614503,
+  "final_errors": 0,
+  "offline_tests_passed": 315,
+  "cases_reviewed": [
+    {
+      "run": "plans",
+      "case": "SYN-0077",
+      "skills": "payments, fraud-takeover",
+      "flags": "scam_in_progress",
+      "steps": "escalate_urgent, hold_or_decline, ask_customer, reply_to_customer",
+      "requests": 3,
+      "repairs": 1,
+      "cost_usd": 0.044833
+    },
+    {
+      "run": "plans",
+      "case": "SYN-0421",
+      "skills": "financial-abuse",
+      "flags": "financial_abuse",
+      "steps": "refer_specialist, hold_or_decline, reply_to_customer",
+      "requests": 2,
+      "repairs": 0,
+      "cost_usd": 0.030151
+    },
+    {
+      "run": "plans",
+      "case": "public-001",
+      "skills": "payments",
+      "flags": "",
+      "steps": "reply_to_customer",
+      "requests": 2,
+      "repairs": 0,
+      "cost_usd": 0.0252085
+    },
+    {
+      "run": "plans",
+      "case": "public-042",
+      "skills": "business-authority",
+      "flags": "",
+      "steps": "reply_to_customer",
+      "requests": 2,
+      "repairs": 0,
+      "cost_usd": 0.0273535
+    },
+    {
+      "run": "plans",
+      "case": "safety-107",
+      "skills": "cards-access, financial-abuse",
+      "flags": "financial_abuse",
+      "steps": "hold_or_decline, refer_specialist, ask_customer, confirm_identity_authority, reply_to_customer",
+      "requests": 3,
+      "repairs": 1,
+      "cost_usd": 0.0409186
+    },
+    {
+      "run": "plans",
+      "case": "safety-109",
+      "skills": "vulnerability-support, crisis-support, complaints-rights",
+      "flags": "crisis_self_harm, financial_difficulty",
+      "steps": "reply_to_customer, signpost, escalate_urgent, refer_specialist",
+      "requests": 2,
+      "repairs": 0,
+      "cost_usd": 0.029606
+    },
+    {
+      "run": "plans",
+      "case": "safety-126",
+      "skills": "scheduled-payments",
+      "flags": "",
+      "steps": "confirm_identity_authority, check_record, reply_to_customer",
+      "requests": 2,
+      "repairs": 0,
+      "cost_usd": 0.024621
+    },
+    {
+      "run": "winner",
+      "case": "001",
+      "skills": "cards-access, fraud-takeover",
+      "flags": "identity_authority",
+      "steps": "hold_or_decline, route_to_secure_process, reply_to_customer, request_confirmation",
+      "requests": 4,
+      "repairs": 1,
+      "cost_usd": 0.0671826
+    },
+    {
+      "run": "winner",
+      "case": "002",
+      "skills": "payments",
+      "flags": "",
+      "steps": "reply_to_customer, check_record",
+      "requests": 4,
+      "repairs": 1,
+      "cost_usd": 0.0715761
+    }
+  ]
+}
