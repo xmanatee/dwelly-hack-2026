@@ -11,6 +11,7 @@ from dwelly_bot.context.documents import Documents
 from dwelly_bot.contracts import AgentCase, RunConfig
 from dwelly_bot.planner.context import parse_events
 from dwelly_bot.planner.contracts import PlanInput
+from hackathon_solver.export import CASE
 
 TASK = (
     "Read the full case history. Plan the bank's next action and the expected outcome, "
@@ -41,6 +42,8 @@ def load(
         if missing := wanted - {f"{prefix}-{p.name}" for p in folders}:
             raise ValueError(f"Unknown case IDs: {sorted(missing)}")
     cases = []
+    if not folders:
+        raise ValueError(f"No history.md cases found in {track}")
     for folder in folders:
         history = (folder / "history.md").read_text()
         events = parse_events(history)
@@ -48,6 +51,8 @@ def load(
             raise ValueError(f"{folder.name}: no events parsed from history.md")
         customer = next((e for e in events if not is_bank(e.sender)), None)
         case_id = f"{prefix}-{folder.name}"
+        if not CASE.fullmatch(case_id):
+            raise ValueError(f"Unsafe case identifier {case_id!r}")
         with tempfile.TemporaryDirectory() as directory:
             (Path(directory) / "history.md").write_text(history)
             case = AgentCase(

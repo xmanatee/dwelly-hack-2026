@@ -6,7 +6,7 @@ import argparse
 import asyncio
 import os
 from collections.abc import Sequence
-from contextlib import AbstractAsyncContextManager, nullcontext
+from contextlib import AbstractAsyncContextManager, AsyncExitStack, nullcontext
 from pathlib import Path
 from typing import Any
 
@@ -14,11 +14,14 @@ from pydantic import BaseModel
 
 from dwelly_bot.budget import BudgetLedger
 from dwelly_bot.configuration import read_config
+from dwelly_bot.experiments.journal import Journal
+from dwelly_bot.harness.runtime import CaseRuntime
 from dwelly_bot.models import BudgetedModel
 from dwelly_bot.planning.contracts import Plan
 from dwelly_bot.providers import ledger_path, profile_for
-from hackathon_solver.export import check_output, write_case
-from hackathon_solver.generation import Generator, ModelGenerator, TemplateGenerator
+from dwelly_bot.storage import save_json
+from hackathon_solver.export import CASE, check_output, write_case
+from hackathon_solver.generation import Generated, Generator, ModelGenerator, TemplateGenerator
 
 
 class PlannerFailure(BaseModel):
@@ -30,6 +33,8 @@ def cases(directory: Path) -> list[tuple[str, Plan, str]]:
     found = []
     for path in sorted(directory.glob("*.plan.json")):
         case_id = path.name.removesuffix(".plan.json")
+        if not CASE.fullmatch(case_id):
+            raise ValueError(f"Unsafe case identifier {case_id!r}")
         context = directory / f"{case_id}.context.md"
         if not context.exists():
             raise ValueError(f"{case_id}: missing {context.name}")
@@ -50,11 +55,16 @@ async def generate(args: argparse.Namespace) -> int:
         config = read_config(args.config)
         context, profile = transport(profile_for(config))
         ledger = BudgetLedger(ledger_path(config), config.total_budget_usd)
+    failed = 0
     async with context as base:
         for case_id, plan, text in inputs:
             generator: Generator
+            journal = None
+            runtime = None
+            model = None
+            details: dict[str, Any] = {"kind": "template"}
             if base is None:
-                generator, details = TemplateGenerator(), {"kind": "template"}
+                generator = TemplateGenerator()
             else:
                 assert ledger is not None
                 model = BudgetedModel(
@@ -64,12 +74,44 @@ async def generate(args: argparse.Namespace) -> int:
                     config.request_timeout_seconds,
                     profile=profile,
                 )
-                generator, details = ModelGenerator(model), {"kind": "model", "model": config.model}
-            generated = await generator.generate(plan, text)
+                journal = Journal(args.output / "journals" / f"{case_id}.jsonl")
+                runtime = CaseRuntime(model, config, journal)
+                generator = ModelGenerator(runtime)
+                details = {"kind": "model", "model": config.model}
+            try:
+                generated = await generator.generate(plan, text)
+            except Exception as exc:
+                failed += 1
+                details.update(kind="generator_error", error=f"{type(exc).__name__}: {exc}")
+                generated = failure_notice("Generator", details["error"])
+            finally:
+                if journal is not None and runtime is not None and model is not None:
+                    try:
+                        record_trace(runtime, [model])
+                    finally:
+                        journal.close()
             write_case(args.output, case_id, generated, plan=plan, context=text, generator=details)
-            print(f"  {case_id}: written", flush=True)
-    print(f"{len(inputs)} cases. Output: {args.output}")
-    return 0
+            print(f"  {case_id}: {details['kind']}", flush=True)
+    print(f"{len(inputs)} cases, {failed} errors. Output: {args.output}")
+    return int(failed > 0)
+
+
+def failure_notice(stage: str, error: str) -> Generated:
+    return Generated(
+        answer="Processing could not be completed; this case requires human review.",
+        reasoning=f"{stage} error: {error}",
+    )
+
+
+def record_trace(runtime: CaseRuntime, models: list[BudgetedModel]) -> None:
+    runtime.journal.append(
+        {
+            "kind": "model_trace",
+            "config": runtime.config.model_dump(mode="json"),
+            "roles": runtime.role_records,
+            "costs": [c for model in models for c in model.calls],
+        }
+    )
 
 
 DEFAULT_CASES = Path(".cache/datasets/banking-v1/original/Banking & Financial Services")
@@ -80,66 +122,83 @@ async def predict(args: argparse.Namespace) -> int:
     from datetime import UTC, datetime
 
     from dwelly_bot.contracts import PlannerConfig
-    from dwelly_bot.experiments.journal import Journal
-    from dwelly_bot.harness.runtime import CaseRuntime
     from dwelly_bot.planner.cli import transport
     from dwelly_bot.planner.contracts import Plan as CasePlan
     from dwelly_bot.planner.planner import plan_case
-    from dwelly_bot.storage import save_json
     from hackathon_solver.adapters import HistoryCase, load
     from hackathon_solver.export.html import render
-    from hackathon_solver.generation import Generated
 
     config = read_config(args.config)
+    if args.submission and args.cases.resolve().is_relative_to(DEFAULT_CASES.resolve()):
+        raise ValueError("The installed public practice corpus is not a submission dataset")
     selected = load(args.cases, config, ids=args.ids.split(",") if args.ids else None)
     stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     output = args.output or Path("experiments/banking-predictions/artifacts") / stamp
     development = not args.submission
+    planner_config = config.planner or PlannerConfig()
+    if planner_config.mode == "off":
+        raise ValueError("predict requires an enabled Planner")
     check_output(output, development=development)
     output.mkdir(parents=True, exist_ok=True)
     context, profile = transport(profile_for(config))
+    planner_context, planner_profile = transport(planner_config.model or profile_for(config))
     ledger = BudgetLedger(ledger_path(config), config.total_budget_usd)
     semaphore = asyncio.Semaphore(config.case_concurrency)
     rows: list[dict[str, Any]] = []
-    async with context as base:
-
-        def bounded(name: str) -> BudgetedModel:
-            return BudgetedModel(
-                base, ledger, name, config.request_timeout_seconds, profile=profile
-            )
+    async with AsyncExitStack() as stack:
+        base = await stack.enter_async_context(context)
+        planner_base = (
+            await stack.enter_async_context(planner_context) if planner_config.model else base
+        )
 
         async def one(case: HistoryCase) -> None:
             async with semaphore:
                 journal = Journal(output / "journals" / f"{case.case_id}.jsonl")
-                planner_model, generator_model = bounded(f"predict/{case.case_id}/planner"), None
+                planner_model = BudgetedModel(
+                    planner_base,
+                    ledger,
+                    f"predict/{case.case_id}/planner",
+                    config.request_timeout_seconds,
+                    profile=planner_profile,
+                )
+                generator_model = BudgetedModel(
+                    base,
+                    ledger,
+                    f"predict/{case.case_id}/generator",
+                    config.request_timeout_seconds,
+                    profile=profile,
+                )
+                runtime = CaseRuntime(generator_model, config, journal, planner_model=planner_model)
+                planned: dict[str, Any] = {"status": "error", "error": "Planner did not complete"}
+                details: dict[str, Any] = {"kind": "planner_error"}
+                plan: BaseModel = PlannerFailure(error="Planner did not complete")
                 try:
-                    planned = await plan_case(
-                        CaseRuntime(planner_model, config, journal),
-                        case.source,
-                        config.planner or PlannerConfig(),
-                    )
+                    async with asyncio.timeout(config.case_timeout_seconds):
+                        planned = await plan_case(runtime, case.source, planner_config)
+                        if planned["status"] == "available":
+                            plan = CasePlan.model_validate(planned["plan"])
+                            details = {
+                                "planner": "available",
+                                "kind": "template" if args.template else "model",
+                            }
+                            generated = (
+                                await TemplateGenerator().generate(plan, case.history)
+                                if args.template
+                                else await ModelGenerator(runtime).generate(plan, case.history)
+                            )
+                        else:
+                            plan = PlannerFailure(error=str(planned.get("error")))
+                            details["error"] = planned.get("error")
+                            generated = failure_notice("Planner", str(planned.get("error")))
+                except Exception as exc:
+                    stage = "generator" if planned["status"] == "available" else "planner"
+                    details.update(kind=f"{stage}_error", error=f"{type(exc).__name__}: {exc}")
+                    generated = failure_notice(stage.capitalize(), details["error"])
                 finally:
-                    journal.file.close()
-                details: dict[str, Any] = {"planner": planned.get("error") or "available"}
-                plan: BaseModel
-                if planned["status"] == "available":
-                    plan = CasePlan.model_validate(planned["plan"])
-                    if args.template:
-                        generated = await TemplateGenerator().generate(plan, case.history)
-                        details["kind"] = "template"
-                    else:
-                        generator_model = bounded(f"predict/{case.case_id}/generator")
-                        generated = await ModelGenerator(generator_model).generate(
-                            plan, case.history
-                        )
-                        details.update(kind="model", model=config.model)
-                else:
-                    plan = PlannerFailure(error=str(planned.get("error")))
-                    generated = Generated(
-                        answer="Processing did not produce a plan; this case requires human review.",
-                        reasoning=f"Planner error: {planned.get('error')}",
-                    )
-                    details["kind"] = "planner_error"
+                    try:
+                        record_trace(runtime, [planner_model, generator_model])
+                    finally:
+                        journal.close()
                 write_case(
                     output,
                     case.case_id,
@@ -148,12 +207,13 @@ async def predict(args: argparse.Namespace) -> int:
                     context=case.history,
                     generator=details,
                 )
-                calls = planner_model.calls + (generator_model.calls if generator_model else [])
+                calls = planner_model.calls + generator_model.calls
                 rows.append(
                     {
                         "case_id": case.case_id,
                         "planner": planned["status"],
                         "generator": details["kind"],
+                        "error": details.get("error"),
                         "requests": len(calls),
                         "cost_usd": sum(c["cost_usd"] for c in calls if c["status"] == "settled"),
                     }
@@ -165,16 +225,22 @@ async def predict(args: argparse.Namespace) -> int:
     rows.sort(key=lambda row: order[row["case_id"]])
     save_json(
         output / "predictions.json",
-        {"input": "full history.md", "cases_root": str(args.cases), "cases": rows},
+        {
+            "input": "full history.md",
+            "development": development,
+            "config": config.model_dump(mode="json"),
+            "cases_root": str(args.cases),
+            "cases": rows,
+        },
     )
     if development:
         (output / "README.md").write_text(
             "# Development predictions\n\nPublic practice cases, not Reality Test results. "
             "Do not submit them.\n"
         )
-    failed = sum(row["planner"] != "available" for row in rows)
-    print(f"{len(rows)} cases, {failed} planner errors. Report: {render(output)}")
-    return 0
+    failed = sum(row["generator"].endswith("_error") for row in rows)
+    print(f"{len(rows)} cases, {failed} errors. Report: {render(output)}")
+    return int(failed > 0)
 
 
 def main(argv: Sequence[str] | None = None) -> int:

@@ -64,10 +64,17 @@ def case_section(folder: Path, summary: dict[str, Any]) -> str:
     plan = record.get("plan") or {}
     answer = (folder / "ANSWER.md").read_text()
     reasoning = (folder / "REASONING.md").read_text()
-    ok = summary.get("planner") == "available"
+    ok = summary.get("planner") == "available" and not str(summary.get("generator", "")).endswith(
+        "_error"
+    )
     flags = plan.get("safety_flags") or []
     tags = [
         badge(summary.get("planner", "?"), "" if ok else "bad"),
+        *(
+            [badge(str(summary["generator"]), "bad")]
+            if str(summary.get("generator", "")).endswith("_error")
+            else []
+        ),
         *(
             [badge(plan["expected_disposition"], "info")]
             if plan.get("expected_disposition")
@@ -101,7 +108,7 @@ def case_section(folder: Path, summary: dict[str, Any]) -> str:
 <section><h3>REASONING.md</h3>{markdown(reasoning)}</section>
 </div>
 <section><h3>Plan</h3>{plan_block}</section>
-<section><h3>Visible evidence at the decision point</h3><pre>{html.escape(record.get("context", ""))}</pre></section>
+<section><h3>Supplied case history</h3><pre>{html.escape(record.get("context", ""))}</pre></section>
 <p class="muted">{summary.get("requests", 0)} model requests · API-equivalent ${summary.get("cost_usd", 0):.4f} · generator: {html.escape(str(summary.get("generator")))}</p>
 </details>"""
 
@@ -112,6 +119,11 @@ def render(directory: Path, output: Path | None = None) -> Path:
     folders = [directory / case_id for case_id in rows if (directory / case_id).is_dir()]
     available = sum(row["planner"] == "available" for row in rows.values())
     cost = sum(row["cost_usd"] for row in rows.values())
+    scope = (
+        "Public practice cases, not a submission"
+        if meta.get("development", True)
+        else "Submission candidate; review before delivery"
+    )
     t = TOKENS
     page = f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -143,7 +155,7 @@ table{{border-collapse:collapse;width:100%;font-size:13px}}td,th{{border-top:1px
 code{{font-size:12px;background:var(--soft);padding:1px 4px;border-radius:4px}}
 </style></head><body><main>
 <h1>Case predictions</h1>
-<p class="muted">{html.escape(str(directory))} · dataset {html.escape(meta.get("dataset", ""))} · practice cases, not a submission. Planned actions are proposals; nothing was executed.</p>
+<p class="muted">{html.escape(str(directory))} · {scope}. Planned actions are proposals; nothing was executed. Full-history predictions are not a blind decision-point evaluation.</p>
 <div class="stats">
 <div class="stat"><b>{len(rows)}</b>cases</div>
 <div class="stat"><b>{available}</b>plans available</div>
@@ -152,7 +164,7 @@ code{{font-size:12px;background:var(--soft);padding:1px 4px;border-radius:4px}}
 </div>
 <div class="controls"><input id="q" placeholder="Search cases, intents, flags, answers" aria-label="Search">
 <select id="f" aria-label="Filter"><option value="">All cases</option><option value="flagged">Safety flags</option>
-<option value="failed">Planner errors</option></select>
+<option value="failed">Processing errors</option></select>
 <button onclick="document.querySelectorAll('.case').forEach(d=>d.open=!d.open)">Expand/collapse</button></div>
 {"".join(case_section(folder, rows[folder.name]) for folder in folders)}
 </main><script>

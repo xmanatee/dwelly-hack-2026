@@ -16,7 +16,7 @@ CASE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
 
 def check_output(directory: Path, *, development: bool) -> None:
     """Practice cases never go to ANSWERS; existing answers are never overwritten."""
-    if development and directory.name.upper() == "ANSWERS":
+    if development and any(p.name.upper() == "ANSWERS" for p in (directory, *directory.parents)):
         raise ValueError(
             "Public practice cases cannot be written to ANSWERS; use a review directory"
         )

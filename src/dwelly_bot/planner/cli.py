@@ -58,6 +58,14 @@ async def run(
     inputs: list[PlanInput], config: RunConfig, output: Path, *, call: bool
 ) -> list[dict[str, Any]]:
     planner = config.planner or PlannerConfig()
+    if not inputs:
+        raise ValueError("No planner inputs selected")
+    if len({source.case_id for source in inputs}) != len(inputs):
+        raise ValueError("Planner input case IDs must be unique")
+    from re import fullmatch
+
+    if any(not fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*", source.case_id) for source in inputs):
+        raise ValueError("Unsafe planner case identifier")
     output.mkdir(parents=True, exist_ok=False)
     for source in inputs:
         save_json(output / f"{source.case_id}.input.json", source.model_dump(mode="json"))
@@ -79,10 +87,21 @@ async def run(
                     profile=profile,
                 )
                 journal = Journal(output / "journals" / f"{source.case_id}.jsonl")
+                runtime = CaseRuntime(model, config, journal)
                 try:
-                    result = await plan_case(CaseRuntime(model, config, journal), source, planner)
+                    result = await plan_case(runtime, source, planner)
                 finally:
-                    journal.file.close()
+                    try:
+                        journal.append(
+                            {
+                                "kind": "model_trace",
+                                "config": config.model_dump(mode="json"),
+                                "roles": runtime.role_records,
+                                "costs": model.calls,
+                            }
+                        )
+                    finally:
+                        journal.close()
                 save_json(output / f"{source.case_id}.plan.json", result)
                 plan = result.get("plan") or {}
                 rows.append(
@@ -198,4 +217,4 @@ def main(argv: Sequence[str] | None = None) -> int:
     save_json(args.output / "plans.json", rows)
     failed = sum(row["status"] == "error" for row in rows)
     print(f"{len(rows)} cases, {failed} planner errors. Output: {args.output}")
-    return 0
+    return int(failed > 0)

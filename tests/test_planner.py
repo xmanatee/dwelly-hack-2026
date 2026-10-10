@@ -243,3 +243,46 @@ def test_cli_writes_json_inputs_without_model_calls(tmp_path: Path) -> None:
     )
     assert json.loads((output / "banking-005.input.json").read_text())["case_id"] == "banking-005"
     assert json.loads((output / "plans.json").read_text())[0]["status"] == "not_run"
+
+
+@pytest.mark.parametrize("ids", [[], ["a", "a"], ["../outside"]])
+async def test_planner_cli_rejects_bad_selection_before_writing(
+    tmp_path: Path, ids: list[str]
+) -> None:
+    from dwelly_bot.planner.cli import run
+    from dwelly_bot.planner.contracts import PlanInput
+
+    output = tmp_path / "out"
+    sources = [PlanInput(case_id=id, decision_time="now", request="test") for id in ids]
+    with pytest.raises(ValueError):
+        await run(sources, RunConfig(), output, call=False)
+    assert not output.exists()
+
+
+def test_planner_cli_failure_exit_and_trace(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from contextlib import nullcontext
+
+    import dwelly_bot.planner.cli as cli
+    from dwelly_bot.contracts import ModelProfile
+    from dwelly_bot.planner.contracts import PlanInput
+
+    def fail(messages: list[ModelMessage], info: AgentInfo) -> ModelResponse:
+        raise RuntimeError("test failure")
+
+    def transport(profile: ModelProfile) -> Any:
+        return nullcontext(FunctionModel(fail)), profile
+
+    monkeypatch.setattr(cli, "transport", transport)
+    source = tmp_path / "case.input.json"
+    source.write_text(
+        PlanInput(case_id="case", decision_time="now", request="test").model_dump_json()
+    )
+    config = tmp_path / "config.json"
+    config.write_text(RunConfig(budget_file=str(tmp_path / "budget.json")).model_dump_json())
+    output = tmp_path / "out"
+    assert cli.main(["--input", str(source), "--config", str(config), "--output", str(output)]) == 1
+    trace = json.loads((output / "journals/case.jsonl").read_text().splitlines()[-1])
+    assert trace["roles"][0]["role"] == "planner"
+    assert trace["costs"] and trace["config"]

@@ -11,6 +11,9 @@ from hackathon_solver.generation import EXECUTED_CLAIM, ModelGenerator, Template
 from pydantic_ai.messages import ModelMessage, ModelResponse, ToolCallPart
 from pydantic_ai.models.function import AgentInfo, FunctionModel
 
+from dwelly_bot.contracts import RunConfig
+from dwelly_bot.experiments.journal import Journal
+from dwelly_bot.harness.runtime import CaseRuntime
 from dwelly_bot.planning.contracts import Handoff, Plan, ReplyToTrigger
 
 PLAN = Plan(
@@ -35,7 +38,7 @@ async def test_template_keeps_decision_and_marks_actions_proposed() -> None:
     assert not EXECUTED_CLAIM.search(generated.answer + generated.reasoning)
 
 
-async def test_model_claims_of_done_actions_are_repaired() -> None:
+async def test_model_claims_of_done_actions_are_repaired(tmp_path: Path) -> None:
     replies: list[dict[str, Any]] = [
         {"answer": "I have registered the return.", "reasoning": "Done."},
         {"answer": "A return request is proposed.", "reasoning": "Pending operator action."},
@@ -46,10 +49,16 @@ async def test_model_claims_of_done_actions_are_repaired() -> None:
         prompts.append(str(getattr(messages[0].parts[-1], "content", "")))
         return ModelResponse(parts=[ToolCallPart(info.output_tools[0].name, replies.pop(0))])
 
-    generated = await ModelGenerator(FunctionModel(model)).generate(PLAN, "VISIBLE_CONTEXT")
+    journal = Journal(tmp_path / "events.jsonl")
+    runtime = CaseRuntime(FunctionModel(model), RunConfig(), journal)
+    try:
+        generated = await ModelGenerator(runtime).generate(PLAN, "VISIBLE_CONTEXT")
+    finally:
+        journal.close()
     assert generated.answer == "A return request is proposed."
     assert "decision of record" in prompts[0] and "VISIBLE_CONTEXT" in prompts[0]
     assert not replies
+    assert runtime.role_records[0]["role"] == "generator"
 
 
 def test_export_refuses_practice_answers_and_overwrites(tmp_path: Path) -> None:
@@ -116,7 +125,7 @@ async def test_template_renders_case_planner_plans_as_proposals() -> None:
         }
     )
     generated = await TemplateGenerator().generate(plan, "context")
-    assert "1. Register the return request (payment team)" in generated.answer
+    assert "1. [s2] Register the return request (payment team)" in generated.answer
     assert "Read history" not in generated.answer
     assert "Registration does not confirm a return" in generated.answer
     assert "Identity checks complete (event-002)" in generated.reasoning
@@ -180,3 +189,162 @@ def test_history_adapter_reads_only_history(tmp_path: Path) -> None:
     assert case.case_id == "banking-005" and len(case.source.events) == 2
     assert case.source.request == "Please seek a return."
     assert "INDEX_SECRET" not in case.source.model_dump_json() + case.history
+
+
+async def test_template_preserves_calculations_and_conditional_steps() -> None:
+    from dwelly_bot.planner.contracts import Plan as CasePlan
+    from dwelly_bot.planning.contracts import Calculate
+
+    plan = PLAN.model_copy(
+        update={
+            "actions": (
+                Calculate(
+                    id="fee", expression="10 * 0.2", rounding="cents", basis="Supplied tariff"
+                ),
+            )
+        }
+    )
+    answer = await TemplateGenerator().generate(plan, "")
+    assert "10 * 0.2" in answer.answer and "Supplied tariff" in answer.answer
+    advisory = CasePlan.model_validate(
+        {
+            "intent": "test",
+            "summary": "Conditional escalation",
+            "identity_authority": "unclear",
+            "expected_disposition": "escalated",
+            "must_not": ["Promise a refund"],
+            "steps": [
+                {
+                    "id": "s1",
+                    "kind": "proposed_action",
+                    "action": "request_team_action",
+                    "purpose": "Escalate",
+                    "condition": "Customer agrees",
+                }
+            ],
+        }
+    )
+    answer = await TemplateGenerator().generate(advisory, "")
+    assert "Only if: Customer agrees" in answer.answer
+    assert "Must not: Promise a refund" in answer.reasoning
+
+
+async def test_generator_respects_runtime_request_limit(tmp_path: Path) -> None:
+    from pydantic_ai.exceptions import UsageLimitExceeded
+
+    def respond(messages: list[ModelMessage], info: AgentInfo) -> ModelResponse:
+        assert info.model_settings and info.model_settings["max_tokens"] == 512
+        return ModelResponse(
+            parts=[
+                ToolCallPart(
+                    info.output_tools[0].name,
+                    {"answer": "I have refunded the customer.", "reasoning": "Done."},
+                )
+            ]
+        )
+
+    journal = Journal(tmp_path / "events.jsonl")
+    runtime = CaseRuntime(
+        FunctionModel(respond), RunConfig(max_requests=1, max_tokens=512), journal
+    )
+    try:
+        with pytest.raises(UsageLimitExceeded):
+            await ModelGenerator(runtime).generate(PLAN, "context")
+    finally:
+        journal.close()
+    assert len(runtime.role_records) == 1
+
+
+@pytest.mark.parametrize("failure_stage", ["planner", "generator"])
+def test_predict_retains_failures_and_continues_batch(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, failure_stage: str
+) -> None:
+    from contextlib import nullcontext
+
+    import dwelly_bot.planner.cli as planner_cli
+    from dwelly_bot.contracts import ModelProfile, PlannerConfig
+
+    track = tmp_path / "cases"
+    for case_id in ("001", "002"):
+        folder = track / case_id
+        folder.mkdir(parents=True)
+        (folder / "history.md").write_text(
+            "## 2026-01-01 09:00:00 UTC — event 001\n\n"
+            "- **Channel:** Email\n- **From:** Customer\n- **To:** Bank\n\n"
+            + ("FAIL_ME" if case_id == "001" else "Good request")
+        )
+    profiles: list[str] = []
+
+    def respond(messages: list[ModelMessage], info: AgentInfo) -> ModelResponse:
+        tool = info.output_tools[0].name
+        stage = "planner" if tool == "case_plan" else "generator"
+        if stage == failure_stage and "FAIL_ME" in str(messages):
+            raise RuntimeError("simulated model failure")
+        if stage == "planner":
+            return ModelResponse(
+                parts=[
+                    ToolCallPart(
+                        tool,
+                        {
+                            "intent": "review",
+                            "summary": "Ask a person to review",
+                            "identity_authority": "unclear",
+                            "expected_disposition": "escalated",
+                            "steps": [
+                                {
+                                    "id": "s1",
+                                    "kind": "proposed_action",
+                                    "action": "reply_to_customer",
+                                    "purpose": "Explain the next step",
+                                }
+                            ],
+                        },
+                    )
+                ]
+            )
+        return ModelResponse(
+            parts=[ToolCallPart(tool, {"answer": "Proposed review", "reasoning": "Needs review"})]
+        )
+
+    def transport(profile: ModelProfile) -> Any:
+        profiles.append(profile.model)
+        return nullcontext(FunctionModel(respond)), profile
+
+    monkeypatch.setattr(planner_cli, "transport", transport)
+    config = tmp_path / "config.json"
+    config.write_text(
+        RunConfig(
+            budget_file=str(tmp_path / "ledger.json"),
+            max_requests=4,
+            planner=PlannerConfig(model=ModelProfile(model="planner-test")),
+        ).model_dump_json()
+    )
+    output = tmp_path / "out"
+    assert (
+        solver_cli(
+            ["predict", "--cases", str(track), "--config", str(config), "--output", str(output)]
+        )
+        == 1
+    )
+    assert "planner-test" in profiles
+    rows = json.loads((output / "predictions.json").read_text())["cases"]
+    assert rows[0]["generator"] == f"{failure_stage}_error"
+    assert rows[1]["planner"] == "available" and rows[1]["generator"] == "model"
+    for row in rows:
+        assert (output / row["case_id"] / "ANSWER.md").exists()
+        trace = json.loads(
+            (output / "journals" / f"{row['case_id']}.jsonl").read_text().splitlines()[-1]
+        )
+        assert trace["roles"] and trace["costs"]
+        assert trace["config"]["max_requests"] == 4
+    page = (output / "report.html").read_text()
+    assert f"{failure_stage}_error" in page and "not a blind" in page
+
+
+def test_empty_history_corpus_and_nested_answers_are_rejected(tmp_path: Path) -> None:
+    from hackathon_solver.adapters import load
+
+    with pytest.raises(ValueError, match="No history"):
+        load(tmp_path, RunConfig())
+    with pytest.raises(ValueError, match="practice"):
+        check_output(tmp_path / "ANSWERS" / "nested", development=True)
